@@ -1,0 +1,5 @@
+# Google API Credentials
+.agent/skills/google_sheets_integration/credentials/
+.agent/scratch/
+*.json
+!mcp_config.json
