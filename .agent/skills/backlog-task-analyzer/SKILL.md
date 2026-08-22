@@ -68,7 +68,19 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
      * Ví dụ chuẩn gọn:
        - Scenario: `Hiển thị nút bấm (Admin)`
        - Test Case: `Hiển thị nút [物件詳細] trên Card (Admin)`
-   - **Test Data**: CẤM viết chung chung ("nhập email đúng", "nhập pass sai"). BẮT BUỘC cấp dữ liệu thực tế (`qa_admin@sdr.vn`, `SecurePass@2026`, `SKU_SDR_8899`).
+   - **Test Data (BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DOMAIN)**:
+     * ❌ **CẤM HOÀN TOÀN**: Dùng dữ liệu test kiểu chung chung, rập khuôn, ngây ngô (như `nhập email đúng`, `nhập pass sai`, `abc@gmail.com`, `admin@123`, `123456`, `test_data_1`).
+     * ✅ **BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DỰ ÁN**:
+       - **Trích xuất trực tiếp từ Task Spec & Comments**: Thu thập toàn bộ các trường thông tin, mã entity, role, trạng thái, định dạng, giới hạn ký tự (min/max), regex xuất hiện trong mô tả task, bình luận của BA/Dev hoặc tài liệu đính kèm để làm Test Data.
+       - **Bám sát Lĩnh vực Nghiệp vụ (Domain Context)**: Dùng danh từ, thuật ngữ, mẫu dữ liệu thực tế đúng lĩnh vực nghiệp vụ của dự án (ví dụ: với dự án Bất động sản Nhật Bản -> Mã BĐS `RE-2026-TK01`, Tên dự án `パークホームズ恵比寿`, Địa chỉ `東京都渋谷区恵比寿1-2-3`, Giá bán `65,000,000 JPY`, Diện tích `75.5m²`; với E-commerce -> Mã SKU `SKU-IP15-PRO-256`, Tên sản phẩm `iPhone 15 Pro 256GB Gold`...).
+       - **Đúng Role & Account quy định**: Dùng đúng tên tài khoản, role/quyền hạn được đề cập trong task (ví dụ: `property_mgr_01@sdr.jp` với Role `[Property Manager]`, không dùng role `admin` chung chung nếu task yêu cầu role cụ thể).
+       - **Data Negative / Boundary bám sát Rule Task**: Dữ liệu vi phạm phải phản ánh đúng điểm gãy nghiệp vụ được định nghĩa trong task. (Ví dụ: Task yêu cầu nhập Mã bưu điện Nhật 7 chữ số -> Negative Data: `100-0001` (chứa dấu gạch ngang), `100001` (thiếu số), `10000012` (thừa số)).
+       - **Minh họa so sánh Data**:
+         | Trường hợp | ❌ Data Chung Chung (CẤM) | ✅ Data Bám Sát Task & Ngữ Cảnh (BẮT BUỘC) |
+         |---|---|---|
+         | Form BĐS hợp lệ | `Tên: House 1`, `Giá: 1000`, `Địa chỉ: ABC` | `Tên: パークホームズ恵比寿`, `Giá: 65,000,000 JPY`, `Địa chỉ: 東京都渋谷区恵比寿1-2-3` |
+         | Vượt giới hạn ký tự | `Tên dài: abcdefghijklmnopqrstuvwxyz...` | `Tên dài > 50 chars`: "Dự án căn hộ chung cư cao cấp Grand Maison Shinjuku Tower Block A (Phiên bản mở rộng 2026)" |
+         | Tài khoản & Quyền | `User: admin`, `Role: user` | `Account: property_mgr_01@sdr.jp`, `Role: [Property Manager]` (đúng role trong task) |
    - **Test Steps**: Các bước nguyên tử (Atomic steps), rõ ràng (1. Truy cập..., 2. Nhập..., 3. Click...).
    - **Expected Result**: Cụ thể, định lượng/định tính đo lường được (Ví dụ: "Hiển thị alert đỏ với text 'Email đã tồn tại'").
 
@@ -77,7 +89,7 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
 ```markdown
 | TC ID | Test Scenario | Test Case | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 |---|---|---|---|---|---|---|---|
-| TC_01 | Đăng nhập hệ thống | Đăng nhập thành công (Admin) | Đã ở trang /login | 1. Nhập email vào ô Email<br>2. Nhập mật khẩu vào ô Mật khẩu<br>3. Click nút "Đăng nhập" | Email: `admin_test@sdr.vn`<br>Password: `Admin@123456` | 1. Đăng nhập thành công<br>2. Chuyển hướng sang `/dashboard` | High |
+| TC_01 | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS vào ô [物件コード]<br>2. Nhập Tên BĐS vào ô [物件名]<br>3. Nhập Giá bán vào ô [販売価格]<br>4. Click nút [登録する] | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
 ```
 
 ---
