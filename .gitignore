@@ -1,0 +1,9 @@
+# Ignore project data and source code
+/*
+
+# Allow .agent directory, GEMINI.md, and configuration files
+!/.agent/
+!/GEMINI.md
+!/RULE_GLOBAL.md
+!/TIPS_QUOTA.md
+!/.gitignore
