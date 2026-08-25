@@ -24,7 +24,7 @@ Use when QC provides raw bug description and optional evidence folder.
    - BugSeverity
    - PhaseDetected
 6. Save draft:
-   - `backlog/draft/bug-<feature-name>.md` (kebab-case)
+   - `backlog/draft/bug/bug-<feature-name>.md` (kebab-case)
    - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`)
    - Keep `## Bình luận (Comments)` blank
 7. Return draft path and prompt user to confirm/choose Custom Fields:
