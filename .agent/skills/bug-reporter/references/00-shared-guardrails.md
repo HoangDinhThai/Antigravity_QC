@@ -18,3 +18,4 @@ Before executing any business step:
 ## Confirmation Rule
 
 - Never create/push issue to Backlog without explicit confirmation in current user turn.
+- Always present Custom Fields in radio-button option format (`🔘` / `[x]`) so QC can confirm or re-select options before creation.

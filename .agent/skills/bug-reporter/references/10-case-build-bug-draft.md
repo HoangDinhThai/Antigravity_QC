@@ -19,7 +19,7 @@ Use when QC provides raw bug description and optional evidence folder.
    - Images: `![Tên ảnh](backlog/draft/<folder-name>/<file>)`
    - Non-image/video: `- [Tên file](backlog/draft/<folder-name>/<file>)`
    - If no evidence folder: `[Chưa có bằng chứng]`.
-5. Classify custom fields from `references/bug_rules.md`:
+5. Auto-detect custom fields from `references/bug_rules.md` as initial recommendations:
    - ProgramLogicBugType
    - BugSeverity
    - PhaseDetected
@@ -27,4 +27,6 @@ Use when QC provides raw bug description and optional evidence folder.
    - `backlog/draft/bug-<feature-name>.md` (kebab-case)
    - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`)
    - Keep `## Bình luận (Comments)` blank
-7. Return draft path and ask for review/confirmation.
+7. Return draft path and prompt user to confirm/choose Custom Fields:
+   - Present the 3 Custom Fields in radio-button format (options list with auto-suggested default selected: `[x]` / `🔘` or `[ ]` / `⚪`).
+   - Ask QC to confirm or pick different options before creating the issue on Backlog.
