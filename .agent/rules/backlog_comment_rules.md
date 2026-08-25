@@ -8,7 +8,7 @@
 
 1. **CẤM TỰ Ý PUSH COMMENT TRỰC TIẾP (KỂ CẢ KHI ĐANG SỬA NỘI DUNG):**
    - **TUYỆT ĐỐI NÓI KHÔNG** với việc gọi API `mcp_backlog_add_issue_comment` hoặc script push comment lên Backlog khi chưa qua bước User kiểm tra và phê duyệt bản nháp.
-   - **Trong quá trình chỉnh sửa / cập nhật nội dung task hoặc comment:** Tất cả chỉnh sửa CHỈ ĐƯỢC LƯU VÀO FILE NHÁP LOCAL (`evidence/test-evidence-{issueKey}.md`). KHÔNG ĐƯỢC tự động push bất kỳ comment nào lên Backlog cho đến khi User phát lệnh push cụ thể.
+   - **Trong quá trình chỉnh sửa / cập nhật nội dung task hoặc comment:** Tất cả chỉnh sửa CHỈ ĐƯỢC LƯU VÀO FILE NHÁP LOCAL (`Evidence/test-evidence-{issueKey}.md`). KHÔNG ĐƯỢC tự động push bất kỳ comment nào lên Backlog cho đến khi User phát lệnh push cụ thể.
 2. **CẤM TỰ Ý KÉO/THAY ĐỔI TRẠNG THÁI TASK (STATUS):**
    - **TUYỆT ĐỐI KHÔNG TỰ Ý KÉO/ĐỔI STATUS TASK** (ví dụ: chuyển từ `Testing` sang `Review` - ID: 31773, hoặc `Resolved`/`Closed`).
    - Luôn **hỏi ý kiến User** rõ ràng trong lúc duyệt bản nháp (ví dụ: *"Có đổi status task sang Review không bạn?"*). Chỉ thực hiện chuyển status khi User xác nhận đồng ý.
@@ -16,7 +16,7 @@
    - Trong trường hợp comment đã được push lên nhưng gặp lỗi lưu/hiển thị ảnh đính kèm, hoặc cần sửa đổi/bổ sung nội dung của comment đó: **BẮT BUỘC phải sửa trực tiếp (Update/Edit) vào chính comment đã tạo**.
    - **TUYỆT ĐỐI CẤM TẠO COMMENT MỚI** để đính kèm lại ảnh sửa lỗi hoặc gửi lại nội dung đè lên comment cũ, tránh làm rác và trùng lặp comment trên ticket Backlog.
 4. **QUY TRÌNH 4 BƯỚC THỰC THI BẮT BUỘC:**
-   - **Bước 1 (Drafting & Editing):** Soạn hoặc chỉnh sửa nội dung báo cáo ra file nháp local tại thư mục `evidence/test-evidence-{issueKey}.md` (hoặc `test-evidence-{issueKey}-tc{X}.md`).
+   - **Bước 1 (Drafting & Editing):** Soạn hoặc chỉnh sửa nội dung báo cáo ra file nháp local tại thư mục `Evidence/test-evidence-{issueKey}.md` (hoặc `test-evidence-{issueKey}-tc{X}.md`).
    - **Bước 2 (User Review):** Hiển thị đường dẫn file nháp + tóm tắt bản nháp trong conversation để User duyệt, **kèm câu hỏi xác nhận có muốn chuyển trạng thái task hay không**.
    - **Bước 3 (Upload Attachment & Push Comment):**
      - Chỉ thực thi khi User đồng ý / phát lệnh push (ví dụ: *"Đẩy comment lên backlog"*, *"Push report đi"*).
