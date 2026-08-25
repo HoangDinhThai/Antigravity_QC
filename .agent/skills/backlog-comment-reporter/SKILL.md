@@ -23,7 +23,7 @@ Tất cả các quy tắc chi tiết về cấu trúc comment, cú pháp ảnh B
 ## ⛔ CRITICAL WORKFLOW (QUY TRÌNH 4 BƯỚC)
 
 1. **Bước 1 - Drafting & Editing:** 
-   - Soạn hoặc chỉnh sửa nội dung báo cáo ra file nháp local tại đường dẫn `Evidence/test-evidence-{issueKey}.md` (hoặc `test-evidence-{issueKey}-tc{X}.md`).
+   - Soạn hoặc chỉnh sửa nội dung báo cáo ra file nháp local tại đường dẫn thư mục ngày `Evidence/{YYYY-MM-DD}/test-evidence-{issueKey}.md` (ví dụ: `Evidence/2026-08-25/test-evidence-SDR-141.md`).
    - **BÁO CÁO BẮT BUỘC CỰC KỲ NGẮN GỌN, CỰC KỲ DỄ HIỂU:** Đảm bảo Developer, Khách hàng (Client) hoặc PM non-tech đọc đều nắm được ngay vấn đề và kết quả kiểm thử mà không cần giải thích thêm.
    - Tuân thủ cấu trúc gọn nhẹ (Compact Mode) và cú pháp ảnh ngoặc vuông `![alt][filename.png]` kèm dòng trống giãn cách 2 đầu.
    - **Kể cả khi đang chỉnh sửa/cập nhật nội dung:** Mọi thao tác sửa đổi CHỈ thực hiện trên file nháp local, TUYỆT ĐỐI KHÔNG tự động push comment lên Backlog.

@@ -24,7 +24,7 @@ Use when QC provides raw bug description and optional evidence folder.
    - BugSeverity
    - PhaseDetected
 6. Save draft:
-   - `Bug/bug-<feature-name>.md` (kebab-case)
+   - `Bug/{YYYY-MM-DD}/bug-<feature-name>.md` (kebab-case, ví dụ: `Bug/2026-08-25/bug-search-placeholder.md`)
    - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`)
    - Keep `## Bình luận (Comments)` blank
 7. Return draft path and prompt user to confirm/choose Custom Fields:
