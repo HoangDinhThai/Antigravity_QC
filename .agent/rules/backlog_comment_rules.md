@@ -1,14 +1,14 @@
-# BACKLOG COMMENT REPORTING RULES
+# BACKLOG ISSUE & COMMENT REPORTING RULES
 
-> **Scope:** Áp dụng BẮT BUỘC cho tất cả tác vụ soạn thảo, chuẩn hóa bản nháp và đẩy comment báo cáo kiểm thử (Test Evidence Report / Progress Report / Bug Evidence) lên hệ thống Backlog.
+> **Scope:** Áp dụng BẮT BUỘC cho tất cả tác vụ soạn thảo, khởi tạo Issue (`description`), cập nhật Issue và đẩy Comment báo cáo kiểm thử trên hệ thống Backlog.
 
 ---
 
 ## ⛔ 1. QUY TRÌNH PHÊ DUYỆT BẢN NHÁP & KÉO TRẠNG THÁI TASK (APPROVAL GATES)
 
-1. **CẤM TỰ Ý PUSH COMMENT TRỰC TIẾP (KỂ CẢ KHI ĐANG SỬA NỘI DUNG):**
-   - **TUYỆT ĐỐI NÓI KHÔNG** với việc gọi API `mcp_backlog_add_issue_comment` hoặc script push comment lên Backlog khi chưa qua bước User kiểm tra và phê duyệt bản nháp.
-   - **Trong quá trình chỉnh sửa / cập nhật nội dung task hoặc comment:** Tất cả chỉnh sửa CHỈ ĐƯỢC LƯU VÀO FILE NHÁP LOCAL theo thư mục ngày (`Evidence/{YYYY-MM-DD}/test-evidence-{issueKey}.md`, ví dụ: `Evidence/2026-08-25/test-evidence-SDR-141.md`). KHÔNG ĐƯỢC tự động push bất kỳ comment nào lên Backlog cho đến khi User phát lệnh push cụ thể.
+1. **CẤM TỰ Ý PUSH COMMENT HOẶC ISSUE TRỰC TIẾP (KỂ CẢ KHI ĐANG SỬA NỘI DUNG):**
+   - **TUYỆT ĐỐI NÓI KHÔNG** với việc gọi API `mcp_backlog_add_issue`, `mcp_backlog_update_issue`, `mcp_backlog_add_issue_comment` hoặc script push khi chưa qua bước User kiểm tra và phê duyệt bản nháp.
+   - **Trong quá trình chỉnh sửa / cập nhật nội dung task hoặc comment:** Tất cả chỉnh sửa CHỈ ĐƯỢC LƯU VÀO FILE NHÁP LOCAL theo thư mục ngày (`Evidence/{YYYY-MM-DD}/test-evidence-{issueKey}.md` hoặc `Bug/bug-{issueKey}-*.md`). KHÔNG ĐƯỢC tự động push bất kỳ nội dung nào lên Backlog cho đến khi User phát lệnh push cụ thể.
 2. **CẤM TỰ Ý KÉO/THAY ĐỔI TRẠNG THÁI TASK (STATUS):**
    - **TUYỆT ĐỐI KHÔNG TỰ Ý KÉO/ĐỔI STATUS TASK** (ví dụ: chuyển từ `Testing` sang `Review` - ID: 31773, hoặc `Resolved`/`Closed`).
    - Luôn **hỏi ý kiến User** rõ ràng trong lúc duyệt bản nháp (ví dụ: *"Có đổi status task sang Review không bạn?"*). Chỉ thực hiện chuyển status khi User xác nhận đồng ý.
@@ -16,15 +16,16 @@
    - Trong trường hợp comment đã được push lên nhưng gặp lỗi lưu/hiển thị ảnh đính kèm, hoặc cần sửa đổi/bổ sung nội dung của comment đó: **BẮT BUỘC phải sửa trực tiếp (Update/Edit) vào chính comment đã tạo**.
    - **TUYỆT ĐỐI CẤM TẠO COMMENT MỚI** để đính kèm lại ảnh sửa lỗi hoặc gửi lại nội dung đè lên comment cũ, tránh làm rác và trùng lặp comment trên ticket Backlog.
 4. **QUY TRÌNH 4 BƯỚC THỰC THI BẮT BUỘC:**
-   - **Bước 1 (Drafting & Editing):** Soạn hoặc chỉnh sửa nội dung báo cáo ra file nháp local theo thư mục ngày tại `Evidence/{YYYY-MM-DD}/test-evidence-{issueKey}.md` (ví dụ: `Evidence/2026-08-25/test-evidence-SDR-141.md`).
+   - **Bước 1 (Drafting & Editing):** Soạn hoặc chỉnh sửa nội dung báo cáo ra file nháp local theo thư mục ngày tại `Evidence/{YYYY-MM-DD}/test-evidence-{issueKey}.md` hoặc `Bug/bug-{issueKey}-*.md`.
    - **Bước 2 (User Review):** Hiển thị đường dẫn file nháp + tóm tắt bản nháp trong conversation để User duyệt, **kèm câu hỏi xác nhận có muốn chuyển trạng thái task hay không**.
-   - **Bước 3 (Upload Attachment & Push Comment):**
-     - Chỉ thực thi khi User đồng ý / phát lệnh push (ví dụ: *"Đẩy comment lên backlog"*, *"Push report đi"*).
+   - **Bước 3 (Upload Attachment & Push Issue/Comment):**
+     - Chỉ thực thi khi User đồng ý / phát lệnh push (ví dụ: *"Đẩy comment lên backlog"*, *"Tạo bug backlog đi"*).
      - Upload toàn bộ ảnh bằng chứng (`media_xxx.png`) qua API `mcp_backlog_post_space_attachment` để lấy danh sách `attachmentId`.
-     - Gọi API push comment (hoặc update comment cũ nếu đang sửa lỗi) kèm theo mảng `attachmentId` và **bắt buộc** truyền `notifiedUserId` (ví dụ `[327651]` cho `@Hung Do (ドー)`).
+     - **PRE-FLIGHT CHECK (MẮT XÍCH BẮT BUỘC):** Kiểm tra chuỗi `description` hoặc `content`, đảm bảo **100% cú pháp ảnh đính kèm** đã được chuyển sang dạng ngoặc vuông `![AltText][filename.png]`. CẤM để lại ngoặc tròn `](filename.png)`.
+     - Gọi API push Issue/Comment (hoặc update Issue/Comment cũ nếu đang sửa lỗi) kèm theo mảng `attachmentId` và **bắt buộc** truyền `notifiedUserId` nếu là comment.
    - **Bước 4 (Status Update & Reporting):**
      - Chỉ cập nhật trạng thái ticket (`mcp_backlog_update_issue`) NẾU VÀ CHỈ NẾU User đã đồng ý ở Bước 2/Bước 3. Nếu User không yêu cầu đổi status thì GIỮ NGUYÊN trạng thái hiện tại.
-     - Báo cáo kết quả kèm link trực tiếp comment trên Backlog cho User.
+     - Báo cáo kết quả kèm link trực tiếp ticket/comment trên Backlog cho User.
 
 ---
 
@@ -50,10 +51,11 @@
 
 ## 🖼️ 3. HIỂN THỊ HÌNH ẢNH & GIÃN CÁCH DÒNG (IMAGE EVIDENCE & SPACING)
 
-1. **Cú pháp Ảnh đính kèm trên Backlog (BẮT BUỘC):**
+1. **Cú pháp Ảnh đính kèm trên Backlog (BẮT BUỘC CHO CẢ ISSUE DESCRIPTION VÀ COMMENT):**
    - Backlog **KHÔNG** hiển thị ảnh nếu dùng ngoặc tròn Markdown tiêu chuẩn `![alt](filename.png)`.
-   - **BẮT BUỘC** dùng cú pháp ngoặc vuông cho Backlog attachments:
+   - **BẮT BUỘC** dùng cú pháp ngoặc vuông cho Backlog attachments (áp dụng cho cả `description` khi tạo/sửa issue và `content` khi add comment):
      `![Trạng thái DB][media__1787381436337.png]` hoặc `![Alt][filename.png]`
+
 2. **Dòng trống Giãn cách (Line Breaks):**
    - **BẮT BUỘC** chèn khoảng trống (dòng trống `\n\n`) ở cả phía **TRÊN** và phía **DƯỚI** mỗi hình ảnh evidence.
    - Giúp giao diện comment trên Backlog thoáng, đẹp mắt và ảnh không dính liền vào văn bản.

@@ -219,6 +219,7 @@ code:     TC_LOGIN_1712049200
 | Commit test FAIL                                  | Chỉ commit khi test PASS ổn định           |
 | Để debug log / commented code khi deliver       | Cleanup trước khi deliver                    |
 | Dùng test data hardcoded trùng lặp             | Sinh data random + traceable                   |
+| Dùng ngoặc tròn `](file.png)` cho ảnh Backlog  | Bắt buộc convert sang ngoặc vuông `![Alt][file.png]` cho cả Issue Description & Comment |
 
 ## 10. Tham Chiếu Workflows
 
