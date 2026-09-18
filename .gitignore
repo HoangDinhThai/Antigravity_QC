@@ -7,3 +7,9 @@
 !/RULE_GLOBAL.md
 !/TIPS_QUOTA.md
 !/.gitignore
+
+# Ignore sensitive credentials and node_modules
+.agent/skills/**/credentials/
+.agent/skills/**/node_modules/
+.agent/**/credentials/
+.agent/**/node_modules/

@@ -1,79 +1,105 @@
 ---
 name: Google Sheets Integration
-description: Đẩy test cases dạng bảng Markdown trực tiếp lên Google Sheets dự án một cách linh động và thông minh.
+description: Đẩy test cases dạng bảng Markdown trực tiếp lên Google Sheets dự án VNTEST một cách linh động, thông minh, đúng chuẩn 15 cột A-O.
 ---
 
 # 📊 Hướng Dẫn Sử Dụng Skill: Google Sheets Integration
 
-Skill này hỗ trợ tự động hóa việc đưa các kịch bản kiểm thử (test cases) dạng bảng Markdown (từ file hoặc từ ô chat) trực tiếp lên Google Sheets của dự án một cách chính xác, đúng định dạng và đúng cột.
+Skill này hỗ trợ tự động hóa việc đưa các kịch bản kiểm thử (test cases) dạng bảng Markdown (từ file `docs/test_cases/*.md` hoặc từ nội dung bảng Markdown trong đoạn chat) trực tiếp lên Google Sheets của dự án **VNTEST** một cách chuẩn xác, đúng định dạng và đúng mẫu 15 cột.
 
 ---
 
-## 🛠️ Cách Thức Hoạt Động (How it works)
+## 1. Cấu Trúc Ánh Xạ 15 Cột Chuẩn (A – O) của Dự Án VNTEST
 
-1. **Phân tích URL Google Sheet:** Tự động tìm ra `Spreadsheet ID` và `GID` (Sheet con) từ đường link bạn cung cấp.
-2. **Dò tìm tiêu đề thông minh (Smart Header Scan):** Tự động quét 100 dòng đầu tiên để xác định vị trí của hàng tiêu đề thực tế (ví dụ: dòng chứa `No. ID`, `Title`, `Steps`, `Expected Result`...). Do đó, form mẫu của bạn có tiêu đề dự án hay thông tin linh tinh ở trên cũng không ảnh hưởng.
-3. **Ánh xạ cột linh hoạt (Flexible Column Mapping):**
-   - **Đánh số thứ tự tự động:** Nhận diện cột `No. ID`, `STT`... và điền số thứ tự tăng dần từ **1, 2, 3...** (tự động tính tiếp nếu bảng tính đã có dữ liệu).
-   - **Tự động điền ngày tạo:** Điền ngày hiện tại dạng `YYYY-MM-DD` vào cột `Created date`.
-   - **Giữ trống cột kiểm thử:** Cột `Test Date` và `Bug_ID` được giữ trống để tester điền thủ công khi chạy test.
-   - **Khớp các cột nghiệp vụ:** Tự động điền các nội dung `Title`, `Pre-Condition`, `Steps`, `Test Data`, `Expected Result` tương ứng vào đúng vị trí cột thiết kế trên Sheet của bạn.
-4. **Tìm dòng trống thông minh:** Dữ liệu mới được điền trực tiếp từ dòng trống đầu tiên bên dưới hàng tiêu đề (không chèn đè lên metadata và không bị đẩy xuống tận cùng bảng tính).
+Hệ thống tự động bóc tách từng dòng dữ liệu của bảng Markdown test case và ánh xạ chuẩn xác vào 15 cột tương ứng trên Google Sheets:
 
----
-
-## 🔑 Hướng Dẫn Thiết Lập Bản Quyền (Setup Credentials)
-
-Để bắt đầu sử dụng, bạn cần đặt file xác thực Google API vào thư mục sau:
-`c:\Users\thai.hoang.dinh\Antigravity_QC\.agent\skills\google_sheets_integration\credentials\`
-
-> [!TIP]
-> **Khuyên dùng Cách 1 (Service Account)** vì chạy hoàn toàn tự động trong nền mà không yêu cầu bạn phải đăng nhập xác thực qua trình duyệt mỗi lần sử dụng.
-
-### Cách 1: Sử dụng Service Account (Khuyên dùng)
-1. Truy cập [Google Cloud Console](https://console.cloud.google.com/) và kích hoạt **Google Sheets API**.
-2. Vào mục **IAM & Admin > Service Accounts** -> Nhấn tạo Service Account mới.
-3. Tạo khóa (Key) dưới dạng **JSON** và tải về máy.
-4. Đổi tên tệp tải về thành **`service_account.json`** và di chuyển vào thư mục `credentials` đã nêu ở trên.
-5. Mở Google Sheet dự án của bạn lên, nhấn nút **Chia sẻ (Share)** và nhập email của Service Account vừa tạo (dạng `xxx@xxx.iam.gserviceaccount.com`) với quyền **Người chỉnh sửa (Editor)**.
-
-### Cách 2: Sử dụng OAuth 2.0 Client ID (Cá nhân)
-1. Kích hoạt **Google Sheets API** trên Cloud Console.
-2. Tạo credential loại **OAuth client ID** (chọn loại ứng dụng là **Desktop App**) và tải tệp JSON về.
-3. Đổi tên tệp thành **`credentials.json`** và di chuyển vào thư mục `credentials` ở trên.
-4. Lần đầu tiên bạn chạy lệnh, một trình duyệt web sẽ mở ra yêu cầu đăng nhập tài khoản Google để cấp quyền. Hệ thống sẽ tự sinh ra file `token.json` để sử dụng cho các lần sau.
+| Cột | Tên Cột trên Sheet | Nguồn Dữ Liệu từ Markdown | Quy Tắc Điền & Chuẩn Hóa |
+| :---: | :--- | :--- | :--- |
+| **A** | **No. ID** (STT) | Tự động sinh | Đánh số thứ tự tăng dần từ `1, 2, 3...` (nếu ghi tiếp bên dưới dữ liệu cũ, tự động cộng tiếp STT). |
+| **B** | **Module** | Tên phân hệ / chức năng lớn | **Chỉ điền ở dòng đầu tiên** (`idx == 1`, ví dụ: `"Chi tiết nhân sự"`), **tất cả các dòng tiếp theo để trống `""`** để giữ giao diện bảng sạch và đúng chuẩn hiển thị của Google Sheets. |
+| **C** | **Feature** | Cột `Title 1` | Nhóm chức năng / Khối tính năng kiểm thử. |
+| **D** | **Test Case Title_1** | Cột `Title 2 (Nếu có)` | Tiêu đề kịch bản kiểm thử chi tiết. |
+| **E** | **Test Case Title_2** | Để trống | Mặc định để trống `""`. |
+| **F** | **Pre-Condition** | Cột `Pre-Condition` | Tiền điều kiện thực thi test case. |
+| **G** | **Steps** | Cột `Test Steps` | Các bước thao tác. **Bóc bỏ `->` và `<br>`, chuyển thành ký tự xuống dòng `\n` trực tiếp trong ô**. |
+| **H** | **Test Data** | Cột `Test Data` | Dữ liệu test cụ thể. **Chuyển `<br>` thành `\n`**. |
+| **I** | **Expected Result** | Cột `Expected Result` | Kết quả mong đợi. **Chuyển `<br>` thành `\n`**. |
+| **J** | **Priority** | Cột `Priority` | Chuẩn hóa về 3 giá trị của Sheet:<br>• `Critical` / `High` ➔ **`High`**<br>• `Medium` ➔ **`Normal`**<br>• `Low` ➔ **`Low`** |
+| **K** | **Web** | Mặc định | Luôn điền giá trị **`UnTest`**. |
+| **L** | **Bug_ID** | Để trống | Giữ trống `""` để Tester điền khi bắt gặp lỗi trong quá trình thực thi. |
+| **M** | **Tester** | Tên Tester | Mặc định điền mã Tester (ví dụ: `ThaiHD`) **chỉ ở dòng đầu tiên**, các dòng tiếp theo để trống `""`. |
+| **N** | **Test Date** | Để trống | Giữ trống `""` để Tester ghi ngày khi chạy kiểm thử thực tế. |
+| **O** | **Comments** | Cột `TC ID` | Điền mã kịch bản gốc (Ví dụ: `VNTEST_PERSONNEL_DETAIL_TC_001`). |
 
 ---
 
-## 💬 Hướng Dẫn Sử Dụng Trong Chat (Với Antigravity Agent)
+## 2. Quy Tắc Làm Sạch Dữ Liệu (Markdown Data Cleaning)
 
-Khi làm việc với Agent, bạn chỉ cần ra lệnh bằng ngôn ngữ tự nhiên theo các cú pháp đơn giản sau:
-
-### Trình huống 1: Đẩy từ file testcase có sẵn trong dự án
-> Hãy đẩy testcase từ tệp `docs/test_cases/tc_import_export.md` vào gg sheet: `https://docs.google.com/spreadsheets/d/157gUV-Yh4GoOwtrRERcsZdDQpZ52KK-uLGCIQT3C6GI/edit?gid=656341314#gid=656341314`
-
-### Trình huống 2: Đẩy trực tiếp bảng vừa sinh ra trong đoạn hội thoại
-> Đẩy kịch bản test vừa tạo ở trên lên Google Sheet giúp tôi: `https://docs.google.com/spreadsheets/d/157gUV-Yh4GoOwtrRERcsZdDQpZ52KK-uLGCIQT3C6GI/edit?gid=656341314#gid=656341314`
+Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm sạch chuỗi:
+1. **Loại bỏ Markdown formatting:** Xóa sạch các dấu in đậm `**text**`, in nghiêng `*text*`, backticks `` `code` `` để nội dung trong ô phẳng, rõ ràng, không bị lỗi hiển thị.
+2. **Xử lý xuống dòng:**
+   - Thay thế toàn bộ thẻ `<br>`, `<br/>`, `<br >` thành ký tự xuống dòng thực tế `\n`.
+   - Thay thế dấu mũi tên phân tách bước ` -> ` thành ký tự xuống dòng `\n`.
+3. **Cắt tỉa khoảng trắng:** Loại bỏ toàn bộ khoảng trắng thừa ở đầu và cuối chuỗi (`strip()`).
 
 ---
 
-## 💻 Hướng Dẫn Chạy Bằng Lệnh Terminal (Dành cho Developer/QA chạy trực tiếp)
+## 3. Cơ Chế Xử Lý Bảng Tính Thông Minh (Smart Sheet Engine)
 
-Nếu bạn muốn chạy script trực tiếp từ PowerShell hoặc Command Prompt:
+1. **Phân tích Sheet ID và GID:**
+   - Trích xuất `Spreadsheet ID` và `GID` trực tiếp từ URL Google Sheet cung cấp.
+   - Tìm chính xác trang tính (tab sheet) khớp với `GID`, không phụ thuộc vào thứ tự tab và **tuyệt đối không hardcode tên sheet**.
+2. **Bảo vệ Metadata & Nhận diện Hàng Tiêu Đề:**
+   - Dòng 1 đến dòng 10 thường là thông tin dự án, tiêu chuẩn, ký hiệu viết tắt.
+   - Quét nhận diện dòng tiêu đề thực tế (thường nằm tại dòng 11 chứa `No. ID`, `Module`, `Feature`...).
+   - Bắt đầu ghi dữ liệu từ dòng 12 (`A12:O...`), hoặc tìm dòng trống đầu tiên bên dưới vùng dữ liệu đã có để ghi nối tiếp (append).
+3. **Tự động Unmerge vùng dữ liệu:**
+   - Nếu trong vùng dữ liệu (từ dòng 11 trở xuống) có các ô bị gộp (merge) do thao tác trước đó, script tự động gọi `unmergeCells` để giải phóng ô trước khi ghi, tránh lỗi ghi đè dữ liệu.
+4. **Cơ chế Batch Update chống Timeout:**
+   - Khi số lượng test cases lớn (từ 50 đến 200+ cases), script tự động chia thành các batch nhỏ từ 30 đến 50 dòng mỗi đợt gọi API Google Sheets để đảm bảo tốc độ và tránh bị timeout kết nối.
 
-### 1. Di chuyển vào thư mục dự án
-```powershell
-cd c:\Users\thai.hoang.dinh\Antigravity_QC
+---
+
+## 4. 🔑 Cấu Hình Xác Thực (Credentials Setup)
+
+Đặt file Service Account JSON vào thư mục:
+`.agent/skills/google_sheets_integration/credentials/service_account.json`
+
+> [!IMPORTANT]
+> Google Sheet mục tiêu phải được chia sẻ quyền **Người chỉnh sửa (Editor)** cho địa chỉ email của Service Account.
+
+---
+
+## 5. 💬 Hướng Dẫn Sử Dụng Trong Chat
+
+Bạn chỉ cần ra lệnh tự nhiên kèm URL Google Sheet:
+
+### Trường hợp 1: Đẩy từ file Markdown có sẵn trong dự án
+> *"Hãy đẩy test cases từ file `docs/test_cases/tc_personnel_detail_sheet.md` lên Google Sheet: `https://docs.google.com/spreadsheets/d/.../edit#gid=...`"*
+
+### Trường hợp 2: Đẩy trực tiếp bảng test case vừa sinh trong chat
+> *"Đẩy toàn bộ kịch bản test vừa tạo ở trên lên Google Sheet giúp tôi: `https://docs.google.com/spreadsheets/d/.../edit#gid=...`"*
+
+---
+
+## 6. 💻 Chạy Trực Tiếp Bằng Lệnh Script
+
+QA hoặc Developer có thể thực thi trực tiếp qua Terminal:
+
+### Chạy bằng Python:
+```bash
+python .agent/skills/google_sheets_integration/scripts/push_testcases.py \
+  --url "<Đường_Dẫn_Google_Sheet>" \
+  --file "docs/test_cases/tc_personnel_detail_sheet.md" \
+  --module "Chi tiết nhân sự" \
+  --tester "ThaiHD"
 ```
 
-### 2. Chạy lệnh đẩy dữ liệu từ một file kịch bản (.md)
-Sử dụng tham số `--url` để truyền link sheet và `--file` để truyền đường dẫn file testcase:
+### Chạy bằng Node.js:
 ```bash
-python .agent/skills/google_sheets_integration/scripts/push_testcases.py --url "<Đường_Dẫn_Google_Sheet>" --file "docs/test_cases/tc_import_export.md"
-```
-
-### 3. Chạy lệnh đẩy trực tiếp chuỗi văn bản Markdown
-Sử dụng tham số `--content` để truyền trực tiếp chuỗi markdown chứa bảng testcase:
-```bash
-python .agent/skills/google_sheets_integration/scripts/push_testcases.py --url "<Đường_Dẫn_Google_Sheet>" --content "| TC ID | Module | ... |"
+node .agent/skills/google_sheets_integration/scripts/push_testcases.js \
+  --url "<Đường_Dẫn_Google_Sheet>" \
+  --file "docs/test_cases/tc_personnel_detail_sheet.md" \
+  --module "Chi tiết nhân sự" \
+  --tester "ThaiHD"
 ```
