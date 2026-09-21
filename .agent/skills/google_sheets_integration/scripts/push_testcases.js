@@ -41,13 +41,36 @@ function parseSheetUrl(url) {
 // 4. Bóc tách bảng Markdown testcase chuẩn
 function parseMarkdownTestCases(mdContent) {
   const lines = mdContent.split('\n');
-  const tableLines = lines
-    .map(l => l.trim())
-    .filter(l => l.startsWith('|') && l.endsWith('|'));
+  const tables = [];
+  let currentTable = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+      currentTable.push(trimmed);
+    } else {
+      if (currentTable.length > 0) {
+        tables.push(currentTable);
+        currentTable = [];
+      }
+    }
+  }
+  if (currentTable.length > 0) tables.push(currentTable);
 
-  if (tableLines.length === 0) {
+  if (tables.length === 0) {
     throw new Error("Không tìm thấy bảng Markdown nào trong nội dung đầu vào.");
   }
+
+  // Tìm bảng chứa cột TC ID trong hàng đầu tiên
+  let targetTable = tables.find(t => {
+    const firstRow = t[0].toLowerCase();
+    return firstRow.includes('tc id') || firstRow.includes('mã tc') || firstRow.includes('test case');
+  });
+
+  if (!targetTable) {
+    targetTable = tables[tables.length - 1]; // fallback về bảng cuối cùng
+  }
+
+  const tableLines = targetTable;
 
   const rawRows = tableLines.map(line => {
     const parts = line.split('|');
@@ -63,11 +86,11 @@ function parseMarkdownTestCases(mdContent) {
   const headerRow = validRows[0];
   const headerLower = headerRow.map(h => h.toLowerCase());
 
-  // Tìm index của các cột trong header
-  const findCol = (keywords) => {
-    for (let i = 0; i < headerLower.length; i++) {
-      for (const kw of keywords) {
-        if (headerLower[i].includes(kw)) return i;
+  // Tìm index của các cột trong header (duyệt keywords trước để ưu tiên từ khóa chính xác nhất)
+  const findCol = (keywords, excludeIndex = -1) => {
+    for (const kw of keywords) {
+      for (let i = 0; i < headerLower.length; i++) {
+        if (i !== excludeIndex && headerLower[i].includes(kw)) return i;
       }
     }
     return -1;
@@ -75,7 +98,7 @@ function parseMarkdownTestCases(mdContent) {
 
   const colTcId = findCol(['tc id', 'mã tc', 'id']);
   const colTitle1 = findCol(['title 1', 'feature', 'chức năng', 'tính năng', 'phân hệ', 'module']);
-  const colTitle2 = findCol(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title']);
+  const colTitle2 = findCol(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'], colTitle1);
   const colPre = findCol(['pre-condition', 'precondition', 'tiền điều kiện', 'điều kiện']);
   const colSteps = findCol(['test steps', 'bước thực hiện', 'các bước', 'steps', 'step']);
   const colData = findCol(['test data', 'dữ liệu test', 'dữ liệu', 'data']);
@@ -119,6 +142,7 @@ function parseMarkdownTestCases(mdContent) {
 async function main() {
   const args = process.argv.slice(2);
   let url = '', filePath = '', content = '', moduleName = '', testerName = 'ThaiHD';
+  let overwrite = false, customStartRow = null;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--url' && args[i + 1]) url = args[i + 1];
@@ -126,12 +150,14 @@ async function main() {
     if (args[i] === '--content' && args[i + 1]) content = args[i + 1];
     if (args[i] === '--module' && args[i + 1]) moduleName = args[i + 1];
     if (args[i] === '--tester' && args[i + 1]) testerName = args[i + 1];
+    if (args[i] === '--overwrite') overwrite = true;
+    if (args[i] === '--start-row' && args[i + 1]) customStartRow = parseInt(args[i + 1], 10);
   }
 
   if (!url || (!filePath && !content)) {
     console.error("Cách sử dụng:");
-    console.error("  node push_testcases.js --url <url> --file <đường_dẫn_file_md> [--module <tên_module>] [--tester <mã_tester>]");
-    console.error("  node push_testcases.js --url <url> --content <chuỗi_markdown> [--module <tên_module>] [--tester <mã_tester>]");
+    console.error("  node push_testcases.js --url <url> --file <đường_dẫn_file_md> [--module <tên_module>] [--tester <mã_tester>] [--overwrite] [--start-row <số_dòng>]");
+    console.error("  node push_testcases.js --url <url> --content <chuỗi_markdown> [--module <tên_module>] [--tester <mã_tester>] [--overwrite] [--start-row <số_dòng>]");
     process.exit(1);
   }
 
@@ -166,9 +192,46 @@ async function main() {
     targetSheet = sheetList[0];
   }
 
-  const targetSheetTitle = targetSheet.properties.title;
+  let targetSheetTitle = targetSheet.properties.title;
   const targetSheetId = targetSheet.properties.sheetId;
-  console.log(`Tab mục tiêu: "${targetSheetTitle}" (Sheet ID: ${targetSheetId})`);
+  console.log(`Tab mục tiêu ban đầu: "${targetSheetTitle}" (Sheet ID: ${targetSheetId})`);
+
+  // Tự động suy ra tên module nếu chưa được truyền qua --module
+  if (!moduleName) {
+    // 1. Thử lấy từ tiêu đề cấp 1 (# ...) trong file markdown
+    const headingMatch = mdContent.match(/^#\s+(?:Test Cases?\s*[-:]*\s*)?(.*)$/m);
+    if (headingMatch && headingMatch[1].trim()) {
+      moduleName = headingMatch[1].trim();
+    } else if (testCases.length > 0 && testCases[0].feature) {
+      // 2. Thử lấy từ Feature của test case đầu tiên
+      moduleName = testCases[0].feature;
+    }
+  }
+
+  // Đổi tên tab sheet thành tên module nếu có moduleName và tên khác hiện tại
+  if (moduleName && targetSheetTitle !== moduleName) {
+    console.log(`Đang đổi tên tab từ "${targetSheetTitle}" thành "${moduleName}"...`);
+    try {
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId,
+        requestBody: {
+          requests: [{
+            updateSheetProperties: {
+              properties: {
+                sheetId: targetSheetId,
+                title: moduleName
+              },
+              fields: 'title'
+            }
+          }]
+        }
+      });
+      console.log(`Đã đổi tên tab thành công sang: "${moduleName}"!`);
+      targetSheetTitle = moduleName;
+    } catch (renameErr) {
+      console.warn(`Cảnh báo: Không thể đổi tên tab thành "${moduleName}": ${renameErr.message}`);
+    }
+  }
 
   // 7. Giải phóng Unmerge vùng dữ liệu từ dòng 11 trở xuống nếu có
   if (targetSheet.merges) {
@@ -200,30 +263,41 @@ async function main() {
     range: `'${targetSheetTitle}'!A11:O30`
   });
 
-  let startRowIndex = 12; // Mặc định ghi từ dòng 12 (sau header dòng 11)
-
-  // Kiểm tra dữ liệu hiện có để tìm dòng trống đầu tiên nếu ghi tiếp
-  const allDataCheck = await sheets.spreadsheets.values.get({
-    spreadsheetId,
-    range: `'${targetSheetTitle}'!A12:A2000`
-  });
-
-  const existingRows = allDataCheck.data.values || [];
+  let startRowIndex = customStartRow || 12; // Mặc định ghi từ dòng 12 (sau header dòng 11)
   let nextSTT = 1;
 
-  if (existingRows.length > 0) {
-    let lastFilledRowOffset = -1;
-    for (let i = existingRows.length - 1; i >= 0; i--) {
-      if (existingRows[i] && existingRows[i][0] && existingRows[i][0].trim() !== '') {
-        lastFilledRowOffset = i;
-        const parsedNum = parseInt(existingRows[i][0].trim(), 10);
-        if (!isNaN(parsedNum)) nextSTT = parsedNum + 1;
-        break;
+  if (overwrite) {
+    console.log(`Chế độ GHI ĐÈ (--overwrite): Đang xóa sạch dữ liệu cũ từ '${targetSheetTitle}'!A12:O...`);
+    await sheets.spreadsheets.values.clear({
+      spreadsheetId,
+      range: `'${targetSheetTitle}'!A12:O`
+    });
+    startRowIndex = customStartRow || 12;
+    nextSTT = 1;
+    console.log(`Đã làm sạch sheet. Bắt đầu ghi mới từ dòng ${startRowIndex}, STT bắt đầu từ 1.`);
+  } else if (!customStartRow) {
+    // Kiểm tra dữ liệu hiện có để tìm dòng trống đầu tiên nếu ghi tiếp
+    const allDataCheck = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `'${targetSheetTitle}'!A12:A2000`
+    });
+
+    const existingRows = allDataCheck.data.values || [];
+
+    if (existingRows.length > 0) {
+      let lastFilledRowOffset = -1;
+      for (let i = existingRows.length - 1; i >= 0; i--) {
+        if (existingRows[i] && existingRows[i][0] && existingRows[i][0].trim() !== '') {
+          lastFilledRowOffset = i;
+          const parsedNum = parseInt(existingRows[i][0].trim(), 10);
+          if (!isNaN(parsedNum)) nextSTT = parsedNum + 1;
+          break;
+        }
       }
-    }
-    if (lastFilledRowOffset !== -1) {
-      startRowIndex = 12 + lastFilledRowOffset + 1;
-      console.log(`Sheet đã có dữ liệu. Sẽ ghi nối tiếp từ dòng ${startRowIndex}, STT bắt đầu từ ${nextSTT}.`);
+      if (lastFilledRowOffset !== -1) {
+        startRowIndex = 12 + lastFilledRowOffset + 1;
+        console.log(`Sheet đã có dữ liệu. Sẽ ghi nối tiếp từ dòng ${startRowIndex}, STT bắt đầu từ ${nextSTT}.`);
+      }
     }
   }
 
@@ -258,6 +332,27 @@ async function main() {
     ];
 
     preparedRows.push(row);
+  }
+
+  // 9.1. Tự động kiểm tra và mở rộng số dòng của sheet nếu dữ liệu vượt quá rowCount
+  const currentMaxRows = targetSheet.properties.gridProperties ? targetSheet.properties.gridProperties.rowCount : 1000;
+  const neededRows = startRowIndex + preparedRows.length + 10;
+  if (neededRows > currentMaxRows) {
+    const addRows = (neededRows - currentMaxRows) + 50;
+    console.log(`Sheet chỉ có ${currentMaxRows} dòng. Cần tối thiểu ${neededRows} dòng. Đang mở rộng thêm ${addRows} dòng...`);
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: [{
+          appendDimension: {
+            sheetId: targetSheetId,
+            dimension: 'ROWS',
+            length: addRows
+          }
+        }]
+      }
+    });
+    console.log(`Đã mở rộng sheet thành công lên ${currentMaxRows + addRows} dòng.`);
   }
 
   // 10. Ghi dữ liệu theo Batch (30-50 dòng/batch để tối ưu tốc độ và an toàn)

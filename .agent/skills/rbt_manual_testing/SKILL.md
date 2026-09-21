@@ -75,6 +75,30 @@ Khi màn hình có các trường nhập liệu, agent **BẮT BUỘC** phải s
 
 > ⚠️ **Nguyên tắc bất biến:** Mỗi trường có đặc tính riêng biệt → phải có test case validation riêng. **TUYỆT ĐỐI KHÔNG** gộp validation của nhiều trường vào một kịch bản chung.
 
+### 3.3. Quy Chuẩn Ngôn Ngữ & Cấm Kỹ Thuật Hóa (Pure Vietnamese & No CSS/Code Bleed) - BẮT BUỘC & CỰC KỲ QUAN TRỌNG
+
+Manual Test Case là tài liệu bàn giao cho Tester, Khách hàng, Product Owner đọc hiểu và thao tác kiểm thử trực tiếp trên giao diện người dùng. **TUYỆT ĐỐI KHÔNG** biến test case thành bản ghi kỹ thuật của lập trình viên.
+
+1. **CẤM TUYỆT ĐỐI:**
+   - CẤM viết test case nửa nạc nửa mỡ, pha trộn tiếng Việt lẫn tiếng Anh kỹ thuật.
+   - CẤM đưa tên CSS class, CSS selector, DOM element, ID, HTML tag, HTML attribute vào kịch bản test (ví dụ: `.modal-title`, `class .is-readonly`, `input[readonly]`, `button.btn-close`, `.badge-success`).
+   - CẤM dùng các từ kỹ thuật tiếng Anh để mô tả trạng thái UI khi đã có từ tiếng Việt tương ứng (ví dụ: `(disabled)`, `readonly`, `active`, `hover`, `spinner loading`).
+
+2. **BẢNG ĐỐI CHIẾU MẪU (BẮT BUỘC TUÂN THỦ):**
+
+| ❌ CẤM (Lẫn lộn tiếng Anh kỹ thuật / CSS / DOM) | ✅ ĐÚNG (Tiếng Việt thuần túy theo góc nhìn người dùng) |
+|---|---|
+| `Nút Lưu (disabled)` | `Nút "Lưu" bị vô hiệu hóa (làm mờ, không thể bấm)` |
+| `Tiêu đề (.modal-title) hiển thị...` | `Tiêu đề hộp thoại / cửa sổ bật lên hiển thị...` |
+| `Biểu tượng CheckCircle class .is-readonly` | `Biểu tượng dấu tích xanh ở trạng thái chỉ đọc` |
+| `Trường Email (readonly)` | `Trường "Email" ở chế độ chỉ đọc (không cho phép chỉnh sửa)` |
+| `Bấm button .btn-close` | `Nhấp vào nút "Đóng" [×]` |
+| `Hiển thị spinner loading` | `Hiển thị biểu tượng vòng xoay đang tải dữ liệu` |
+| `Dropdown status active` | `Trường trạng thái hiển thị giá trị "Đang hoạt động"` |
+| `Backdrop modal hiển thị` | `Màn hình tối mờ phía sau hộp thoại hiển thị` |
+| `Input placeholder="Nhập tên"` | `Ô nhập hiển thị văn bản gợi ý mờ: "Nhập tên"` |
+| `Click tab .nav-link-active` | `Nhấp vào tab "Thông tin chung"` |
+
 ---
 
 ## 4. Các Nhóm Kịch bản Bắt buộc Bao phủ
@@ -131,3 +155,4 @@ Một bộ Test Cases hoàn chỉnh cho bất kỳ tính năng nào của VNTEST
 1. **Thư mục lưu file:** Tất cả các bộ test case tạo ra phải được lưu dưới dạng file Markdown tại:
    `docs/test_cases/tc_<tên_tính_năng>.md` (Ví dụ: `docs/test_cases/tc_personnel_detail_sheet.md`).
 2. **Sẵn sàng tích hợp Google Sheets:** Bảng Markdown sinh ra từ skill này luôn tương thích 100% với skill `google_sheets_integration` để có thể tự động bóc tách và đẩy lên Google Sheets của dự án.
+3. **Tự động đổi tên Sheet:** Khi đẩy test cases lên Google Sheets, hệ thống sẽ tự động cập nhật tên tab sheet (theo `GID`) thành tên Module đang phân tích để đồng bộ quản lý kịch bản.

@@ -21,7 +21,7 @@ Workflow này sử dụng **Mode FULL RBT** của skill `rbt_manual_testing` —
 - **BẮT BUỘC chạy tuần tự** từng bước, KHÔNG gộp nhiều bước
 - **PHẢI dừng lại** chờ user phản hồi tại Bước 2 (Q&A) và Bước 4 (Review Scenarios)
 - Nếu user chưa cung cấp requirements, hỏi user cung cấp trước khi bắt đầu
-- Tất cả output bằng **Tiếng Việt**
+- **Ngôn ngữ thuần Việt (BẮT BUỘC):** Tất cả output và nội dung test case viết bằng **Tiếng Việt thuần túy**, diễn giải theo góc nhìn người dùng/nghiệp vụ. **TUYỆT ĐỐI CẤM** viết tiếng Việt pha trộn tiếng Anh kỹ thuật hoặc chèn tên CSS class, selector, thuộc tính DOM (như `(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`, `input readonly`).
 
 ## Các bước thực hiện
 
@@ -56,25 +56,29 @@ Thực hiện theo hướng dẫn chi tiết trong skill `rbt_manual_testing` �
    - Sinh validation TCs **riêng cho TỪNG trường** theo đặc tính riêng
    - Tham chiếu **Bảng Field-Level Validation** trong skill `rbt_manual_testing`
    - **KHÔNG** gộp validation nhiều trường vào 1 TC
-5. Bao phủ đầy đủ: Happy Path, Negative, Boundary, Edge Cases
-6. Test Data phải cụ thể (không placeholder chung)
-7. Nếu quá nhiều → sinh từng Module, hỏi user để tiếp tục
+5. **Tuân thủ quy chuẩn ngôn ngữ:**
+   - Dùng Tiếng Việt thuần túy mô tả hành vi: `bị vô hiệu hóa`, `ở chế độ chỉ đọc`, `tiêu đề hộp thoại`...
+   - Cấm chèn CSS class, selector, thuộc tính DOM kỹ thuật vào các bước test và kết quả mong đợi.
+6. Bao phủ đầy đủ: Happy Path, Negative, Boundary, Edge Cases
+7. Test Data phải cụ thể (không placeholder chung)
+8. Nếu quá nhiều → sinh từng Module, hỏi user để tiếp tục
 
 ### Bước 6: Chuẩn hóa Format (Template Mapping)
 1. Đóng gói toàn bộ test cases vào bảng Markdown chuẩn:
-   `| TC ID | Module | Risk Level | Test Title | Pre-Condition | Test Steps | Expected Result | Priority | Test Data |`
+   `| TC ID | Title 1 | Title 2 (Nếu có) | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |`
 2. Không được bỏ sót test case nào
 3. Lưu tệp testcase dưới dạng tệp Markdown tại thư mục `docs/test_cases/` (ví dụ: `docs/test_cases/tc_[ten_chuc_nang].md`).
 
 ### Bước 7: Đẩy Test Cases Lên Google Sheets (Tùy chọn)
 Nếu người dùng cung cấp đường dẫn Google Sheets (ví dụ: `Hãy đẩy testcase từ <tệp> vào trong gg sheet: <url>`), hãy thực hiện:
-1. Đảm bảo các thư viện python cần thiết đã được cài đặt.
-2. Nhắc nhở người dùng thiết lập file credentials xác thực Google API (Service Account hoặc OAuth) như hướng dẫn tại `SKILL.md` của skill `google_sheets_integration`.
-3. Chạy script đẩy testcase:
+1. Đảm bảo các thư viện python / nodejs cần thiết đã được cài đặt.
+2. Nhắc nhở người dùng thiết lập file credentials xác thực Google API như hướng dẫn tại `SKILL.md` của skill `google_sheets_integration`.
+3. Chạy script đẩy testcase (kèm tham số `--module` để hệ thống tự động đổi tên tab sheet sang tên module):
    ```bash
-   python .agent/skills/google_sheets_integration/scripts/push_testcases.py --url "<url_gg_sheet>" --file "<duong_dan_file_markdown>"
+   node .agent/skills/google_sheets_integration/scripts/push_testcases.js --url "<url_gg_sheet>" --file "<duong_dan_file_markdown>" --module "<ten_module>"
    ```
-4. Báo cáo kết quả đẩy testcase thành công lên sheet tương ứng.
+   *(hoặc dùng python: `python .agent/skills/google_sheets_integration/scripts/push_testcases.py --url "<url_gg_sheet>" --file "<duong_dan_file_markdown>" --module "<ten_module>" `)*
+4. Báo cáo kết quả đẩy testcase và xác nhận tab sheet đã được đổi tên theo module thành công.
 
 ## Output
 

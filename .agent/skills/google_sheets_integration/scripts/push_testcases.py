@@ -63,16 +63,16 @@ def parse_markdown_testcases(md_content):
 
     header = [h.lower() for h in valid_rows[0]]
 
-    def find_col(keywords):
-        for idx, h in enumerate(header):
-            for kw in keywords:
-                if kw in h:
+    def find_col(keywords, exclude_index=-1):
+        for kw in keywords:
+            for idx, h in enumerate(header):
+                if idx != exclude_index and kw in h:
                     return idx
         return -1
 
     col_tc_id = find_col(['tc id', 'mã tc', 'id'])
     col_title1 = find_col(['title 1', 'feature', 'chức năng', 'tính năng', 'phân hệ', 'module'])
-    col_title2 = find_col(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'])
+    col_title2 = find_col(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'], col_title1)
     col_pre = find_col(['pre-condition', 'precondition', 'tiền điều kiện', 'điều kiện'])
     col_steps = find_col(['test steps', 'bước thực hiện', 'các bước', 'steps', 'step'])
     col_data = find_col(['test data', 'dữ liệu test', 'dữ liệu', 'data'])
@@ -160,7 +160,36 @@ def main():
 
     target_title = target_sheet['properties']['title']
     target_id = target_sheet['properties']['sheetId']
-    print(f"Tab mục tiêu: '{target_title}' (Sheet ID: {target_id})")
+    print(f"Tab mục tiêu ban đầu: '{target_title}' (Sheet ID: {target_id})")
+
+    # Tự động suy ra tên module nếu chưa được truyền qua --module
+    if not args.module:
+        heading_match = re.search(r'^#\s+(?:Test Cases?\s*[-:]*\s*)?(.*)$', md_content, flags=re.MULTILINE)
+        if heading_match and heading_match.group(1).strip():
+            args.module = heading_match.group(1).strip()
+        elif test_cases and test_cases[0].get('feature'):
+            args.module = test_cases[0]['feature']
+
+    # Đổi tên tab sheet thành tên module nếu có module và tên khác hiện tại
+    if args.module and target_title != args.module:
+        print(f"Đang đổi tên tab từ '{target_title}' thành '{args.module}'...")
+        try:
+            service.spreadsheets().batchUpdate(
+                spreadsheetId=spreadsheet_id,
+                body={'requests': [{
+                    'updateSheetProperties': {
+                        'properties': {
+                            'sheetId': target_id,
+                            'title': args.module
+                         },
+                        'fields': 'title'
+                    }
+                }]}
+            ).execute()
+            print(f"Đã đổi tên tab thành công sang: '{args.module}'!")
+            target_title = args.module
+        except Exception as e:
+            print(f"Cảnh báo: Không thể đổi tên tab thành '{args.module}': {e}", file=sys.stderr)
 
     # Unmerge nếu có
     merges = target_sheet.get('merges', [])

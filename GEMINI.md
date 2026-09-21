@@ -113,6 +113,7 @@ Test chỉ được coi là **hoàn thành** khi đáp ứng **toàn bộ** các
 - Luôn giao tiếp, giải thích ý tưởng và báo cáo bằng **Tiếng Việt**.
 - Diễn giải **ngắn gọn, rõ ràng, dễ hiểu**.
 - Tránh suy đoán lập trình hoặc giải thích mơ hồ về lỗi mà cần có căn cứ trực tiếp.
+- **Kịch bản kiểm thử (Test Cases):** BẮT BUỘC viết bằng **Tiếng Việt thuần túy, chuẩn mực theo góc nhìn người dùng cuối và nghiệp vụ**. Tuyệt đối KHÔNG viết pha trộn tiếng Anh kỹ thuật nửa nạc nửa mỡ, KHÔNG chèn tên CSS class, CSS selector, thẻ HTML, thuộc tính DOM kỹ thuật (như `(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`, `input readonly`, `.btn-close`). Mọi trạng thái phải được diễn đạt bằng lời văn tiếng Việt tự nhiên (ví dụ: `nút bị vô hiệu hóa`, `tiêu đề cửa sổ`, `ở chế độ chỉ đọc`).
 
 ## 2. Quy Trình Làm Việc (Workflow)
 
@@ -220,6 +221,7 @@ code:     TC_LOGIN_1712049200
 | Để debug log / commented code khi deliver       | Cleanup trước khi deliver                    |
 | Dùng test data hardcoded trùng lặp             | Sinh data random + traceable                   |
 | Dùng ngoặc tròn `](file.png)` cho ảnh Backlog  | Bắt buộc convert sang ngoặc vuông `![Alt][file.png]` cho cả Issue Description & Comment |
+| Viết testcase nửa nạc nửa mỡ, chèn class/selector/thuộc tính tiếng Anh (`(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`) | Viết thuần Tiếng Việt theo góc nhìn người dùng: `bị vô hiệu hóa`, `tiêu đề popup`, `biểu tượng chỉ đọc` |
 
 ## 10. Tham Chiếu Workflows
 

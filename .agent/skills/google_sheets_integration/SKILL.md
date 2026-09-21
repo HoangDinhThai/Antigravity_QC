@@ -46,9 +46,10 @@ Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm s�
 
 ## 3. Cơ Chế Xử Lý Bảng Tính Thông Minh (Smart Sheet Engine)
 
-1. **Phân tích Sheet ID và GID:**
+1. **Phân tích Sheet ID, GID & Tự Động Đổi Tên Tab Sheet:**
    - Trích xuất `Spreadsheet ID` và `GID` trực tiếp từ URL Google Sheet cung cấp.
-   - Tìm chính xác trang tính (tab sheet) khớp với `GID`, không phụ thuộc vào thứ tự tab và **tuyệt đối không hardcode tên sheet**.
+   - Tìm chính xác trang tính (tab sheet) khớp với `GID`, không phụ thuộc vào thứ tự tab.
+   - **Tự động đổi tên Sheet:** Cập nhật ngay tên của tab sheet (sheet title) thành tên Module đang phân tích (lấy từ tham số `--module` hoặc tự động nhận diện từ tiêu đề kịch bản Markdown).
 2. **Bảo vệ Metadata & Nhận diện Hàng Tiêu Đề:**
    - Dòng 1 đến dòng 10 thường là thông tin dự án, tiêu chuẩn, ký hiệu viết tắt.
    - Quét nhận diện dòng tiêu đề thực tế (thường nằm tại dòng 11 chứa `No. ID`, `Module`, `Feature`...).

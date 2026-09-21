@@ -1,34 +1,6 @@
-# Custom Fields Classification Rules & Radio Button Selection
+# Custom Fields Classification Rules
 
-- The agent analyzes QC's raw error description against the rules below to auto-recommend initial values.
-- **MANDATORY INTERACTIVE PROMPT:** When presenting the draft to QC for review, the agent MUST list the 3 Custom Fields as radio button / choice lists with the auto-recommended option pre-selected (`🔘` or `[x]`):
-
-```markdown
-### 🔘 Phân loại Custom Fields (Vui lòng chọn hoặc xác nhận):
-
-**1. Program Logic Bug Type:**
-- [x] Functional Bug *(Gợi ý)*
-- [ ] Interface Error
-- [ ] Workflow
-- [ ] Logical Bug
-- [ ] Security Bug
-- [ ] Performance Problem
-- [ ] UAT Bug
-- [ ] Release Bug
-
-**2. Bug Severity:**
-- [x] Major *(Gợi ý)*
-- [ ] Critical
-- [ ] Minor
-
-**3. Phase Detected:**
-- [x] System Testing *(Gợi ý)*
-- [ ] Unit Testing
-- [ ] Integration Testing
-- [ ] Acceptance Testing
-```
-
-- If QC replies confirming or choosing different options, update the Custom Fields in the draft accordingly before delegating to `backlog-issue-manager`.
+- Use the following rules for the agent to automatically recognize and classify Bugs. Recognize errors when QC describes them roughly to standardize them properly.
 
 ## 1. Program Logic Bug Type
 
