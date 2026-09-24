@@ -104,3 +104,30 @@ node .agent/skills/google_sheets_integration/scripts/push_testcases.js \
   --module "Chi tiết nhân sự" \
   --tester "ThaiHD"
 ```
+
+---
+
+## 7. 🔄 Tự Động Cập Nhật Bảng Thống Kê SUMMARY (Auto-Sync Summary Sheet)
+
+Tự động quét toàn bộ các sheet testcase chức năng và cập nhật bảng **"II. Report by Function List"** trong sheet **SUMMARY**:
+- Tự động đánh số thứ tự (No).
+- Cột `Module code`: Chứa tên sheet kèm link bấm nhảy trực tiếp tới tab đó (`HYPERLINK`). **Lưu ý: Tên các sheet KHÔNG ĐƯỢC GẠCH DƯỚI (`underline: false`)** để giữ giao diện bảng sạch sẽ, trực quan.
+- Cột `Pass`, `Fail`, `Untested`, `N/A`, `Number of test cases`: Sử dụng công thức tham chiếu chuẩn xác / `COUNTIF` / `COUNTA` động (khi Tester cập nhật kết quả bên sheet con thì số liệu trên trang SUMMARY tự động nhảy realtime).
+- Tự động tính hàng `Sub total`, `Test coverage` và `Test successful coverage`.
+
+### Cách 1: Tích Hợp Google Apps Script Trực Tiếp Trong Sheet (Khuyên dùng - Tự động 100%)
+File mã nguồn: `.agent/skills/google_sheets_integration/scripts/Code.gs`
+1. Trên Google Sheets, mở menu **Tiện ích mở rộng (Extensions)** ➔ **Apps Script**.
+2. Xóa hết code mặc định và dán toàn bộ nội dung từ file `Code.gs` vào.
+3. Bấm **Lưu (Save)**.
+4. F5 tải lại Google Sheets: Sẽ xuất hiện menu mới **🚀 VNTEST Tools** trên thanh công cụ:
+   - Bấm **🔄 Cập nhật bảng SUMMARY ngay** để cập nhật bất kỳ lúc nào.
+   - Bấm **⚡ Cài đặt Tự động cập nhật khi tạo/sửa sheet** để bật chế độ tự động 100% (mỗi khi bấm `+` tạo sheet mới, đổi tên hoặc xóa sheet, bảng SUMMARY sẽ tự động đồng bộ ngay).
+
+### Cách 2: Chạy Bằng Lệnh Node.js Qua Terminal
+File mã nguồn: `.agent/skills/google_sheets_integration/scripts/update_summary.js`
+```bash
+node .agent/skills/google_sheets_integration/scripts/update_summary.js \
+  --url "<Đường_Dẫn_Google_Sheet>"
+```
+
