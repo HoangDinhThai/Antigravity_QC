@@ -26,6 +26,7 @@ BugSeverity: {CustomField_Severity}
 <!-- Cú pháp {Summary}: [{Mã Task}][{Feature}]: <hành vi lỗi> (hoặc [{Feature}]: <hành vi lỗi> nếu không có task cha) -->
 
 ## Mô tả (Description)
+<!-- QUY TẮC VIẾT: Cực kỳ ngắn gọn, súc tích, dễ hiểu nhất có thể để PM non-tech hoặc Dev đọc đều hiểu ngay lập tức. Tránh viết dài dòng, tránh biệt ngữ kỹ thuật phức tạp. -->
 **Nguồn:** {Source}
 **Ngày nhận:** {Date}
 **Môi trường (Environment):** {Environment}

@@ -5,6 +5,7 @@
 - No ad-hoc scripts.
 - All output must be Vietnamese.
 - This skill handles **Bug** only.
+- Mọi nội dung mô tả bug phải **cực kỳ ngắn gọn, súc tích, dễ hiểu nhất có thể** để PM non-tech, Dev hoặc bất kỳ ai đọc vào cũng hiểu ngay. Tuyệt đối không kỹ thuật hóa lan man.
 
 ## Read Verification Gate (hard stop)
 

@@ -100,6 +100,13 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   3. **Kết quả mong đợi (Expected Result):** Trình bày sau kết quả thực tế, nêu rõ hành vi đúng theo đặc tả nghiệp vụ.
   4. **Tài liệu đính kèm / Bằng chứng (Evidence):** Cú pháp ảnh bắt buộc dùng ngoặc vuông `![Tên ảnh][file.png]`.
 
+### 🎯 Tiêu Chuẩn Ngôn Ngữ: Cực Kỳ Ngắn Gọn & Dễ Hiểu (Non-Tech & Dev Friendly)
+* **Đối tượng tiếp nhận:** Viết sao cho **PM Non-tech, Dev hoặc bất kỳ ai đọc vào cũng hiểu ngay lập tức** mà không cần giải thích thêm.
+* **Nguyên tắc cốt lõi:**
+  - **Cực kỳ ngắn gọn, súc tích:** Đi thẳng vào trọng tâm vấn đề, không viết văn miêu tả dài dòng lan man.
+  - **Không kỹ thuật hóa:** Tuyệt đối không dùng thuật ngữ backend/code phức tạp, không chèn selector HTML/CSS hay mã lỗi khó hiểu vào phần mô tả nghiệp vụ.
+  - **Rõ ràng, trực quan:** Dùng từ ngữ đời thường, chuẩn nghiệp vụ người dùng cuối (ví dụ: "Bấm nút Lưu nhưng hệ thống không phản hồi" thay vì "Sự kiện onClick không trigger payload gửi lên API").
+
 ### 🛑 Quy Trình Duyệt Bug (Bắt Buộc Phê Duyệt Từ Người Dùng)
 * **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
 * **Quy trình 3 bước bắt buộc:**

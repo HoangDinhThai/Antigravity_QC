@@ -15,6 +15,10 @@ Use when QC provides raw bug description and optional evidence folder.
 3. Build description using template:
    - `backlog-issue-manager/references/template_bug.md`
    - Fill known fields from QC text.
+   - **Tiêu chuẩn viết nội dung (CỰC KỲ QUAN TRỌNG):**
+     - Viết **cực kỳ ngắn gọn, súc tích, dễ hiểu nhất có thể**.
+     - Đảm bảo **PM Non-tech, Dev hoặc bất kỳ ai đọc vào cũng hiểu ngay lập tức** (lỗi ở đâu, làm sao để bị, hành vi sai là gì, hành vi đúng là gì).
+     - Tuyệt đối không viết lan man dài dòng, không kỹ thuật hóa (không chèn selector CSS, mã code hay thuật ngữ backend phức tạp vào phần mô tả nghiệp vụ).
    - Thứ tự chuẩn: Các bước tái hiện -> **Kết quả thực tế (Actual Result)** -> **Kết quả mong đợi (Expected Result)** -> Bằng chứng (Evidence).
    - Unknown fields -> `[Cần QC bổ sung]`.
 4. Evidence handling:
