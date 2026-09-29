@@ -26,14 +26,17 @@ Use when QC provides raw bug description and optional evidence folder.
    - Images: Cú pháp ảnh khi lên Backlog bắt buộc dùng ngoặc vuông: `![Tên ảnh][file.png]` (tuyệt đối không dùng ngoặc tròn `](file.png)`).
    - Non-image/video: `- [Tên file](backlog/draft/<folder-name>/<file>)`
    - If no evidence folder: `[Chưa có bằng chứng]`.
-5. Classify custom fields from `references/bug_rules.md`:
-   - ProgramLogicBugType
-   - BugSeverity
-   - PhaseDetected
+5. Classify custom fields (BẮT BUỘC trong mọi Bug):
+   - Luôn đánh giá và điền đầy đủ 3 trường:
+     - `Bug Type` (`ProgramLogicBugType`): `Logical Bug`, `Functional Bug`, `Interface Error`, `Workflow`, `Security Bug`, `Performance Problem`, `UAT Bug`, `Release Bug`.
+     - `Bug Severity`: `Critical`, `Major`, `Minor`.
+     - `Phase Detected`: `Unit Testing`, `Intergration Testing`, `System Testing`, `Acceptance Testing`.
 6. Save draft:
    - `backlog/draft/bug-<feature-name>.md` (kebab-case)
-   - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`)
-7. Trình bày bản nháp & Chờ phê duyệt (BẮT BUỘC):
+   - Lưu đầy đủ 3 trường phân loại lỗi và trường Assignee vào frontmatter và body.
+   - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`).
+7. Trình bày bản nháp, hỏi Assignee & Chờ phê duyệt (BẮT BUỘC):
    - Xuất toàn bộ nội dung bản nháp chi tiết (Tiêu đề, Bước tái hiện, Kết quả thực tế, Kết quả mong đợi, Bằng chứng, Phân loại lỗi) ra chat để QC kiểm tra và chỉnh sửa.
    - Nêu rõ đường dẫn file draft đã lưu tại `backlog/draft/bug-<feature-name>.md`.
-   - **DỪNG LẠI và CHỜ** phản hồi/chỉnh sửa từ QC. **TUYỆT ĐỐI KHÔNG** tự ý gọi API tạo/đẩy bug khi QC chưa duyệt và xác nhận.
+   - **BẮT BUỘC HỎI ASSIGNEE:** Luôn hỏi người dùng: *"Bạn muốn gán (assign) bug này cho ai phụ trách?"* (kèm danh sách Dev/thành viên trong dự án để người dùng chọn).
+   - **DỪNG LẠI và CHỜ** phản hồi/chỉnh sửa và thông tin assignee từ QC. **TUYỆT ĐỐI KHÔNG** tự ý gọi API tạo/đẩy bug khi QC chưa duyệt và xác nhận.

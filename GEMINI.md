@@ -111,8 +111,15 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 * **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
 * **Quy trình 3 bước bắt buộc:**
   1. **Lên bản nháp (Draft) & Bắt buộc xuất file MD:** Soạn thảo đầy đủ nội dung bug theo template chuẩn (tiêu đề chuẩn, các bước, kết quả thực tế, kết quả mong đợi, bằng chứng). **Bắt buộc lưu bản nháp ra file Markdown (.md) tại thư mục `backlog/draft/bug-<ten-loi>.md` kèm thư mục chứa ảnh/video bằng chứng tương ứng trước khi trình bày.**
-  2. **Trình bày cho người dùng duyệt & sửa:** Xuất bản nháp ra chat trực quan kèm đường dẫn file `.md` đã lưu tại `backlog/draft/`, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
+  2. **Trình bày cho người dùng duyệt, hỏi Assignee & sửa:** Xuất bản nháp ra chat trực quan kèm đường dẫn file `.md` đã lưu tại `backlog/draft/`, **bắt buộc hỏi người dùng muốn gán (assign) bug cho ai phụ trách**, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
   3. **Chỉ đẩy khi có lệnh duyệt:** CHỈ KHI người dùng phản hồi phê duyệt rõ ràng (ví dụ: "Duyệt rồi, đẩy đi", "OK đẩy bug lên", "Tạo bug nhé") thì Agent mới được gọi API tạo issue lên Backlog.
+
+### 🏷️ Đánh Giá Phân Loại Lỗi & Gán Người Phụ Trách (MANDATORY)
+* **Bắt buộc đánh giá và điền đủ 3 trường trong mọi Bug:**
+  - `Bug Type`: `Logical Bug`, `Functional Bug`, `Interface Error`, `Workflow`, `Security Bug`, `Performance Problem`, `UAT Bug`, `Release Bug`.
+  - `Bug Severity`: `Critical`, `Major`, `Minor`.
+  - `Phase Detected`: `Unit Testing`, `Intergration Testing`, `System Testing`, `Acceptance Testing`.
+* **Bắt buộc hỏi Assignee khi tạo bug:** Khi trình bày bản nháp hoặc tiếp nhận lệnh tạo bug, Agent bắt buộc phải hỏi người dùng muốn gán (assign) ticket cho ai phụ trách trước khi gọi API tạo issue (kèm gợi ý danh sách thành viên dự án nếu có).
 
 ---
 

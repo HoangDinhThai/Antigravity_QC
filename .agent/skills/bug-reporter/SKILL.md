@@ -25,6 +25,14 @@ Use for QC free-text bug reports with image/video evidence.
 - **TUYỆT ĐỐI KHÔNG** chỉ xuất bản nháp ra khung chat mà bỏ quên bước ghi file `.md`.
 - Trình bày đường dẫn file `.md` đã lưu cùng nội dung bản nháp ra chat để QC kiểm tra và phê duyệt.
 
+## Mandatory Evaluation Fields & Assignee Rule (Bắt Buộc Đánh Giá 3 Trường & Hỏi Assignee)
+
+- **LUÔN ĐÁNH GIÁ VÀ ĐIỀN ĐỦ 3 TRƯỜNG:** Trong MỌI bản nháp Bug và khi đẩy lên Backlog, bắt buộc phải đánh giá và điền đủ 3 thông tin:
+  1. `Bug Type`: `Logical Bug`, `Functional Bug`, `Interface Error`, `Workflow`, `Security Bug`, `Performance Problem`, `UAT Bug`, `Release Bug`.
+  2. `Bug Severity`: `Critical`, `Major`, `Minor`.
+  3. `Phase Detected`: `Unit Testing`, `Intergration Testing`, `System Testing`, `Acceptance Testing`.
+- **LUÔN HỎI ASSIGNEE KHI TẠO BUG:** Khi trình bày bản nháp hoặc trước khi đẩy bug lên Backlog, bắt buộc phải hỏi người dùng muốn gán (assign) ticket cho ai phụ trách (kèm gợi ý danh sách thành viên dự án nếu có).
+
 ## Load Order (mandatory)
 
 1. Read this file.
