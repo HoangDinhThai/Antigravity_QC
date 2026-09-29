@@ -17,7 +17,7 @@ Hệ thống tự động bóc tách từng dòng dữ liệu của bảng Markd
 | :---: | :--- | :--- | :--- |
 | **A** | **No. ID** (STT) | Tự động sinh | Đánh số thứ tự tăng dần từ `1, 2, 3...` (nếu ghi tiếp bên dưới dữ liệu cũ, tự động cộng tiếp STT). |
 | **B** | **Module** | Tên phân hệ / chức năng lớn | **Chỉ điền ở dòng đầu tiên** (`idx == 1`, ví dụ: `"Chi tiết nhân sự"`), **tất cả các dòng tiếp theo để trống `""`** để giữ giao diện bảng sạch và đúng chuẩn hiển thị của Google Sheets. |
-| **C** | **Feature** | Cột `Title 1` | Nhóm chức năng / Khối tính năng kiểm thử. |
+| **C** | **Feature** | Cột `Title 1` | Nhóm chức năng / Khối tính năng kiểm thử. **Bắt buộc tự động gộp ô (Merge Cells) theo chiều dọc cho các test case liên tiếp chung Feature**. Căn giữa (Center & Middle), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders) rõ ràng. |
 | **D** | **Test Case Title_1** | Cột `Title 2 (Nếu có)` | Tiêu đề kịch bản kiểm thử chi tiết. |
 | **E** | **Test Case Title_2** | Để trống | Mặc định để trống `""`. |
 | **F** | **Pre-Condition** | Cột `Pre-Condition` | Tiền điều kiện thực thi test case. |
@@ -41,6 +41,7 @@ Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm s�
    - Thay thế toàn bộ thẻ `<br>`, `<br/>`, `<br >` thành ký tự xuống dòng thực tế `\n`.
    - Thay thế dấu mũi tên phân tách bước ` -> ` thành ký tự xuống dòng `\n`.
 3. **Cắt tỉa khoảng trắng:** Loại bỏ toàn bộ khoảng trắng thừa ở đầu và cuối chuỗi (`strip()`).
+4. **Kế thừa Feature:** Nếu trong bảng Markdown cột `Title 1` chỉ điền ở dòng đầu của khối và để trống các dòng tiếp theo, hệ thống tự động kế thừa tên Feature cho các dòng con cùng nhóm.
 
 ---
 
@@ -54,10 +55,14 @@ Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm s�
    - Dòng 1 đến dòng 10 thường là thông tin dự án, tiêu chuẩn, ký hiệu viết tắt.
    - Quét nhận diện dòng tiêu đề thực tế (thường nằm tại dòng 11 chứa `No. ID`, `Module`, `Feature`...).
    - Bắt đầu ghi dữ liệu từ dòng 12 (`A12:O...`), hoặc tìm dòng trống đầu tiên bên dưới vùng dữ liệu đã có để ghi nối tiếp (append).
-3. **Tự động Unmerge vùng dữ liệu:**
-   - Nếu trong vùng dữ liệu (từ dòng 11 trở xuống) có các ô bị gộp (merge) do thao tác trước đó, script tự động gọi `unmergeCells` để giải phóng ô trước khi ghi, tránh lỗi ghi đè dữ liệu.
+3. **Tự động Unmerge vùng dữ liệu cũ:**
+   - Nếu trong vùng dữ liệu (từ dòng 11 trở xuống) có các ô bị gộp (merge) do thao tác hoặc template trước đó để lại, script **bắt buộc tự động unmerge toàn bộ** để giải phóng ô trước khi ghi dữ liệu mới, ngăn ngừa triệt để lỗi ghi đè dữ liệu hoặc mất/nuốt giá trị.
 4. **Cơ chế Batch Update chống Timeout:**
    - Khi số lượng test cases lớn (từ 50 đến 200+ cases), script tự động chia thành các batch nhỏ từ 30 đến 50 dòng mỗi đợt gọi API Google Sheets để đảm bảo tốc độ và tránh bị timeout kết nối.
+5. **Tự Động Gộp Ô (Merge Cells) & Định Dạng Chuẩn Cột Feature:**
+   - **Gộp ô theo nhóm:** Tự động gom các test case liên tiếp có chung tên Feature và thực thi `mergeCells` theo chiều dọc (`startColumnIndex: 2, endColumnIndex: 3`).
+   - **Làm sạch giá trị trước khi merge:** Ô đầu tiên của nhóm lưu tên Feature, các ô phía dưới để trống `""` để bảng tính sạch sẽ và tối ưu bộ nhớ.
+   - **Định dạng chuẩn:** Áp dụng căn giữa ngang (`CENTER`), căn giữa dọc (`MIDDLE`), tự động ngắt dòng (`WRAP`), phông chữ `Arial 10pt` in đậm (`bold: true`) và đóng khung viền đen (`Borders: SOLID 1px`) bao quanh toàn bộ ô gộp.
 
 ---
 

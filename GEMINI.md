@@ -66,6 +66,26 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 
 ---
 
+## Google Sheets Rules (MANDATORY)
+
+### 📊 Cấu Trúc Bảng Tính & Đẩy Test Case (15 Cột A-O)
+* Luôn tuân thủ chuẩn 15 cột A-O của dự án VNTEST.
+* **Cột Module (Cột B):** Chỉ điền ở dòng đầu tiên của sheet, các dòng tiếp theo để trống `""`.
+* **Cột Feature (Cột C):** 
+  - **Bắt buộc tự động gộp ô (Merge Cells):** Gom toàn bộ các test case liên tiếp thuộc cùng một nhóm Feature và thực hiện gộp ô theo chiều dọc (`mergeCells` trên Cột C).
+  - **Làm sạch trước khi gộp:** Chỉ điền giá trị tên Feature tại dòng đầu tiên của khối, các dòng phía dưới trong cùng nhóm để trống `""` trước khi merge.
+  - **Định dạng chuẩn:**
+    - Căn lề: Căn giữa ngang và dọc (`horizontalAlignment: CENTER`, `verticalAlignment: MIDDLE`).
+    - Phông chữ: `Arial`, cỡ chữ `10pt`, in đậm (`bold: true`).
+    - Xuống dòng: Tự động xuống dòng (`wrapStrategy: WRAP`).
+    - Đóng khung: Viền đen (`Borders: SOLID 1px`) bao quanh toàn bộ ô gộp.
+
+### 🧹 Tự Động Unmerge Vùng Dữ Liệu Cũ Trước Khi Đẩy
+* Trước khi ghi dữ liệu và gộp ô mới, **bắt buộc unmerge toàn bộ** các dải ô bị gộp cũ trong vùng dữ liệu (từ dòng 11 trở xuống).
+* Tuyệt đối không ghi đè dữ liệu hoặc merge chồng chéo lên các ô merge cũ (gây mất dữ liệu, nuốt giá trị Feature hoặc lỗi API).
+
+---
+
 ## Cleanup & Delivery
 
 ### ✅ Điều kiện bàn giao (Definition of Done)
@@ -222,6 +242,7 @@ code:     TC_LOGIN_1712049200
 | Dùng test data hardcoded trùng lặp             | Sinh data random + traceable                   |
 | Dùng ngoặc tròn `](file.png)` cho ảnh Backlog  | Bắt buộc convert sang ngoặc vuông `![Alt][file.png]` cho cả Issue Description & Comment |
 | Viết testcase nửa nạc nửa mỡ, chèn class/selector/thuộc tính tiếng Anh (`(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`) | Viết thuần Tiếng Việt theo góc nhìn người dùng: `bị vô hiệu hóa`, `tiêu đề popup`, `biểu tượng chỉ đọc` |
+| Đẩy test case lên Sheet để rời rạc không gộp ô Feature hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô theo nhóm Feature và căn giữa định dạng chuẩn |
 
 ## 10. Tham Chiếu Workflows
 

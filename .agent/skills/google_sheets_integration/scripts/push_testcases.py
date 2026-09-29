@@ -80,11 +80,16 @@ def parse_markdown_testcases(md_content):
     col_priority = find_col(['priority', 'độ ưu tiên', 'mức độ ưu tiên'])
 
     test_cases = []
+    current_feature = ""
     for r in valid_rows[1:]:
         if len(r) < 5 or (r[0] and 'tc id' in r[0].lower()):
             continue
         tc_id = clean_markdown(r[col_tc_id]) if col_tc_id != -1 and col_tc_id < len(r) else ""
         t1 = clean_markdown(r[col_title1]) if col_title1 != -1 and col_title1 < len(r) else ""
+        if t1:
+            current_feature = t1
+        else:
+            t1 = current_feature
         t2 = clean_markdown(r[col_title2]) if col_title2 != -1 and col_title2 < len(r) else ""
         pre = clean_markdown(r[col_pre]) if col_pre != -1 and col_pre < len(r) else ""
         steps = clean_markdown(r[col_steps]) if col_steps != -1 and col_steps < len(r) else ""
@@ -232,10 +237,12 @@ def main():
     sheet_rows = []
     for idx, tc in enumerate(test_cases):
         is_first = (idx == 0)
+        is_new_feature = (idx == 0 or tc['feature'] != test_cases[idx - 1]['feature'])
+        col_feature = tc['feature'] if is_new_feature else ""
         row = [
             str(next_stt + idx),
             (args.module or target_title) if is_first else "",
-            tc['feature'],
+            col_feature,
             tc['title'],
             "",
             tc['pre'],
@@ -267,6 +274,95 @@ def main():
         total_updated += res.get('updatedRows', len(batch))
         print(f"  -> Đã cập nhật xong: {rng} ({len(batch)} dòng)")
         curr_row = end_r + 1
+
+    # Tự động gộp ô (Merge) cột Feature cho các test case chung Feature & Định dạng
+    feature_blocks = []
+    current_block = None
+    for idx, tc in enumerate(test_cases):
+        f_name = tc.get('feature', '')
+        curr_r = start_row + idx
+        if not current_block or current_block['name'] != f_name:
+            if current_block and current_block['name']:
+                feature_blocks.append(current_block)
+            current_block = {'name': f_name, 'start_row': curr_r, 'end_row': curr_r}
+        else:
+            current_block['end_row'] = curr_r
+    if current_block and current_block['name']:
+        feature_blocks.append(current_block)
+
+    merge_requests = []
+    for b in feature_blocks:
+        if b['end_row'] > b['start_row']:
+            merge_requests.append({
+                'mergeCells': {
+                    'range': {
+                        'sheetId': target_id,
+                        'startRowIndex': b['start_row'] - 1,
+                        'endRowIndex': b['end_row'],
+                        'startColumnIndex': 2,
+                        'endColumnIndex': 3
+                    },
+                    'mergeType': 'MERGE_ALL'
+                }
+            })
+
+    end_data_row = start_row + len(test_cases)
+    merge_requests.append({
+        'repeatCell': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 2,
+                'endColumnIndex': 3
+            },
+            'cell': {
+                'userEnteredFormat': {
+                    'horizontalAlignment': 'CENTER',
+                    'verticalAlignment': 'MIDDLE',
+                    'wrapStrategy': 'WRAP',
+                    'textFormat': {
+                        'fontFamily': 'Arial',
+                        'fontSize': 10,
+                        'bold': True
+                    }
+                }
+            },
+            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+        }
+    })
+
+    border_style = {
+        'style': 'SOLID',
+        'width': 1,
+        'colorStyle': {'rgbColor': {'red': 0, 'green': 0, 'blue': 0}}
+    }
+    merge_requests.append({
+        'updateBorders': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 2,
+                'endColumnIndex': 3
+            },
+            'top': border_style,
+            'bottom': border_style,
+            'left': border_style,
+            'right': border_style,
+            'innerHorizontal': border_style,
+            'innerVertical': border_style
+        }
+    })
+
+    if merge_requests:
+        merge_count = len([b for b in feature_blocks if b['end_row'] > b['start_row']])
+        print(f"Đang thực hiện gộp {merge_count} nhóm Feature và định dạng chuẩn cho cột Feature...")
+        service.spreadsheets().batchUpdate(
+            spreadsheetId=spreadsheet_id,
+            body={'requests': merge_requests}
+        ).execute()
+        print("Đã gộp ô và định dạng cột Feature thành công!")
 
     print(f"\n🎉 Hoàn tất đẩy thành công {total_updated} test cases lên Google Sheet.")
 

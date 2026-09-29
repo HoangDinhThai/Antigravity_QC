@@ -108,11 +108,17 @@ function parseMarkdownTestCases(mdContent) {
   const testCases = [];
   const dataRows = validRows.slice(1);
 
+  let currentFeature = '';
   for (const r of dataRows) {
     if (r.length < 5 || (r[0] && r[0].toLowerCase().includes('tc id'))) continue;
 
     const tcId = colTcId !== -1 && r[colTcId] ? cleanMarkdown(r[colTcId]) : '';
-    const title1 = colTitle1 !== -1 && r[colTitle1] ? cleanMarkdown(r[colTitle1]) : '';
+    let title1 = colTitle1 !== -1 && r[colTitle1] ? cleanMarkdown(r[colTitle1]) : '';
+    if (title1) {
+      currentFeature = title1;
+    } else {
+      title1 = currentFeature; // Kế thừa tên Feature từ dòng trước nếu để trống
+    }
     const title2 = colTitle2 !== -1 && r[colTitle2] ? cleanMarkdown(r[colTitle2]) : '';
     const pre = colPre !== -1 && r[colPre] ? cleanMarkdown(r[colPre]) : '';
     const steps = colSteps !== -1 && r[colSteps] ? cleanMarkdown(r[colSteps]) : '';
@@ -313,10 +319,14 @@ async function main() {
     // Col M: Tester (chỉ điền ở dòng đầu tiên)
     const colTester = isFirstRow ? testerName : "";
 
+    // Col C: Feature (chỉ điền ở dòng đầu của nhóm Feature, các dòng sau của cùng nhóm để trống "" để gộp ô sạch sẽ)
+    const isNewFeature = (idx === 0 || tc.feature !== testCases[idx - 1].feature);
+    const colFeature = isNewFeature ? tc.feature : "";
+
     const row = [
       String(currentSTT),         // Col A: No. ID
       colModule,                  // Col B: Module
-      tc.feature,                 // Col C: Feature
+      colFeature,                 // Col C: Feature
       tc.title,                   // Col D: Test Case Title_1
       "",                         // Col E: Test Case Title_2
       tc.preCondition,            // Col F: Pre-Condition
@@ -377,6 +387,113 @@ async function main() {
     totalUpdated += (res.data.updatedRows || batchRows.length);
     console.log(`  -> Đã cập nhật xong dải: ${range} (${batchRows.length} dòng)`);
     currentRow = endRow + 1;
+  }
+
+  // 11. Tự động Gộp ô (Merge) cột Feature cho các test case chung Feature & Định dạng chuẩn
+  console.log("Đang tiến hành gom nhóm và gộp ô cho cột Feature...");
+  const featureBlocks = [];
+  let currentBlock = null;
+
+  for (let idx = 0; idx < testCases.length; idx++) {
+    const fName = testCases[idx].feature || '';
+    const currRow = startRowIndex + idx;
+
+    if (!currentBlock || currentBlock.name !== fName) {
+      if (currentBlock && currentBlock.name) {
+        featureBlocks.push(currentBlock);
+      }
+      currentBlock = {
+        name: fName,
+        startRow: currRow,
+        endRow: currRow
+      };
+    } else {
+      currentBlock.endRow = currRow;
+    }
+  }
+  if (currentBlock && currentBlock.name) {
+    featureBlocks.push(currentBlock);
+  }
+
+  const postRequests = [];
+
+  // Tạo request merge cho từng nhóm Feature có từ 2 test case trở lên
+  for (const block of featureBlocks) {
+    if (block.endRow > block.startRow) {
+      postRequests.push({
+        mergeCells: {
+          range: {
+            sheetId: targetSheetId,
+            startRowIndex: block.startRow - 1, // 0-based inclusive
+            endRowIndex: block.endRow,         // 0-based exclusive
+            startColumnIndex: 2,               // Column C
+            endColumnIndex: 3
+          },
+          mergeType: 'MERGE_ALL'
+        }
+      });
+    }
+  }
+
+  // Định dạng toàn bộ cột C từ startRowIndex đến startRowIndex + testCases.length - 1
+  const endDataRow = startRowIndex + testCases.length; // 0-based exclusive
+  postRequests.push({
+    repeatCell: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 2,
+        endColumnIndex: 3
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          wrapStrategy: 'WRAP',
+          textFormat: {
+            fontFamily: 'Arial',
+            fontSize: 10,
+            bold: true
+          }
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+    }
+  });
+
+  // Đóng khung viền rõ ràng cho cột C
+  const borderStyle = {
+    style: 'SOLID',
+    width: 1,
+    colorStyle: { rgbColor: { red: 0, green: 0, blue: 0 } }
+  };
+  postRequests.push({
+    updateBorders: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 2,
+        endColumnIndex: 3
+      },
+      top: borderStyle,
+      bottom: borderStyle,
+      left: borderStyle,
+      right: borderStyle,
+      innerHorizontal: borderStyle,
+      innerVertical: borderStyle
+    }
+  });
+
+  if (postRequests.length > 0) {
+    const mergeCount = featureBlocks.filter(b => b.endRow > b.startRow).length;
+    console.log(`Đang thực hiện gộp ${mergeCount} nhóm Feature và định dạng chuẩn cho cột Feature...`);
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: { requests: postRequests }
+    });
+    console.log("Đã gộp ô và định dạng cột Feature thành công!");
   }
 
   console.log(`\n🎉 Hoàn thành xuất sắc! Đã đẩy thành công tổng cộng ${totalUpdated} test cases lên Google Sheets.`);
