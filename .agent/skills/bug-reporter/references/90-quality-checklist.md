@@ -11,6 +11,5 @@ Before final response:
 - [ ] Evidence links are valid local paths (or `[Chưa có bằng chứng]`).
 - [ ] Draft path is `backlog/draft/bug-<feature-name>.md` (or user-specified draft path).
 - [ ] YAML IDs remain blank before create.
-- [ ] `## Bình luận (Comments)` stays blank.
 - [ ] Đã trình bày bản nháp chi tiết ra chat để QC duyệt và sửa đổi (tuyệt đối KHÔNG tự ý đẩy bug lên).
 - [ ] Chỉ gọi API đẩy lên Backlog khi QC đã xác nhận/phê duyệt rõ ràng trong lượt hiện tại.

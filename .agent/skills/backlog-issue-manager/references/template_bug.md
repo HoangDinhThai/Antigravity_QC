@@ -51,18 +51,3 @@ BugSeverity: {CustomField_Severity}
 
 **Tài liệu đính kèm / Bằng chứng (Evidence):**
 {Evidence}
-
----
-**Thảo luận gốc (Jira/Redmine):**
-{OriginalComments}
-
-<details>
-<summary><b>📝 Ghi chú / Nguyên văn (Reference)</b></summary>
-
-```text
-{OriginalText}
-```
-</details>
-
-## Bình luận (Comments)
-<!-- Vùng hiển thị/đồng bộ các bình luận. Mỗi bình luận cách nhau rõ ràng. -->
