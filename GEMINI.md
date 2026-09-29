@@ -196,20 +196,49 @@ Agent phải tham chiếu quy tắc chi tiết trong `.agent/rules/`:
 
 ## 5. Tham Chiếu Skills
 
-Agent sử dụng skills trong `.agent/skills/` tùy theo nhiệm vụ:
+Agent sử dụng các kỹ năng chuyên biệt trong `.agent/skills/` tùy theo từng nhóm nhiệm vụ:
 
-| Skill                      | Vai trò                                                                                  |
-| -------------------------- | ----------------------------------------------------------------------------------------- |
-| `qa_automation_engineer` | Master skill cho automation — điều phối toàn bộ quy trình                          |
-| `rbt_manual_testing`     | Master skill cho manual testing — 2 modes: QUICK (sinh TC nhanh) và FULL RBT (6 bước) |
-| `backlog-comment-reporter` | Soạn thảo, chuẩn hóa bản nháp và đẩy comment báo cáo kiểm thử lên Backlog                |
-| `requirements_analyzer`  | Phân tích requirements từ website/tài liệu                                           |
-| `ui_debug_agent`         | Inspect UI/DOM, thu thập locators                                                        |
-| `smart_locator_agent`    | Sinh locator mới ổn định                                                              |
-| `locator_healer_agent`   | Sửa locator hỏng                                                                        |
-| `test_data_generator`    | Sinh test data unique, traceable — hỗ trợ multi-step pipeline & combinatorial data       |
-| `flaky_test_analyzer`    | Phân tích và khắc phục flaky tests                                                   |
-| `jira_integration`       | Tích hợp Jira/Xray — lấy requirements, đẩy test results                             |
+### 📝 Nhóm 1: Kiểm Thử Thủ Công & Phân Tích Yêu Cầu (Manual Testing & Requirements)
+
+| Skill | Vai trò |
+| :--- | :--- |
+| `rbt_manual_testing` | Master skill sinh manual test cases theo 2 modes: QUICK (nhanh) và FULL RBT (6 bước có đánh giá rủi ro) |
+| `requirements_analyzer` | Phân tích màn hình/tính năng/UI Prototype, sinh Tài liệu Đặc tả Yêu cầu Chức năng (SRS) chuẩn 10-12 phần |
+| `backlog-task-analyzer` | Đọc task từ link/key Backlog, phân tích nghiệp vụ và tự động sinh bộ manual test cases toàn diện |
+| `google_sheets_integration` | Đẩy test cases dạng bảng Markdown lên Google Sheets dự án VNTEST chuẩn 15 cột A-O (tự động unmerge & gộp ô Feature) |
+
+### 🐛 Nhóm 2: Quản Lý Lỗi & Tích Hợp Backlog / Jira (Bug & Issue Management)
+
+| Skill | Vai trò |
+| :--- | :--- |
+| `bug-reporter` | Tiếp nhận lỗi thô, chuẩn hóa bản nháp Bug draft cực kỳ ngắn gọn, dễ hiểu và chờ QC duyệt trước khi đẩy |
+| `backlog-issue-manager` | Quản lý toàn diện Backlog API (tạo mới, đồng bộ, cập nhật issue, quản lý comment, điều tra ticket) |
+| `backlog-comment-reporter` | Soạn thảo, chuẩn hóa bản nháp và đẩy comment báo cáo kiểm thử (Test Evidence Report) lên Backlog |
+| `backlog-to-summary-reporter` | Lấy danh sách bug từ dự án Backlog và append/điền vào trang tính Summary của Google Sheet |
+| `jp-issue-creator` | Xử lý yêu cầu/ticket tiếng Nhật từ khách hàng (chuyển tiếp từ Jira/Redmine sang Backlog) |
+| `jira_integration` | Tích hợp Jira/Xray — lấy requirements từ Jira, xác thực Xray và đẩy kết quả test |
+
+### ⚡ Nhóm 3: Kiểm Thử Tự Động (Automation Testing)
+
+| Skill | Vai trò |
+| :--- | :--- |
+| `qa_automation_engineer` | Master skill cho automation — điều phối toàn bộ quy trình thiết kế và sinh test script |
+| `framework_architect` | Thiết kế và scaffold cấu trúc automation framework hoàn chỉnh cho Playwright, Selenium, Appium |
+| `ui_debug_agent` | Mở browser thật inspect UI/DOM, thu thập locators và debug automation failures |
+| `smart_locator_agent` | Sinh locator mới ổn định, tối ưu và dễ bảo trì |
+| `locator_healer_agent` | Tự động phát hiện và sửa chữa locator bị hỏng khi UI thay đổi |
+| `test_data_generator` | Sinh test data unique, traceable — hỗ trợ multi-step pipeline & combinatorial data |
+| `flaky_test_analyzer` | Phân tích root cause và khắc phục các test case chạy chập chờn (flaky tests) |
+| `unit-test` | Thiết lập và chạy unit test đa ngôn ngữ/framework (PHP, Node.js, Vue, React) |
+
+### 🛠️ Nhóm 4: Tiện Ích Dự Án & Hệ Thống (Project Utilities & Tools)
+
+| Skill | Vai trò |
+| :--- | :--- |
+| `outline-sync` | Đồng bộ cấu trúc tài liệu giữa Outline cloud và thư mục local |
+| `piranet-devlog` | Ghi nhận giờ làm việc / devlog vào hệ thống Piranet qua MCP tools |
+| `pm-estimation` | Ước lượng effort/chi phí dự án từ tài liệu yêu cầu (PRD, Figma, wireframe) |
+| `skill-creator` | Tạo mới, tối ưu hóa và đánh giá hiệu năng các agent skills |
 
 ## 6. Kế Hoạch Kiểm Thử (Plan Templates)
 
