@@ -41,11 +41,11 @@ BugSeverity: {CustomField_Severity}
 **Các bước tái hiện:**
 {StepsToReproduce}
 
-**Kết quả mong đợi:**
-{ExpectedResult}
-
 **Kết quả thực tế:**
 {ActualResult}
+
+**Kết quả mong đợi:**
+{ExpectedResult}
 
 **Tài liệu đính kèm / Bằng chứng (Evidence):**
 {Evidence}

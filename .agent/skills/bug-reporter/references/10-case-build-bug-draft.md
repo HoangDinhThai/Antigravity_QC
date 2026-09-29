@@ -13,10 +13,11 @@ Use when QC provides raw bug description and optional evidence folder.
 3. Build description using template:
    - `backlog-issue-manager/references/template_bug.md`
    - Fill known fields from QC text.
+   - Thứ tự chuẩn: Các bước tái hiện -> **Kết quả thực tế (Actual Result)** -> **Kết quả mong đợi (Expected Result)** -> Bằng chứng (Evidence).
    - Unknown fields -> `[Cần QC bổ sung]`.
 4. Evidence handling:
    - Read files from `backlog/draft/<folder-name>/` when provided.
-   - Images: `![Tên ảnh](backlog/draft/<folder-name>/<file>)`
+   - Images: Cú pháp ảnh khi lên Backlog bắt buộc dùng ngoặc vuông: `![Tên ảnh][file.png]` (tuyệt đối không dùng ngoặc tròn `](file.png)`).
    - Non-image/video: `- [Tên file](backlog/draft/<folder-name>/<file>)`
    - If no evidence folder: `[Chưa có bằng chứng]`.
 5. Classify custom fields from `references/bug_rules.md`:
