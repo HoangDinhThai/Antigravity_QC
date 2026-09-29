@@ -110,8 +110,8 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 ### 🛑 Quy Trình Duyệt Bug (Bắt Buộc Phê Duyệt Từ Người Dùng)
 * **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
 * **Quy trình 3 bước bắt buộc:**
-  1. **Lên bản nháp (Draft):** Soạn thảo đầy đủ nội dung bug theo template chuẩn (tiêu đề chuẩn, các bước, kết quả thực tế, kết quả mong đợi, bằng chứng).
-  2. **Trình bày cho người dùng duyệt & sửa:** Xuất bản nháp ra chat trực quan và lưu tại `backlog/draft/`, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
+  1. **Lên bản nháp (Draft) & Bắt buộc xuất file MD:** Soạn thảo đầy đủ nội dung bug theo template chuẩn (tiêu đề chuẩn, các bước, kết quả thực tế, kết quả mong đợi, bằng chứng). **Bắt buộc lưu bản nháp ra file Markdown (.md) tại thư mục `backlog/draft/bug-<ten-loi>.md` kèm thư mục chứa ảnh/video bằng chứng tương ứng trước khi trình bày.**
+  2. **Trình bày cho người dùng duyệt & sửa:** Xuất bản nháp ra chat trực quan kèm đường dẫn file `.md` đã lưu tại `backlog/draft/`, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
   3. **Chỉ đẩy khi có lệnh duyệt:** CHỈ KHI người dùng phản hồi phê duyệt rõ ràng (ví dụ: "Duyệt rồi, đẩy đi", "OK đẩy bug lên", "Tạo bug nhé") thì Agent mới được gọi API tạo issue lên Backlog.
 
 ---

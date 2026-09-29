@@ -18,6 +18,13 @@ Use for QC free-text bug reports with image/video evidence.
 - Only for **Bug** issues.
 - For Feature/Change or JP customer structured flows, use `jp-issue-creator`.
 
+## Mandatory Draft File Rule (Bắt Buộc Xuất File MD)
+
+- **LUÔN LUÔN** phải tạo và lưu bản nháp Bug ra file Markdown (`.md`) tại thư mục: `backlog/draft/bug-<feature-name>.md` (kebab-case).
+- Tạo thư mục `backlog/draft/bug-<feature-name>/` và copy đầy đủ các file ảnh/video bằng chứng (evidence) vào đó.
+- **TUYỆT ĐỐI KHÔNG** chỉ xuất bản nháp ra khung chat mà bỏ quên bước ghi file `.md`.
+- Trình bày đường dẫn file `.md` đã lưu cùng nội dung bản nháp ra chat để QC kiểm tra và phê duyệt.
+
 ## Load Order (mandatory)
 
 1. Read this file.
