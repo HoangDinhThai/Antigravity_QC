@@ -7,9 +7,11 @@ Use when QC provides raw bug description and optional evidence folder.
 1. Intake:
    - QC sends error description (VI/JA/EN).
    - If evidence exists, QC provides folder in `backlog/draft/<folder-name>/`.
-2. Build title:
-   - Web default: `[Web][Feature Name] <hành vi lỗi>`
-   - Mobile format: `[Platform][Browser][Feature Name] <hành vi lỗi>`
+2. Build title (Tiêu đề Bug / Summary):
+   - Cú pháp chuẩn: `[{Mã Task}][{Feature}]: <hành vi lỗi>`
+   - Ví dụ: `[196_VNTEST_LIMS-48][Thêm mới khách hàng]: Trường "MÃ ĐT/CTV" bị vô hiệu hóa khi tạo mới khách hàng`
+   - Trường hợp không có Mã Task (task cha): `[{Feature}]: <hành vi lỗi>`
+   - Trên Mobile (nếu cần chỉ định nền tảng/thiết bị): `[{Mã Task}][{Feature}][{Platform}]: <hành vi lỗi>`
 3. Build description using template:
    - `backlog-issue-manager/references/template_bug.md`
    - Fill known fields from QC text.

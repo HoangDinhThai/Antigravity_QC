@@ -86,6 +86,22 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 
 ---
 
+## Bug Reporting Rules (MANDATORY)
+
+### 🐛 Định Dạng Tiêu Đề Bug (Summary)
+* **Cú pháp bắt buộc:** `[{Mã Task}][{Feature}]: {Hành vi lỗi}`
+* **Ví dụ:** `[196_VNTEST_LIMS-48][Thêm mới khách hàng]: Trường "MÃ ĐT/CTV" bị vô hiệu hóa khi tạo mới khách hàng`
+* **Trường hợp không có Mã Task (task cha):** `[{Feature}]: {Hành vi lỗi}`
+
+### 📝 Thứ Tự Trình Bày Mô Tả Lỗi (Description)
+* Bắt buộc tuân theo thứ tự sau:
+  1. **Các bước tái hiện (Steps to Reproduce)**
+  2. **Kết quả thực tế (Actual Result):** Trình bày trước kết quả mong đợi, mô tả chi tiết lỗi xảy ra, không kỹ thuật hóa.
+  3. **Kết quả mong đợi (Expected Result):** Trình bày sau kết quả thực tế, nêu rõ hành vi đúng theo đặc tả nghiệp vụ.
+  4. **Tài liệu đính kèm / Bằng chứng (Evidence):** Cú pháp ảnh bắt buộc dùng ngoặc vuông `![Tên ảnh][file.png]`.
+
+---
+
 ## Cleanup & Delivery
 
 ### ✅ Điều kiện bàn giao (Definition of Done)
@@ -243,6 +259,7 @@ code:     TC_LOGIN_1712049200
 | Dùng ngoặc tròn `](file.png)` cho ảnh Backlog  | Bắt buộc convert sang ngoặc vuông `![Alt][file.png]` cho cả Issue Description & Comment |
 | Viết testcase nửa nạc nửa mỡ, chèn class/selector/thuộc tính tiếng Anh (`(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`) | Viết thuần Tiếng Việt theo góc nhìn người dùng: `bị vô hiệu hóa`, `tiêu đề popup`, `biểu tượng chỉ đọc` |
 | Đẩy test case lên Sheet để rời rạc không gộp ô Feature hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô theo nhóm Feature và căn giữa định dạng chuẩn |
+| Đặt tiêu đề bug tùy tiện hoặc đảo ngược Expected Result lên trước Actual Result | Bắt buộc format tiêu đề `[{Mã Task}][{Feature}]: {Hành vi lỗi}` và đặt Kết quả thực tế trước Kết quả mong đợi |
 
 ## 10. Tham Chiếu Workflows
 

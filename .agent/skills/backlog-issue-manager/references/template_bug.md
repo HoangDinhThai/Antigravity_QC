@@ -22,7 +22,8 @@ ProgramLogicBugType: {CustomField_LogicBugType}
 BugSeverity: {CustomField_Severity}
 ---
 
-# [BUG] {Summary}
+# {Summary}
+<!-- Cú pháp {Summary}: [{Mã Task}][{Feature}]: <hành vi lỗi> (hoặc [{Feature}]: <hành vi lỗi> nếu không có task cha) -->
 
 ## Mô tả (Description)
 **Nguồn:** {Source}

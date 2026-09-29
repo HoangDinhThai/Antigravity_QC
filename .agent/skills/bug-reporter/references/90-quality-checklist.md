@@ -4,6 +4,8 @@ Before final response:
 
 - [ ] `bug_rules.md` has been used for classification.
 - [ ] Draft follows bug template structure.
+- [ ] Title follows format: `[{Mã Task}][{Feature}]: <hành vi lỗi>` (hoặc `[{Feature}]: <hành vi lỗi>`).
+- [ ] Thứ tự mô tả: Các bước tái hiện -> Kết quả thực tế -> Kết quả mong đợi -> Bằng chứng.
 - [ ] Missing fields are marked `[Cần QC bổ sung]`.
 - [ ] Evidence links are valid local paths (or `[Chưa có bằng chứng]`).
 - [ ] Draft path is `backlog/draft/bug-<feature-name>.md` (or user-specified draft path).
