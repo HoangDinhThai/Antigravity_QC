@@ -30,4 +30,7 @@ Use when QC provides raw bug description and optional evidence folder.
    - `backlog/draft/bug-<feature-name>.md` (kebab-case)
    - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`)
    - Keep `## Bình luận (Comments)` blank
-7. Return draft path and ask for review/confirmation.
+7. Trình bày bản nháp & Chờ phê duyệt (BẮT BUỘC):
+   - Xuất toàn bộ nội dung bản nháp chi tiết (Tiêu đề, Bước tái hiện, Kết quả thực tế, Kết quả mong đợi, Bằng chứng, Phân loại lỗi) ra chat để QC kiểm tra và chỉnh sửa.
+   - Nêu rõ đường dẫn file draft đã lưu tại `backlog/draft/bug-<feature-name>.md`.
+   - **DỪNG LẠI và CHỜ** phản hồi/chỉnh sửa từ QC. **TUYỆT ĐỐI KHÔNG** tự ý gọi API tạo/đẩy bug khi QC chưa duyệt và xác nhận.

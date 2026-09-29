@@ -100,6 +100,13 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   3. **Kết quả mong đợi (Expected Result):** Trình bày sau kết quả thực tế, nêu rõ hành vi đúng theo đặc tả nghiệp vụ.
   4. **Tài liệu đính kèm / Bằng chứng (Evidence):** Cú pháp ảnh bắt buộc dùng ngoặc vuông `![Tên ảnh][file.png]`.
 
+### 🛑 Quy Trình Duyệt Bug (Bắt Buộc Phê Duyệt Từ Người Dùng)
+* **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
+* **Quy trình 3 bước bắt buộc:**
+  1. **Lên bản nháp (Draft):** Soạn thảo đầy đủ nội dung bug theo template chuẩn (tiêu đề chuẩn, các bước, kết quả thực tế, kết quả mong đợi, bằng chứng).
+  2. **Trình bày cho người dùng duyệt & sửa:** Xuất bản nháp ra chat trực quan và lưu tại `backlog/draft/`, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
+  3. **Chỉ đẩy khi có lệnh duyệt:** CHỈ KHI người dùng phản hồi phê duyệt rõ ràng (ví dụ: "Duyệt rồi, đẩy đi", "OK đẩy bug lên", "Tạo bug nhé") thì Agent mới được gọi API tạo issue lên Backlog.
+
 ---
 
 ## Cleanup & Delivery
@@ -260,6 +267,7 @@ code:     TC_LOGIN_1712049200
 | Viết testcase nửa nạc nửa mỡ, chèn class/selector/thuộc tính tiếng Anh (`(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`) | Viết thuần Tiếng Việt theo góc nhìn người dùng: `bị vô hiệu hóa`, `tiêu đề popup`, `biểu tượng chỉ đọc` |
 | Đẩy test case lên Sheet để rời rạc không gộp ô Feature hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô theo nhóm Feature và căn giữa định dạng chuẩn |
 | Đặt tiêu đề bug tùy tiện hoặc đảo ngược Expected Result lên trước Actual Result | Bắt buộc format tiêu đề `[{Mã Task}][{Feature}]: {Hành vi lỗi}` và đặt Kết quả thực tế trước Kết quả mong đợi |
+| Tự ý gọi API tạo/đẩy Bug lên Backlog khi chưa được người dùng duyệt | Bắt buộc tạo bản nháp (Draft), trình bày cho người dùng duyệt/sửa và chỉ đẩy khi có xác nhận rõ ràng |
 
 ## 10. Tham Chiếu Workflows
 
