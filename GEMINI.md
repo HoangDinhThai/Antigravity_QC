@@ -70,7 +70,9 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 
 ### 📊 Cấu Trúc Bảng Tính & Đẩy Test Case (15 Cột A-O)
 * Luôn tuân thủ chuẩn 15 cột A-O của dự án VNTEST.
-* **Cột Module (Cột B):** Chỉ điền ở dòng đầu tiên của sheet, các dòng tiếp theo để trống `""`.
+* **Cột Module (Cột B):** 
+  - Chỉ điền ở dòng đầu tiên của sheet, các dòng tiếp theo để trống `""`.
+  - **Chỉ hiển thị tên chức năng thuần túy:** Tuyệt đối **CẤM lấy cả số thứ tự hay tiền tố số** vào cột Module (Ví dụ: tên tab là `7.4. Chỉnh sửa khách hàng` ➔ Cột Module chỉ được ghi là `Chỉnh sửa khách hàng`; CẤM ghi `7.4. Chỉnh sửa khách hàng`).
 * **Cột Feature (Cột C):** 
   - **Khối tính năng lớn** (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`...).
   - **Bắt buộc tự động gộp ô (Merge Cells):** Gom toàn bộ các test case liên tiếp thuộc cùng một nhóm Feature và thực hiện gộp ô theo chiều dọc (`mergeCells` trên Cột C).
@@ -322,6 +324,7 @@ code:     TC_LOGIN_1712049200
 | Đặt tên ca kiểm thử giá trị biên dài dòng kèm ngoặc đơn (`Nhập thiếu chữ số (9 số hoặc 11 số)`) | Đặt tên cực kỳ ngắn gọn, đi thẳng vào số liệu: `Nhập 9 chữ số`, `Nhập 13 chữ số` |
 | Viết các ý đánh số trong Steps / Expected Result dính sát nhau không có dòng trống | Bắt buộc có dòng trống (`\n\n` trên Sheet, `<br><br>` trong Markdown) giữa các ý đánh số |
 | Đẩy test case lên Sheet để rời rạc không gộp ô Feature / Title_1 hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô cả cột Feature (C) và cột Test Case Title_1 (D) theo nhóm và căn lề định dạng chuẩn |
+| Điền cả số thứ tự vào cột Module (như `7.4. Chỉnh sửa khách hàng`) | Cột Module chỉ được ghi tên chức năng thuần túy (`Chỉnh sửa khách hàng`), CẤM lấy kèm số |
 | Đặt tiêu đề bug tùy tiện hoặc đảo ngược Expected Result lên trước Actual Result | Bắt buộc format tiêu đề `[{Mã Task}][{Feature}]: {Hành vi lỗi}` và đặt Kết quả thực tế trước Kết quả mong đợi |
 | Tự ý gọi API tạo/đẩy Bug lên Backlog khi chưa được người dùng duyệt | Bắt buộc tạo bản nháp (Draft), trình bày cho người dùng duyệt/sửa và chỉ đẩy khi có xác nhận rõ ràng |
 

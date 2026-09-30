@@ -37,6 +37,12 @@ def format_spaced_text(text):
         return s.strip()
     return "\n\n".join(lines)
 
+def clean_module_name(name):
+    if not name:
+        return ""
+    cleaned = re.sub(r'^[\s\d\.\-_:]+\s*', '', name).strip()
+    return cleaned if cleaned else name.strip()
+
 def normalize_priority(raw):
     if not raw:
         return 'Normal'
@@ -287,6 +293,10 @@ def main():
         is_new_feature = (idx == 0 or tc['feature'] != test_cases[idx - 1]['feature'])
         col_feature = tc['feature'] if is_new_feature else ""
 
+        # Col B: Module (chỉ điền ở dòng đầu tiên, các dòng sau để trống ""; CẤM chứa số thứ tự)
+        raw_module = args.module or target_title
+        col_module = clean_module_name(raw_module) if is_first else ""
+
         # Col D: Test Case Title_1 (chỉ điền ở dòng đầu của nhóm Title_1 trong cùng Feature, các dòng sau để trống "" để gộp ô sạch sẽ)
         is_new_title1 = is_new_feature or (tc['title1'] != test_cases[idx - 1]['title1'])
         col_title1 = tc['title1'] if is_new_title1 else ""
@@ -298,7 +308,7 @@ def main():
 
         row = [
             str(next_stt + idx),
-            (args.module or target_title) if is_first else "",
+            col_module,
             col_feature,
             col_title1,
             col_title2,

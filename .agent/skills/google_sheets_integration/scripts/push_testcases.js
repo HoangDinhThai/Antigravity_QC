@@ -40,6 +40,12 @@ function formatSpacedText(text) {
   return lines.join('\n\n');
 }
 
+// 1.2 Helper làm sạch tên Module (loại bỏ tiền tố số như "7.4. ", "01. ", "1.2. ")
+function cleanModuleName(name) {
+  if (!name) return '';
+  return name.replace(/^[\s\d\.\-_:]+\s*/, '').trim() || name.trim();
+}
+
 // 2. Chuẩn hóa Priority
 function normalizePriority(raw) {
   if (!raw) return 'Normal';
@@ -375,8 +381,9 @@ async function main() {
     const currentSTT = nextSTT + idx;
     const isFirstRow = (idx === 0);
 
-    // Col B: Module (chỉ điền ở dòng đầu tiên, các dòng sau để trống "")
-    const colModule = isFirstRow ? (moduleName || targetSheetTitle) : "";
+    // Col B: Module (chỉ điền ở dòng đầu tiên, các dòng sau để trống ""; CẤM chứa số thứ tự)
+    const rawModule = moduleName || targetSheetTitle;
+    const colModule = isFirstRow ? cleanModuleName(rawModule) : "";
     // Col M: Tester (chỉ điền ở dòng đầu tiên)
     const colTester = isFirstRow ? testerName : "";
 
