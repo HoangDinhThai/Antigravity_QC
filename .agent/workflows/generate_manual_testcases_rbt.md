@@ -64,10 +64,20 @@ Thực hiện theo hướng dẫn chi tiết trong skill `rbt_manual_testing` �
 8. Nếu quá nhiều → sinh từng Module, hỏi user để tiếp tục
 
 ### Bước 6: Chuẩn hóa Format (Template Mapping)
-1. Đóng gói toàn bộ test cases vào bảng Markdown chuẩn:
-   `| TC ID | Title 1 | Title 2 (Nếu có) | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |`
-2. Không được bỏ sót test case nào
-3. Lưu tệp testcase dưới dạng tệp Markdown tại thư mục `docs/test_cases/` (ví dụ: `docs/test_cases/tc_[ten_chuc_nang].md`).
+1. Đóng gói toàn bộ test cases vào bảng Markdown chuẩn 9 cột của dự án VNTEST:
+   ```markdown
+   | TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
+   ```
+2. **Quy chuẩn phân cấp tiêu đề 3 tầng (BẮT BUỘC):**
+   - **Feature**: Khối tính năng lớn (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`...).
+   - **Test Case Title_1**: Tên nhóm con / Chủ đề kiểm thử cấp 1 (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`...). Gom các test case liên tiếp để tự động gộp ô (Merge Cells).
+   - **Test Case Title_2**: Tiêu đề kịch bản chi tiết.
+     - **CẤM lặp lại tiền tố Title_1**: Không lặp lại tiền tố của Title_1 trong Title_2 (❌ CẤM: `Quyền truy cập - Người dùng chỉ có quyền xem` ➔ ✅ ĐÚNG: `Người dùng chỉ có quyền xem`).
+     - **Chống trùng lặp ca đơn lẻ:** Nếu kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. Tuyệt đối KHÔNG copy y hệt tên từ Title_1 sang Title_2.
+     - **Quy tắc giá trị biên / độ dài:** Đi thẳng vào số liệu cụ thể, cực kỳ ngắn gọn (ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết rườm rà kèm ngoặc đơn như `Nhập thiếu chữ số (9 số hoặc 11 số)`).
+   - **Giãn cách dòng trong Steps & Expected Result:** Bắt buộc có dòng trống `<br><br>` giữa các ý đánh số.
+3. Không được bỏ sót test case nào.
+4. Lưu tệp testcase dưới dạng tệp Markdown tại thư mục `docs/test_cases/` (ví dụ: `docs/test_cases/tc_[ten_chuc_nang].md`).
 
 ### Bước 7: Đẩy Test Cases Lên Google Sheets (Tùy chọn)
 Nếu người dùng cung cấp đường dẫn Google Sheets (ví dụ: `Hãy đẩy testcase từ <tệp> vào trong gg sheet: <url>`), hãy thực hiện:

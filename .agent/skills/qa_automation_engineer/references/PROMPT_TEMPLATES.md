@@ -7,18 +7,22 @@ Các prompt templates tái sử dụng cho các tác vụ QA automation phổ bi
 ## 1. Test Case Generation
 
 ```
-Phân tích requirement sau và sinh test cases:
+Phân tích requirement sau và sinh manual test cases:
 
 **Requirement:** [Mô tả requirement]
 
 **Output format:**
-| TC ID | Test Case Title | Precondition | Steps | Expected Result | Priority | Type |
+| TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 
 **Yêu cầu:**
-- Bao gồm positive, negative, boundary, edge cases
-- Sử dụng tiếng Việt cho mô tả
-- Priority: High / Medium / Low
-- Type: Positive / Negative / Boundary / Edge
+- Tuân thủ quy chuẩn phân cấp 3 tầng: Feature (Khối lớn) ➔ Title_1 (Nhóm con) ➔ Title_2 (Kịch bản chi tiết)
+- CẤM lặp lại tiền tố Title_1 trong Title_2. Với ca đơn lẻ không có phân nhánh con, để trống Title_2 ("")
+- Nêu rõ số liệu cụ thể cho ca kiểm thử biên/độ dài (ví dụ: "Nhập 9 chữ số", "Nhập 256 ký tự")
+- Bao gồm positive (Happy Path), negative, boundary, edge cases, permission
+- Sử dụng tiếng Việt thuần túy cho mô tả (không chèn CSS class, selector, thẻ DOM kỹ thuật)
+- Priority: Critical / High / Medium / Low
+- Test Data cụ thể, bám sát nghiệp vụ thực tế
+- Giữa các bước test và kết quả mong đợi bắt buộc dùng <br><br> để tạo dòng trống
 ```
 
 ---

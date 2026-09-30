@@ -21,12 +21,5 @@ Before executing any business step:
 - **TUYỆT ĐỐI KHÔNG** tự ý gọi API tạo hoặc đẩy Bug lên Backlog ngay khi tiếp nhận hoặc sinh ra lỗi.
 - **BẮT BUỘC XUẤT FILE MD:** Luôn tạo bản nháp (Draft) lưu ra file Markdown (`.md`) tại thư mục `backlog/draft/bug-<feature-name>.md` kèm thư mục lưu ảnh bằng chứng (`backlog/draft/bug-<feature-name>/`).
 - **TUYỆT ĐỐI KHÔNG** chỉ xuất bản nháp ra khung chat mà bỏ quên bước ghi file `.md`.
+- Trình bày đầy đủ chi tiết cho User kiểm tra, chỉnh sửa trước (kèm đường dẫn file `.md` đã tạo).
 - **CHỈ ĐƯỢC PHÉP** gọi API đẩy bug lên Backlog sau khi User đã xem bản nháp, duyệt và đưa ra xác nhận/chỉ thị rõ ràng (ví dụ: "Duyệt rồi, đẩy đi", "OK đẩy bug lên", "Tạo bug nhé") trong lượt hội thoại hiện tại.
-
-## Mandatory Evaluation Fields & Assignee Rule (BẮT BUỘC ĐÁNH GIÁ 3 TRƯỜNG & HỎI ASSIGNEE)
-
-- **LUÔN ĐÁNH GIÁ VÀ ĐIỀN ĐỦ 3 TRƯỜNG:** Trong MỌI bản nháp Bug và khi đẩy lên Backlog, bắt buộc phải đánh giá và điền đủ 3 thông tin:
-  1. `Bug Type`: `Logical Bug`, `Functional Bug`, `Interface Error`, `Workflow`, `Security Bug`, `Performance Problem`, `UAT Bug`, `Release Bug`.
-  2. `Bug Severity`: `Critical`, `Major`, `Minor`.
-  3. `Phase Detected`: `Unit Testing`, `Intergration Testing`, `System Testing`, `Acceptance Testing`.
-- **LUÔN HỎI ASSIGNEE KHI TẠO BUG:** Khi trình bày bản nháp hoặc trước khi đẩy bug lên Backlog, bắt buộc phải hỏi người dùng muốn gán (assign) ticket cho ai phụ trách (kèm gợi ý danh sách thành viên dự án nếu có).

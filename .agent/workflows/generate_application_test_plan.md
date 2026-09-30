@@ -86,8 +86,8 @@ Workflow này giúp agent tự động khám phá một ứng dụng web, phân 
 
 > Chỉ thực hiện khi ở **Mode FULL**
 
-1. Chuyển test scenarios (Bước 3) thành **manual test cases đầy đủ**:
-   - TC ID, Module, Test Title, Pre-conditions, Test Steps, Expected Results, Test Data, Priority
+1. Chuyển test scenarios (Bước 3) thành **manual test cases đầy đủ** theo chuẩn 9 cột:
+   - TC ID, Feature, Test Case Title_1, Test Case Title_2, Pre-Condition, Test Steps, Test Data, Expected Result, Priority
 2. Test Data phải **cụ thể** (không placeholder chung chung)
 3. Xuất dưới dạng bảng Markdown trong artifact
 

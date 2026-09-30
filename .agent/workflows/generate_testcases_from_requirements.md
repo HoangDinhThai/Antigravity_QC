@@ -31,15 +31,16 @@ Workflow này sử dụng **Mode QUICK** của skill `rbt_manual_testing` để 
    - Sinh validation TCs **riêng cho TỪNG trường** theo đặc tính riêng (text, email, phone, date, number, dropdown, file upload, password...)
    - Áp dụng **Bảng Field-Level Validation** trong skill `rbt_manual_testing` để chọn validation phù hợp
    - **KHÔNG** gộp validation nhiều trường vào 1 test case
-5. **Sinh test cases đầy đủ fields theo chuẩn dự án:**
-   - TC ID (format: `VNTEST_[MODULE]_TC_[SỐ 3 CHỮ SỐ]`)
-   - Title 1 (Tên Feature / Phân nhóm chức năng)
-   - Title 2 (Nếu có) (Tiêu đề kịch bản chi tiết)
-   - Pre-conditions
-   - Test Steps (đánh số, hành động nguyên tử)
-   - Expected Results (đánh số tương ứng)
-   - Test Data (**phải cụ thể**, không placeholder)
-   - Priority (Critical / High / Medium / Low)
+5. **Sinh test cases đầy đủ 9 cột theo chuẩn dự án VNTEST:**
+   - **TC ID** (format: `VNTEST_[MODULE]_TC_[SỐ 3 CHỮ SỐ]`)
+   - **Feature** (Khối tính năng lớn, ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`...)
+   - **Test Case Title_1** (Tên nhóm con / Chủ đề kiểm thử cấp 1, gom nhóm các TC liên tiếp để gộp ô)
+   - **Test Case Title_2** (Tiêu đề kịch bản chi tiết; CẤM lặp lại tiền tố Title_1; với ca đơn lẻ không có phân nhánh thì để trống `""`)
+   - **Pre-Condition** (Tiền điều kiện chi tiết)
+   - **Test Steps** (đánh số, hành động nguyên tử, ngắt dòng `<br><br>`)
+   - **Test Data** (**phải cụ thể**, bám sát nghiệp vụ thực tế, không placeholder)
+   - **Expected Result** (đánh số tương ứng, bắt buộc có dòng trống `<br><br>` giữa các ý)
+   - **Priority** (Critical / High / Medium / Low)
 6. **Xuất ra bảng Markdown chuẩn và lưu vào thư mục** `docs/test_cases/` (ví dụ: `docs/test_cases/tc_[ten_chuc_nang].md`)
 7. **Đẩy Test Cases lên Google Sheets (Tùy chọn)**: Nếu người dùng cung cấp đường dẫn Google Sheets, sử dụng skill `google_sheets_integration` để đẩy trực tiếp testcase lên Google Sheets (kèm `--module` để hệ thống tự động đổi tên tab sheet sang tên module):
    ```bash
@@ -49,8 +50,8 @@ Workflow này sử dụng **Mode QUICK** của skill `rbt_manual_testing` để 
 
 ## Bảng Output
 
-```
-| TC ID | Title 1 | Title 2 (Nếu có) | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
+```markdown
+| TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 ```
 
 ## Quy tắc quan trọng
