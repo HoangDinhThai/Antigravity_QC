@@ -486,6 +486,129 @@ def main():
         }
     })
 
+    # Gộp ô Cột Module (Cột B: 1 to 2) và Cột Tester (Cột M: 12 to 13)
+    if len(sheet_rows) > 1:
+        merge_requests.append({
+            'mergeCells': {
+                'range': {
+                    'sheetId': target_id,
+                    'startRowIndex': start_row - 1,
+                    'endRowIndex': end_data_row - 1,
+                    'startColumnIndex': 1,
+                    'endColumnIndex': 2
+                },
+                'mergeType': 'MERGE_ALL'
+            }
+        })
+        merge_requests.append({
+            'mergeCells': {
+                'range': {
+                    'sheetId': target_id,
+                    'startRowIndex': start_row - 1,
+                    'endRowIndex': end_data_row - 1,
+                    'startColumnIndex': 12,
+                    'endColumnIndex': 13
+                },
+                'mergeType': 'MERGE_ALL'
+            }
+        })
+
+    # Định dạng Cột B (Module): Center, Middle, Bold
+    merge_requests.append({
+        'repeatCell': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 1,
+                'endColumnIndex': 2
+            },
+            'cell': {
+                'userEnteredFormat': {
+                    'horizontalAlignment': 'CENTER',
+                    'verticalAlignment': 'MIDDLE',
+                    'wrapStrategy': 'WRAP',
+                    'textFormat': {
+                        'fontFamily': 'Arial',
+                        'fontSize': 10,
+                        'bold': True
+                    }
+                }
+            },
+            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+        }
+    })
+
+    # Định dạng Cột M (Tester): Center, Middle, Bold
+    merge_requests.append({
+        'repeatCell': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 12,
+                'endColumnIndex': 13
+            },
+            'cell': {
+                'userEnteredFormat': {
+                    'horizontalAlignment': 'CENTER',
+                    'verticalAlignment': 'MIDDLE',
+                    'wrapStrategy': 'WRAP',
+                    'textFormat': {
+                        'fontFamily': 'Arial',
+                        'fontSize': 10,
+                        'bold': True
+                    }
+                }
+            },
+            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+        }
+    })
+
+    # Sao chép Data Validation Dropdown Chip chuẩn từ sheet mẫu (13.1. Danh sách thiết bị)
+    template_sheet = next((s for s in sheet_list if s.get('properties', {}).get('title') == '13.1. Danh sách thiết bị'), sheet_list[0])
+    template_sheet_id = template_sheet['properties']['sheetId']
+
+    merge_requests.append({
+        'copyPaste': {
+            'source': {
+                'sheetId': template_sheet_id,
+                'startRowIndex': 11,
+                'endRowIndex': 12,
+                'startColumnIndex': 9,
+                'endColumnIndex': 11
+            },
+            'destination': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 9,
+                'endColumnIndex': 11
+            },
+            'pasteType': 'PASTE_DATA_VALIDATION'
+        }
+    })
+
+    # Căn giữa cột Priority (J) và Web (K)
+    merge_requests.append({
+        'repeatCell': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 9,
+                'endColumnIndex': 11
+            },
+            'cell': {
+                'userEnteredFormat': {
+                    'horizontalAlignment': 'CENTER',
+                    'verticalAlignment': 'MIDDLE'
+                }
+            },
+            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment)'
+        }
+    })
+
     if merge_requests:
         f_merge_count = len([b for b in feature_blocks if b['end_row'] > b['start_row']])
         t1_merge_count = len([b for b in title1_blocks if b['end_row'] > b['start_row']])

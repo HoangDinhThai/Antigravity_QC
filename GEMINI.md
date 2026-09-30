@@ -69,10 +69,31 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 ## Google Sheets Rules (MANDATORY)
 
 ### 📊 Cấu Trúc Bảng Tính & Đẩy Test Case (15 Cột A-O)
-* Luôn tuân thủ chuẩn 15 cột A-O của dự án VNTEST.
-* **Cột Module (Cột B):** 
-  - Chỉ điền ở dòng đầu tiên của sheet, các dòng tiếp theo để trống `""`.
-  - **Chỉ hiển thị tên chức năng thuần túy:** Tuyệt đối **CẤM lấy cả số thứ tự hay tiền tố số** vào cột Module (Ví dụ: tên tab là `7.4. Chỉnh sửa khách hàng` ➔ Cột Module chỉ được ghi là `Chỉnh sửa khách hàng`; CẤM ghi `7.4. Chỉnh sửa khách hàng`).
+* **Cột Module (Cột B):**
+  - Điền tên chức năng tại dòng đầu tiên (tuyệt đối CẤM chứa số thứ tự như "10.4. ").
+  - **Bắt buộc tự động gộp ô (Merge Cells) toàn bộ:** Gộp toàn bộ cột B theo chiều dọc từ dòng đầu tiên đến dòng cuối cùng của bảng test cases (`mergeCells` trên Cột B).
+  - **Định dạng chuẩn:** Căn giữa ngang và dọc (`horizontalAlignment: CENTER`, `verticalAlignment: MIDDLE`), `Arial 10pt`, in đậm (`bold: true`), tự động xuống dòng (`wrapStrategy: WRAP`), viền đen (`Borders: SOLID 1px`).
+* **Cột Tester (Cột M):**
+  - Điền tên Tester (mặc định "ThaiHD") tại dòng đầu tiên.
+  - **Bắt buộc tự động gộp ô (Merge Cells) toàn bộ:** Gộp toàn bộ cột M theo chiều dọc từ dòng đầu tiên đến dòng cuối cùng của bảng test cases (`mergeCells` trên Cột M).
+  - **Định dạng chuẩn:** Căn giữa ngang và dọc (`horizontalAlignment: CENTER`, `verticalAlignment: MIDDLE`), `Arial 10pt`, in đậm (`bold: true`), tự động xuống dòng (`wrapStrategy: WRAP`), viền đen (`Borders: SOLID 1px`).
+* **Cột Priority (Cột J) & Cột Web (Cột K) - Bắt Buộc Giữ Nguyên Dropdown Chip Có Màu Chuẩn Dự Án (Nền Trắng):**
+  - **Giữ nguyên 100% màu sắc và hình dáng Dropdown Chip gốc:** Hiển thị dạng viên thuốc bo tròn (Smart Canvas Dropdown Chip) trên **nền ô màu trắng tinh (`#FFFFFF`)**:
+    - **`High`**: Chip màu đỏ đậm/đỏ đô (`#B71C1C`), chữ trắng, mũi tên trắng `▼`.
+    - **`Normal`**: Chip màu xanh lá nhạt (`#CEEAD6`), chữ xanh lá đậm, mũi tên xanh `▼`.
+    - **`Low`**: Chip màu xanh dương nhạt (`#C2E7FF`), chữ xanh dương, mũi tên xanh `▼`.
+    - **`UnTest`**: Chip màu tím nhạt (`#DED0EE` / lavender), chữ tím, mũi tên tím `▼`.
+    - **`Passed`**: Chip màu xanh lá (`#CEEAD6`).
+    - **`Failed`**: Chip màu đỏ.
+  - Cả 2 cột được căn giữa ngang và dọc (`horizontalAlignment: CENTER`, `verticalAlignment: MIDDLE`).
+  - Cột Web (K) mặc định điền giá trị `UnTest` cho toàn bộ các dòng.
+  - **Cơ chế thiết lập bắt buộc (Sao chép Data Validation từ Template):**
+    - Sử dụng thao tác `copyPaste` với `pasteType: "PASTE_DATA_VALIDATION"` từ dòng mẫu của sheet template gốc (ví dụ: tab `13.1. Danh sách thiết bị`) sang toàn bộ dải test case mới `J12:K<endRow>`.
+    - Nền toàn bộ ô giữ nguyên màu trắng, bảo toàn 100% cấu hình và màu sắc Dropdown Chip gốc của Google Sheets.
+  - **CẤM TUYỆT ĐỐI (ANTI-PATTERNS):**
+    - ❌ **CẤM dùng Conditional Formatting (Định dạng có điều kiện)** để tô màu nền cell (gây lem màu vàng/hồng kín toàn bộ ô, làm hỏng giao diện Dropdown Chip).
+    - ❌ **CẤM dùng API `setDataValidation` tự sinh** của Google Sheets API v4 vì API này sẽ reset cấu hình Smart Canvas Dropdown Chip của Google Sheets về dạng plain text cũ (mũi tên trắng, mất màu bo tròn).
+    - ❌ **CẤM tự ý thay đổi màu sắc** khác với form mẫu chuẩn của dự án.
 * **Cột Feature (Cột C):** 
   - **Khối tính năng lớn** (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`...).
   - **Bắt buộc tự động gộp ô (Merge Cells):** Gom toàn bộ các test case liên tiếp thuộc cùng một nhóm Feature và thực hiện gộp ô theo chiều dọc (`mergeCells` trên Cột C).
@@ -85,12 +106,11 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Định dạng chuẩn:** Căn giữa dọc (`verticalAlignment: MIDDLE`), căn lề trái (`horizontalAlignment: LEFT`), `Arial 10pt`, in đậm (`bold: true`), tự động xuống dòng (`wrapStrategy: WRAP`), viền đen (`Borders: SOLID 1px`).
 * **Cột Test Case Title_2 (Cột E):**
   - **Hành vi kiểm thử / Kịch bản chi tiết** (ví dụ: `Người dùng chỉ có quyền xem`, `Cố tình truy cập trái phép bằng đường dẫn trực tiếp`, `Nhân viên kinh doanh thông thường`...).
-  - **CỰC KỲ NGẮN GỌN & KHÔNG LẶP LẠI:** Tuyệt đối **KHÔNG lặp lại tiền tố của Title_1** (CẤM viết kiểu: `Quyền truy cập - Người dùng chỉ có quyền xem`).
-  - **Quy tắc ca đơn lẻ:** Nếu ca kiểm thử độc lập không có các nhánh con, điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. CẤM copy lặp lại y hệt nội dung của Title_1 sang Title_2.
-* **Quy tắc đặt tên giá trị biên / độ dài (Cực kỳ ngắn gọn, đi thẳng vào số liệu):**
-  - Đặt tên ngắn gọn, nêu rõ số lượng/kích thước giá trị thử nghiệm, không viết câu giải thích dài dòng kèm ngoặc đơn (Ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết: `Nhập thiếu chữ số (9 số hoặc 11 số)`).
-* **Quy tắc giãn cách dòng trong Steps & Expected Result (BẮT BUỘC):**
-  - Giữa các ý đánh số (`1. ...`, `2. ...`) hoặc gạch đầu dòng, **bắt buộc có 1 dòng trống** (`\n\n` trên Google Sheet hoặc `<br><br>` trong Markdown) để nhìn thoáng mắt, dễ theo dõi, tuyệt đối không viết dính sát một dòng.
+  - **Quy tắc quan trọng (CỰC KỲ NGẮN GỌN & KHÔNG LẶP LẠI):** Tuyệt đối **KHÔNG lặp lại tiền tố của Title_1** (CẤM viết kiểu: `Quyền truy cập - Người dùng chỉ có quyền xem`).
+  - **Chống trùng lặp ca đơn lẻ (Single Case):** Nếu kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2.
+  - **Quy tắc đặt tên giá trị biên / độ dài:** Đi thẳng vào số liệu cụ thể, cực kỳ ngắn gọn (ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết rườm rà kèm ngoặc đơn như `Nhập thiếu chữ số (9 số hoặc 11 số)`).
+* **Cột Steps (Cột G) & Expected Result (Cột I):**
+  - **Bắt buộc có khoảng cách dòng trống** giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc, không bị dính sát vào nhau thành khối chữ đặc.
 
 ### 🧹 Tự Động Unmerge Vùng Dữ Liệu Cũ Trước Khi Đẩy
 * Trước khi ghi dữ liệu và gộp ô mới, **bắt buộc unmerge toàn bộ** các dải ô bị gộp cũ trong vùng dữ liệu (từ dòng 11 trở xuống).
@@ -123,15 +143,8 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 * **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
 * **Quy trình 3 bước bắt buộc:**
   1. **Lên bản nháp (Draft) & Bắt buộc xuất file MD:** Soạn thảo đầy đủ nội dung bug theo template chuẩn (tiêu đề chuẩn, các bước, kết quả thực tế, kết quả mong đợi, bằng chứng). **Bắt buộc lưu bản nháp ra file Markdown (.md) tại thư mục `backlog/draft/bug-<ten-loi>.md` kèm thư mục chứa ảnh/video bằng chứng tương ứng trước khi trình bày.**
-  2. **Trình bày cho người dùng duyệt, hỏi Assignee & sửa:** Xuất bản nháp ra chat trực quan kèm đường dẫn file `.md` đã lưu tại `backlog/draft/`, **bắt buộc hỏi người dùng muốn gán (assign) bug cho ai phụ trách**, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
+  2. **Trình bày cho người dùng duyệt & sửa:** Xuất bản nháp ra chat trực quan kèm đường dẫn file `.md` đã lưu tại `backlog/draft/`, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
   3. **Chỉ đẩy khi có lệnh duyệt:** CHỈ KHI người dùng phản hồi phê duyệt rõ ràng (ví dụ: "Duyệt rồi, đẩy đi", "OK đẩy bug lên", "Tạo bug nhé") thì Agent mới được gọi API tạo issue lên Backlog.
-
-### 🏷️ Đánh Giá Phân Loại Lỗi & Gán Người Phụ Trách (MANDATORY)
-* **Bắt buộc đánh giá và điền đủ 3 trường trong mọi Bug:**
-  - `Bug Type`: `Logical Bug`, `Functional Bug`, `Interface Error`, `Workflow`, `Security Bug`, `Performance Problem`, `UAT Bug`, `Release Bug`.
-  - `Bug Severity`: `Critical`, `Major`, `Minor`.
-  - `Phase Detected`: `Unit Testing`, `Intergration Testing`, `System Testing`, `Acceptance Testing`.
-* **Bắt buộc hỏi Assignee khi tạo bug:** Khi trình bày bản nháp hoặc tiếp nhận lệnh tạo bug, Agent bắt buộc phải hỏi người dùng muốn gán (assign) ticket cho ai phụ trách trước khi gọi API tạo issue (kèm gợi ý danh sách thành viên dự án nếu có).
 
 ---
 
@@ -320,13 +333,14 @@ code:     TC_LOGIN_1712049200
 | Dùng test data hardcoded trùng lặp             | Sinh data random + traceable                   |
 | Dùng ngoặc tròn `](file.png)` cho ảnh Backlog  | Bắt buộc convert sang ngoặc vuông `![Alt][file.png]` cho cả Issue Description & Comment |
 | Viết testcase nửa nạc nửa mỡ, chèn class/selector/thuộc tính tiếng Anh (`(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`) | Viết thuần Tiếng Việt theo góc nhìn người dùng: `bị vô hiệu hóa`, `tiêu đề popup`, `biểu tượng chỉ đọc` |
-| Viết Test Case Title_2 lặp lại tiền tố của Title_1 (như `Quyền truy cập - Người dùng chỉ có quyền xem`) hoặc lặp lại y hệt Title_1 | Tách biệt 3 tầng: Feature (C) ➔ Title_1 (D, gộp ô theo nhóm con) ➔ Title_2 (E, chi tiết ngắn gọn không lặp lại; ca đơn lẻ để trống `""`) |
-| Đặt tên ca kiểm thử giá trị biên dài dòng kèm ngoặc đơn (`Nhập thiếu chữ số (9 số hoặc 11 số)`) | Đặt tên cực kỳ ngắn gọn, đi thẳng vào số liệu: `Nhập 9 chữ số`, `Nhập 13 chữ số` |
-| Viết các ý đánh số trong Steps / Expected Result dính sát nhau không có dòng trống | Bắt buộc có dòng trống (`\n\n` trên Sheet, `<br><br>` trong Markdown) giữa các ý đánh số |
+| Viết Test Case Title_2 lặp lại tiền tố của Title_1 (như `Quyền truy cập - Người dùng chỉ có quyền xem`) | Tách biệt 3 tầng: Feature (C) ➔ Title_1 (D, gộp ô theo nhóm con) ➔ Title_2 (E, chi tiết ngắn gọn không lặp lại) |
+| Copy trùng lặp y hệt tên Title_1 sang Title_2 đối với ca đơn lẻ không phân nhánh | Title_1 giữ tên kịch bản, Title_2 bắt buộc để trống `""` |
+| Viết tiêu đề kiểm thử biên dài dòng kèm ngoặc đơn (`Nhập thiếu chữ số (9 số hoặc 11 số)`) | Đi thẳng vào số liệu cụ thể: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự` |
+| Trình bày Expected Result / Steps dính sát nhau không có khoảng cách giữa các ý | Ngăn cách các ý đánh số bằng dòng trống (`\n\n` trên Sheet, `<br><br>` trong Markdown) |
 | Đẩy test case lên Sheet để rời rạc không gộp ô Feature / Title_1 hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô cả cột Feature (C) và cột Test Case Title_1 (D) theo nhóm và căn lề định dạng chuẩn |
-| Điền cả số thứ tự vào cột Module (như `7.4. Chỉnh sửa khách hàng`) | Cột Module chỉ được ghi tên chức năng thuần túy (`Chỉnh sửa khách hàng`), CẤM lấy kèm số |
 | Đặt tiêu đề bug tùy tiện hoặc đảo ngược Expected Result lên trước Actual Result | Bắt buộc format tiêu đề `[{Mã Task}][{Feature}]: {Hành vi lỗi}` và đặt Kết quả thực tế trước Kết quả mong đợi |
 | Tự ý gọi API tạo/đẩy Bug lên Backlog khi chưa được người dùng duyệt | Bắt buộc tạo bản nháp (Draft), trình bày cho người dùng duyệt/sửa và chỉ đẩy khi có xác nhận rõ ràng |
+| Dùng Conditional Formatting tô màu nền ô Dropdown hoặc dùng API `setDataValidation` tự sinh làm mất màu Chip | Bắt buộc giữ nguyên nền ô màu trắng, sao chép Data Validation (`PASTE_DATA_VALIDATION`) từ template mẫu để bảo toàn 100% màu sắc Dropdown Chip chuẩn VNTEST |
 
 ## 10. Tham Chiếu Workflows
 

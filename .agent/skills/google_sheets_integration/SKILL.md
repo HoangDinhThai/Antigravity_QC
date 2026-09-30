@@ -16,7 +16,7 @@ Hệ thống tự động bóc tách từng dòng dữ liệu của bảng Markd
 | Cột | Tên Cột trên Sheet | Nguồn Dữ Liệu từ Markdown | Quy Tắc Điền & Chuẩn Hóa |
 | :---: | :--- | :--- | :--- |
 | **A** | **No. ID** (STT) | Tự động sinh | Đánh số thứ tự tăng dần từ `1, 2, 3...` (nếu ghi tiếp bên dưới dữ liệu cũ, tự động cộng tiếp STT). |
-| **B** | **Module** | Tên phân hệ / chức năng lớn | **Chỉ điền ở dòng đầu tiên** (`idx == 1`), tất cả các dòng tiếp theo để trống `""`. **CHỈ ĐƯỢC HIỂN THỊ TÊN CHỨC NĂNG THUẦN TÚY (CẤM LẤY KÈM SỐ THỨ TỰ)**: ví dụ tên tab/module là `7.4. Chỉnh sửa khách hàng` thì Cột B chỉ điền là `"Chỉnh sửa khách hàng"`, tuyệt đối không lấy phần số `7.4. `. |
+| **B** | **Module** | Tên phân hệ / chức năng lớn | Điền tên Module tại dòng đầu tiên và **bắt buộc tự động gộp ô (Merge Cells) toàn bộ** theo chiều dọc từ dòng đầu đến dòng cuối của bảng test case. Căn giữa (Center & Middle), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders: SOLID 1px). Tuyệt đối CẤM chứa số thứ tự (như "10.4. "). |
 | **C** | **Feature** | Cột `Feature` | Khối chức năng / Nhóm tính năng lớn. **Bắt buộc tự động gộp ô (Merge Cells) theo chiều dọc cho các test case liên tiếp chung Feature**. Căn giữa (Center & Middle), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders: SOLID 1px). |
 | **D** | **Test Case Title_1** | Cột `Test Case Title_1` | Tên nhóm con / Chủ đề kiểm thử cấp 1 (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`). **Bắt buộc tự động gộp ô (Merge Cells) theo chiều dọc cho các test case liên tiếp chung Title_1 trong cùng Feature**. Căn giữa dọc (Middle), căn lề trái (Left), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders: SOLID 1px). |
 | **E** | **Test Case Title_2** | Cột `Test Case Title_2` | Tiêu đề kịch bản kiểm thử chi tiết. **Tuyệt đối KHÔNG lặp lại tiền tố của Title_1**. Đối với ca đơn lẻ (không có phân nhánh con): **Bắt buộc để trống `""`**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2. |
@@ -24,10 +24,10 @@ Hệ thống tự động bóc tách từng dòng dữ liệu của bảng Markd
 | **G** | **Steps** | Cột `Test Steps` | Các bước thao tác. **Bóc bỏ `->` và `<br>`, chuyển thành ký tự xuống dòng; tạo dòng trống ngăn cách (`\n\n`) giữa các ý đánh số để thoáng mắt**. |
 | **H** | **Test Data** | Cột `Test Data` | Dữ liệu test cụ thể. **Chuyển `<br>` thành `\n`**. |
 | **I** | **Expected Result** | Cột `Expected Result` | Kết quả mong đợi. **Bắt buộc tạo khoảng cách dòng trống (`\n\n`) giữa các ý đánh số (`1. ...`, `2. ...`)** để các ý tách bạch, thoáng đãng và dễ đọc. |
-| **J** | **Priority** | Cột `Priority` | Chuẩn hóa về 3 giá trị của Sheet:<br>• `Critical` / `High` ➔ **`High`**<br>• `Medium` ➔ **`Normal`**<br>• `Low` ➔ **`Low`** |
-| **K** | **Web** | Mặc định | Luôn điền giá trị **`UnTest`**. |
+| **J** | **Priority** | Cột `Priority` | Chuẩn hóa về 3 giá trị của Sheet:<br>• `Critical` / `High` ➔ **`High`**<br>• `Medium` ➔ **`Normal`**<br>• `Low` ➔ **`Low`**.<br>**Bắt buộc giữ nguyên Dropdown Chip có màu chuẩn trên nền trắng tinh (`#FFFFFF`)**:<br>• `High`: Chip đỏ đậm (`#B71C1C`), chữ trắng.<br>• `Normal`: Chip xanh lá nhạt (`#CEEAD6`), chữ xanh lá đậm.<br>• `Low`: Chip xanh dương nhạt (`#C2E7FF`), chữ xanh dương.<br>Căn giữa. Bắt buộc sao chép Data Validation (`PASTE_DATA_VALIDATION`) từ sheet mẫu; **TUYỆT ĐỐI CẤM** dùng Conditional Formatting tô màu nền ô. |
+| **K** | **Web** | Mặc định | Mặc định điền giá trị **`UnTest`** cho tất cả các dòng.<br>**Bắt buộc giữ nguyên Dropdown Chip có màu chuẩn trên nền trắng tinh (`#FFFFFF`)**:<br>• `UnTest`: Chip tím nhạt (`#DED0EE` / lavender), chữ tím.<br>• `Passed`: Chip xanh lá nhạt (`#CEEAD6`).<br>• `Failed`: Chip đỏ.<br>Căn giữa. Bắt buộc sao chép Data Validation (`PASTE_DATA_VALIDATION`) từ sheet mẫu; **TUYỆT ĐỐI CẤM** dùng Conditional Formatting tô màu nền ô. |
 | **L** | **Bug_ID** | Để trống | Giữ trống `""` để Tester điền khi bắt gặp lỗi trong quá trình thực thi. |
-| **M** | **Tester** | Tên Tester | Mặc định điền mã Tester (ví dụ: `ThaiHD`) **chỉ ở dòng đầu tiên**, các dòng tiếp theo để trống `""`. |
+| **M** | **Tester** | Tên Tester | Mặc định điền mã Tester (ví dụ: `ThaiHD`) tại dòng đầu tiên và **bắt buộc tự động gộp ô (Merge Cells) toàn bộ** theo chiều dọc từ dòng đầu đến dòng cuối của bảng test case. Căn giữa (Center & Middle), in đậm (Bold), đóng viền khung. |
 | **N** | **Test Date** | Để trống | Giữ trống `""` để Tester ghi ngày khi chạy kiểm thử thực tế. |
 | **O** | **Comments** | Cột `TC ID` | Điền mã kịch bản gốc (Ví dụ: `VNTEST_PERSONNEL_DETAIL_TC_001`). |
 
@@ -61,10 +61,27 @@ Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm s�
    - Nếu trong vùng dữ liệu (từ dòng 11 trở xuống) có các ô bị gộp (merge) do thao tác hoặc template trước đó để lại, script **bắt buộc tự động unmerge toàn bộ** để giải phóng ô trước khi ghi dữ liệu mới, ngăn ngừa triệt để lỗi ghi đè dữ liệu hoặc mất/nuốt giá trị.
 4. **Cơ chế Batch Update chống Timeout:**
    - Khi số lượng test cases lớn (từ 50 đến 200+ cases), script tự động chia thành các batch nhỏ từ 30 đến 50 dòng mỗi đợt gọi API Google Sheets để đảm bảo tốc độ và tránh bị timeout kết nối.
-5. **Tự Động Gộp Ô (Merge Cells) & Định Dạng Chuẩn Cột Feature (C) và Title_1 (D):**
+5. **Tự Động Gộp Ô (Merge Cells) & Định Dạng Chuẩn Cột Feature (C), Title_1 (D), Module (B) và Tester (M):**
+   - **Gộp ô Cột Module (Cột B):** Điền tên chức năng tại dòng đầu tiên (CẤM số thứ tự) và gộp toàn bộ cột B theo chiều dọc từ dòng đầu đến dòng cuối của bảng (`mergeCells` startCol: 1, endCol: 2). Căn giữa ngang và dọc (`CENTER` & `MIDDLE`), in đậm (`bold: true`), `Arial 10pt`, đóng khung viền.
+   - **Gộp ô Cột Tester (Cột M):** Điền mã Tester (mặc định "ThaiHD") tại dòng đầu tiên và gộp toàn bộ cột M theo chiều dọc từ dòng đầu đến dòng cuối của bảng (`mergeCells` startCol: 12, endCol: 13). Căn giữa ngang và dọc (`CENTER` & `MIDDLE`), in đậm (`bold: true`), `Arial 10pt`, đóng khung viền.
    - **Gộp ô Cột Feature (Cột C):** Tự động gom các test case liên tiếp có chung tên Feature và thực thi `mergeCells` theo chiều dọc (`startColumnIndex: 2, endColumnIndex: 3`). Căn giữa ngang và dọc (`CENTER` & `MIDDLE`), in đậm (`bold: true`), `Arial 10pt`, đóng khung viền.
    - **Gộp ô Cột Test Case Title_1 (Cột D):** Tự động gom các test case liên tiếp có chung tên Title_1 trong cùng khối Feature và thực thi `mergeCells` theo chiều dọc (`startColumnIndex: 3, endColumnIndex: 4`). Căn giữa dọc (`MIDDLE`), căn lề trái (`LEFT`), in đậm (`bold: true`), `Arial 10pt`, đóng khung viền.
    - **Làm sạch giá trị trước khi merge:** Ô đầu tiên của mỗi nhóm lưu giá trị, các ô phía dưới để trống `""` để bảng tính sạch sẽ và tối ưu bộ nhớ.
+6. **Bảo Toàn 100% Màu Sắc & Kiểu Dáng Dropdown Chip Chuẩn Dự Án VNTEST (Nền Trắng):**
+   - **Quy chuẩn hiển thị:** Toàn bộ cột Priority (J) và Web (K) hiển thị dạng **Dropdown Chip (viên thuốc bo tròn có màu sắc)** đặt trên **nền ô màu trắng tinh (`#FFFFFF`)**:
+     - `High`: Chip màu đỏ đậm/đỏ đô (`#B71C1C`), chữ trắng, mũi tên trắng `▼`.
+     - `Normal`: Chip màu xanh lá nhạt (`#CEEAD6`), chữ xanh lá đậm, mũi tên xanh `▼`.
+     - `Low`: Chip màu xanh dương nhạt (`#C2E7FF`), chữ xanh dương, mũi tên xanh `▼`.
+     - `UnTest`: Chip màu tím nhạt (`#DED0EE` / lavender), chữ tím, mũi tên tím `▼`.
+     - `Passed`: Chip màu xanh lá (`#CEEAD6`).
+     - `Failed`: Chip màu đỏ.
+   - **Cơ chế kỹ thuật bắt buộc:**
+     - Sử dụng `copyPaste` với `pasteType: 'PASTE_DATA_VALIDATION'` từ ô mẫu của sheet template gốc (ví dụ: tab `13.1. Danh sách thiết bị`) sang toàn bộ dải `J12:K<endRow>` của sheet mới.
+     - Sau khi copy validation, thực hiện căn giữa ngang và dọc (`CENTER` & `MIDDLE`).
+   - **CẤM TUYỆT ĐỐI (ANTI-PATTERNS):**
+     - ❌ **CẤM dùng Conditional Formatting (Định dạng có điều kiện)** để tô màu nền ô (gây lem màu vàng/hồng kín toàn bộ cell, làm mất đi vẻ đẹp và sự đồng bộ của Dropdown Chip).
+     - ❌ **CẤM dùng API `setDataValidation` tự sinh** của Google Sheets API v4 vì API này sẽ reset cấu hình Smart Canvas Dropdown Chip của Google Sheets về dạng plain text cũ (mũi tên trắng, mất màu bo tròn).
+     - ❌ **CẤM tự ý thay đổi màu sắc** khác với form mẫu chuẩn của dự án.
 
 ---
 

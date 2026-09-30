@@ -614,7 +614,135 @@ async function main() {
     }
   });
 
-  // Đóng khung viền rõ ràng cho cả cột C và cột D
+  // 11.3 Gộp ô toàn bộ cột Module (Cột B) và Tester (Cột M)
+  if (preparedRows.length > 1) {
+    // Merge cột Module (Cột B, startColumnIndex: 1, endColumnIndex: 2)
+    postRequests.push({
+      mergeCells: {
+        range: {
+          sheetId: targetSheetId,
+          startRowIndex: startRowIndex - 1,
+          endRowIndex: endDataRow - 1,
+          startColumnIndex: 1,
+          endColumnIndex: 2
+        },
+        mergeType: 'MERGE_ALL'
+      }
+    });
+
+    // Merge cột Tester (Cột M, startColumnIndex: 12, endColumnIndex: 13)
+    postRequests.push({
+      mergeCells: {
+        range: {
+          sheetId: targetSheetId,
+          startRowIndex: startRowIndex - 1,
+          endRowIndex: endDataRow - 1,
+          startColumnIndex: 12,
+          endColumnIndex: 13
+        },
+        mergeType: 'MERGE_ALL'
+      }
+    });
+  }
+
+  // Định dạng toàn bộ cột B (Module) từ startRowIndex đến endDataRow - 1 (Center, Middle, Bold)
+  postRequests.push({
+    repeatCell: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 1,
+        endColumnIndex: 2
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          wrapStrategy: 'WRAP',
+          textFormat: {
+            fontFamily: 'Arial',
+            fontSize: 10,
+            bold: true
+          }
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+    }
+  });
+
+  // Định dạng toàn bộ cột M (Tester) từ startRowIndex đến endDataRow - 1 (Center, Middle, Bold)
+  postRequests.push({
+    repeatCell: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 12,
+        endColumnIndex: 13
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE',
+          wrapStrategy: 'WRAP',
+          textFormat: {
+            fontFamily: 'Arial',
+            fontSize: 10,
+            bold: true
+          }
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+    }
+  });
+
+  // 11.4 Sao chép Data Validation Dropdown Chip chuẩn từ sheet mẫu để giữ nguyên màu sắc gốc của Dropdown Chip
+  // (Tuyệt đối không dùng setDataValidation tự sinh hay addConditionalFormatRule để tránh làm mất màu chip hay đổi màu nền ô)
+  const templateSheet = sheetList.find(s => s.properties.title === '13.1. Danh sách thiết bị') || sheetList[0];
+  const templateSheetId = templateSheet.properties.sheetId;
+
+  postRequests.push({
+    copyPaste: {
+      source: {
+        sheetId: templateSheetId,
+        startRowIndex: 11, // Dòng 12 (0-indexed)
+        endRowIndex: 12,
+        startColumnIndex: 9, // Cột J (Priority)
+        endColumnIndex: 11   // Cột K (Web)
+      },
+      destination: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 9,
+        endColumnIndex: 11
+      },
+      pasteType: 'PASTE_DATA_VALIDATION'
+    }
+  });
+
+  // Căn giữa cho cột Priority (J) và Web (K)
+  postRequests.push({
+    repeatCell: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 9,
+        endColumnIndex: 11
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'CENTER',
+          verticalAlignment: 'MIDDLE'
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment,verticalAlignment)'
+    }
+  });
+
+  // Đóng khung viền rõ ràng cho toàn bộ bảng A đến O
   const borderStyle = {
     style: 'SOLID',
     width: 1,
@@ -626,8 +754,8 @@ async function main() {
         sheetId: targetSheetId,
         startRowIndex: startRowIndex - 1,
         endRowIndex: endDataRow - 1,
-        startColumnIndex: 2,
-        endColumnIndex: 4
+        startColumnIndex: 0,
+        endColumnIndex: 15
       },
       top: borderStyle,
       bottom: borderStyle,
@@ -641,12 +769,12 @@ async function main() {
   if (postRequests.length > 0) {
     const fMergeCount = featureBlocks.filter(b => b.endRow > b.startRow).length;
     const t1MergeCount = title1Blocks.filter(b => b.endRow > b.startRow).length;
-    console.log(`Đang thực hiện gộp ${fMergeCount} nhóm Feature, ${t1MergeCount} nhóm Title_1 và định dạng chuẩn cho cột Feature & Title_1...`);
+    console.log(`Đang thực hiện gộp Module (B), Tester (M), ${fMergeCount} nhóm Feature, ${t1MergeCount} nhóm Title_1, cài đặt Dropdown Priority (J), Web (K) và định dạng chuẩn...`);
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
       requestBody: { requests: postRequests }
     });
-    console.log("Đã gộp ô và định dạng cột Feature & Title_1 thành công!");
+    console.log("Đã gộp ô, thiết lập Dropdown và định dạng thành công!");
   }
 
   console.log(`\n🎉 Hoàn thành xuất sắc! Đã đẩy thành công tổng cộng ${totalUpdated} test cases lên Google Sheets.`);
