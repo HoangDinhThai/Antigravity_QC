@@ -18,6 +18,28 @@ function cleanMarkdown(text) {
   return str.trim();
 }
 
+// 1.1 Helper format giãn cách dòng giữa các mục đánh số (cho Steps, Expected Result)
+function formatSpacedText(text) {
+  if (!text) return '';
+  let str = text;
+  // Chuyển các thẻ <br> thành newline
+  str = str.replace(/<br\s*\/?>/gi, '\n');
+  // Chuyển các mũi tên -> thành newline
+  str = str.replace(/\s*->\s*/g, '\n');
+  // Bóc bold, italic, code
+  str = str.replace(/\*\*/g, '');
+  str = str.replace(/\*/g, '');
+  str = str.replace(/`/g, '');
+  str = str.replace(/\\\|/g, '|');
+
+  // Tách dòng và loại bỏ dòng trắng thừa
+  const lines = str.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length <= 1) return str.trim();
+
+  // Nối các dòng bằng 2 dấu xuống dòng (\n\n) để tạo khoảng cách thoáng mắt giữa các mục
+  return lines.join('\n\n');
+}
+
 // 2. Chuẩn hóa Priority
 function normalizePriority(raw) {
   if (!raw) return 'Normal';
@@ -97,8 +119,19 @@ function parseMarkdownTestCases(mdContent) {
   };
 
   const colTcId = findCol(['tc id', 'mã tc', 'id']);
-  const colTitle1 = findCol(['title 1', 'feature', 'chức năng', 'tính năng', 'phân hệ', 'module']);
-  const colTitle2 = findCol(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'], colTitle1);
+  const colFeature = findCol(['feature', 'chức năng lớn', 'khối tính năng', 'phân hệ', 'module']);
+  let colTitle1, colTitle2;
+
+  if (colFeature !== -1) {
+    // Có cột Feature riêng
+    colTitle1 = findCol(['test case title_1', 'title 1', 'tiêu đề 1', 'test scenario', 'kịch bản', 'chủ đề'], colFeature);
+    colTitle2 = findCol(['test case title_2', 'title 2', 'tiêu đề 2', 'test case', 'chi tiết', 'tiêu đề', 'mô tả'], colTitle1);
+  } else {
+    // Bảng cũ không có cột Feature riêng: Title 1 là Feature, Title 2 là kịch bản
+    colTitle1 = findCol(['title 1', 'feature', 'chức năng', 'tính năng', 'phân hệ', 'module']);
+    colTitle2 = findCol(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'], colTitle1);
+  }
+
   const colPre = findCol(['pre-condition', 'precondition', 'tiền điều kiện', 'điều kiện']);
   const colSteps = findCol(['test steps', 'bước thực hiện', 'các bước', 'steps', 'step']);
   const colData = findCol(['test data', 'dữ liệu test', 'dữ liệu', 'data']);
@@ -109,30 +142,64 @@ function parseMarkdownTestCases(mdContent) {
   const dataRows = validRows.slice(1);
 
   let currentFeature = '';
+  let currentTitle1 = '';
   for (const r of dataRows) {
     if (r.length < 5 || (r[0] && r[0].toLowerCase().includes('tc id'))) continue;
 
     const tcId = colTcId !== -1 && r[colTcId] ? cleanMarkdown(r[colTcId]) : '';
-    let title1 = colTitle1 !== -1 && r[colTitle1] ? cleanMarkdown(r[colTitle1]) : '';
-    if (title1) {
-      currentFeature = title1;
+    
+    let rawFeature = '';
+    let rawTitle1 = '';
+    let rawTitle2 = '';
+
+    if (colFeature !== -1) {
+      rawFeature = r[colFeature] ? cleanMarkdown(r[colFeature]) : '';
+      rawTitle1 = colTitle1 !== -1 && r[colTitle1] ? cleanMarkdown(r[colTitle1]) : '';
+      rawTitle2 = colTitle2 !== -1 && r[colTitle2] ? cleanMarkdown(r[colTitle2]) : '';
     } else {
-      title1 = currentFeature; // Kế thừa tên Feature từ dòng trước nếu để trống
+      // Bảng cũ: cột Title 1 chứa feature, cột Title 2 chứa kịch bản
+      rawFeature = colTitle1 !== -1 && r[colTitle1] ? cleanMarkdown(r[colTitle1]) : '';
+      const oldTitle2 = colTitle2 !== -1 && r[colTitle2] ? cleanMarkdown(r[colTitle2]) : '';
+      if (oldTitle2.includes(' - ')) {
+        const parts = oldTitle2.split(' - ');
+        rawTitle1 = parts[0].trim();
+        rawTitle2 = parts.slice(1).join(' - ').trim();
+      } else {
+        rawTitle1 = oldTitle2;
+        rawTitle2 = '';
+      }
     }
-    const title2 = colTitle2 !== -1 && r[colTitle2] ? cleanMarkdown(r[colTitle2]) : '';
+
+    if (rawFeature) {
+      currentFeature = rawFeature;
+      currentTitle1 = rawTitle1 || '';
+    } else {
+      rawFeature = currentFeature; // Kế thừa tên Feature từ dòng trước nếu để trống
+      if (rawTitle1) {
+        currentTitle1 = rawTitle1;
+      } else {
+        rawTitle1 = currentTitle1; // Kế thừa Title 1
+      }
+    }
+
+    if (rawTitle2 && rawTitle1 && rawTitle2.trim().toLowerCase() === rawTitle1.trim().toLowerCase()) {
+      rawTitle2 = '';
+    }
+
     const pre = colPre !== -1 && r[colPre] ? cleanMarkdown(r[colPre]) : '';
-    const steps = colSteps !== -1 && r[colSteps] ? cleanMarkdown(r[colSteps]) : '';
+    const steps = colSteps !== -1 && r[colSteps] ? formatSpacedText(r[colSteps]) : '';
     const data = colData !== -1 && r[colData] ? cleanMarkdown(r[colData]) : '';
-    const exp = colExp !== -1 && r[colExp] ? cleanMarkdown(r[colExp]) : '';
+    const exp = colExp !== -1 && r[colExp] ? formatSpacedText(r[colExp]) : '';
     const priority = colPriority !== -1 && r[colPriority] ? normalizePriority(r[colPriority]) : 'Normal';
 
     // Bỏ qua nếu dòng rỗng hoặc không có nội dung test
-    if (!title1 && !title2 && !steps && !exp) continue;
+    if (!rawFeature && !rawTitle1 && !rawTitle2 && !steps && !exp) continue;
 
     testCases.push({
       tcId,
-      feature: title1,
-      title: title2 || title1,
+      feature: rawFeature,
+      title1: rawTitle1,
+      title2: rawTitle2,
       preCondition: pre,
       steps,
       testData: data,
@@ -148,7 +215,7 @@ function parseMarkdownTestCases(mdContent) {
 async function main() {
   const args = process.argv.slice(2);
   let url = '', filePath = '', content = '', moduleName = '', testerName = 'ThaiHD';
-  let overwrite = false, customStartRow = null;
+  let overwrite = false, customStartRow = null, renameTab = '';
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--url' && args[i + 1]) url = args[i + 1];
@@ -158,6 +225,7 @@ async function main() {
     if (args[i] === '--tester' && args[i + 1]) testerName = args[i + 1];
     if (args[i] === '--overwrite') overwrite = true;
     if (args[i] === '--start-row' && args[i + 1]) customStartRow = parseInt(args[i + 1], 10);
+    if (args[i] === '--rename-tab' && args[i + 1]) renameTab = args[i + 1];
   }
 
   if (!url || (!filePath && !content)) {
@@ -202,21 +270,9 @@ async function main() {
   const targetSheetId = targetSheet.properties.sheetId;
   console.log(`Tab mục tiêu ban đầu: "${targetSheetTitle}" (Sheet ID: ${targetSheetId})`);
 
-  // Tự động suy ra tên module nếu chưa được truyền qua --module
-  if (!moduleName) {
-    // 1. Thử lấy từ tiêu đề cấp 1 (# ...) trong file markdown
-    const headingMatch = mdContent.match(/^#\s+(?:Test Cases?\s*[-:]*\s*)?(.*)$/m);
-    if (headingMatch && headingMatch[1].trim()) {
-      moduleName = headingMatch[1].trim();
-    } else if (testCases.length > 0 && testCases[0].feature) {
-      // 2. Thử lấy từ Feature của test case đầu tiên
-      moduleName = testCases[0].feature;
-    }
-  }
-
-  // Đổi tên tab sheet thành tên module nếu có moduleName và tên khác hiện tại
-  if (moduleName && targetSheetTitle !== moduleName) {
-    console.log(`Đang đổi tên tab từ "${targetSheetTitle}" thành "${moduleName}"...`);
+  // Đổi tên tab sheet CHỈ KHI người dùng truyền rõ ràng --rename-tab
+  if (renameTab && targetSheetTitle !== renameTab) {
+    console.log(`Đang đổi tên tab từ "${targetSheetTitle}" thành "${renameTab}"...`);
     try {
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId,
@@ -225,18 +281,23 @@ async function main() {
             updateSheetProperties: {
               properties: {
                 sheetId: targetSheetId,
-                title: moduleName
+                title: renameTab
               },
               fields: 'title'
             }
           }]
         }
       });
-      console.log(`Đã đổi tên tab thành công sang: "${moduleName}"!`);
-      targetSheetTitle = moduleName;
+      console.log(`Đã đổi tên tab thành công sang: "${renameTab}"!`);
+      targetSheetTitle = renameTab;
     } catch (renameErr) {
-      console.warn(`Cảnh báo: Không thể đổi tên tab thành "${moduleName}": ${renameErr.message}`);
+      console.warn(`Cảnh báo: Không thể đổi tên tab thành "${renameTab}": ${renameErr.message}`);
     }
+  }
+
+  // Tên module cho Cột B: nếu không truyền thì mặc định lấy chính tên tab
+  if (!moduleName) {
+    moduleName = targetSheetTitle;
   }
 
   // 7. Giải phóng Unmerge vùng dữ liệu từ dòng 11 trở xuống nếu có
@@ -323,12 +384,22 @@ async function main() {
     const isNewFeature = (idx === 0 || tc.feature !== testCases[idx - 1].feature);
     const colFeature = isNewFeature ? tc.feature : "";
 
+    // Col D: Test Case Title_1 (chỉ điền ở dòng đầu của nhóm Title_1 trong cùng Feature, các dòng sau để trống "" để gộp ô sạch sẽ)
+    const isNewTitle1 = isNewFeature || (tc.title1 !== testCases[idx - 1].title1);
+    const colTitle1 = isNewTitle1 ? tc.title1 : "";
+
+    // Col E: Test Case Title_2 (kịch bản chi tiết, không lặp lại tiền tố của Title_1; nếu ca đơn lẻ trùng title1 thì để trống "")
+    let colTitle2 = tc.title2 || (!tc.title1 ? (tc.title || "") : "");
+    if (colTitle2 && tc.title1 && colTitle2.trim().toLowerCase() === tc.title1.trim().toLowerCase()) {
+      colTitle2 = "";
+    }
+
     const row = [
       String(currentSTT),         // Col A: No. ID
       colModule,                  // Col B: Module
       colFeature,                 // Col C: Feature
-      tc.title,                   // Col D: Test Case Title_1
-      "",                         // Col E: Test Case Title_2
+      colTitle1,                  // Col D: Test Case Title_1
+      colTitle2,                  // Col E: Test Case Title_2
       tc.preCondition,            // Col F: Pre-Condition
       tc.steps,                   // Col G: Steps (đã chuyển -> và <br> thành \n)
       tc.testData,                // Col H: Test Data (đã chuyển <br> thành \n)
@@ -389,8 +460,10 @@ async function main() {
     currentRow = endRow + 1;
   }
 
-  // 11. Tự động Gộp ô (Merge) cột Feature cho các test case chung Feature & Định dạng chuẩn
-  console.log("Đang tiến hành gom nhóm và gộp ô cho cột Feature...");
+  // 11. Tự động Gộp ô (Merge) cột Feature (C) và Test Case Title_1 (D) & Định dạng chuẩn
+  console.log("Đang tiến hành gom nhóm và gộp ô cho cột Feature và Test Case Title_1...");
+
+  // 11.1 Gom nhóm Feature (Cột C)
   const featureBlocks = [];
   let currentBlock = null;
 
@@ -415,9 +488,37 @@ async function main() {
     featureBlocks.push(currentBlock);
   }
 
+  // 11.2 Gom nhóm Test Case Title_1 (Cột D) trong từng nhóm Feature
+  const title1Blocks = [];
+  let currentT1Block = null;
+
+  for (let idx = 0; idx < testCases.length; idx++) {
+    const fName = testCases[idx].feature || '';
+    const t1Name = testCases[idx].title1 || '';
+    const currRow = startRowIndex + idx;
+    const groupKey = `${fName}:::${t1Name}`;
+
+    if (!currentT1Block || currentT1Block.key !== groupKey) {
+      if (currentT1Block && currentT1Block.name) {
+        title1Blocks.push(currentT1Block);
+      }
+      currentT1Block = {
+        key: groupKey,
+        name: t1Name,
+        startRow: currRow,
+        endRow: currRow
+      };
+    } else {
+      currentT1Block.endRow = currRow;
+    }
+  }
+  if (currentT1Block && currentT1Block.name) {
+    title1Blocks.push(currentT1Block);
+  }
+
   const postRequests = [];
 
-  // Tạo request merge cho từng nhóm Feature có từ 2 test case trở lên
+  // Tạo request merge cho cột Feature (Cột C, startColumnIndex: 2, endColumnIndex: 3)
   for (const block of featureBlocks) {
     if (block.endRow > block.startRow) {
       postRequests.push({
@@ -435,7 +536,25 @@ async function main() {
     }
   }
 
-  // Định dạng toàn bộ cột C từ startRowIndex đến startRowIndex + testCases.length - 1
+  // Tạo request merge cho cột Test Case Title_1 (Cột D, startColumnIndex: 3, endColumnIndex: 4)
+  for (const block of title1Blocks) {
+    if (block.endRow > block.startRow) {
+      postRequests.push({
+        mergeCells: {
+          range: {
+            sheetId: targetSheetId,
+            startRowIndex: block.startRow - 1,
+            endRowIndex: block.endRow,
+            startColumnIndex: 3,               // Column D
+            endColumnIndex: 4
+          },
+          mergeType: 'MERGE_ALL'
+        }
+      });
+    }
+  }
+
+  // Định dạng toàn bộ cột C từ startRowIndex đến startRowIndex + testCases.length - 1 (Center, Middle, Bold)
   const endDataRow = startRowIndex + testCases.length; // 0-based exclusive
   postRequests.push({
     repeatCell: {
@@ -462,7 +581,33 @@ async function main() {
     }
   });
 
-  // Đóng khung viền rõ ràng cho cột C
+  // Định dạng toàn bộ cột D từ startRowIndex đến startRowIndex + testCases.length - 1 (Left, Middle, Bold)
+  postRequests.push({
+    repeatCell: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 3,
+        endColumnIndex: 4
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'LEFT',
+          verticalAlignment: 'MIDDLE',
+          wrapStrategy: 'WRAP',
+          textFormat: {
+            fontFamily: 'Arial',
+            fontSize: 10,
+            bold: true
+          }
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+    }
+  });
+
+  // Đóng khung viền rõ ràng cho cả cột C và cột D
   const borderStyle = {
     style: 'SOLID',
     width: 1,
@@ -475,7 +620,7 @@ async function main() {
         startRowIndex: startRowIndex - 1,
         endRowIndex: endDataRow - 1,
         startColumnIndex: 2,
-        endColumnIndex: 3
+        endColumnIndex: 4
       },
       top: borderStyle,
       bottom: borderStyle,
@@ -487,13 +632,14 @@ async function main() {
   });
 
   if (postRequests.length > 0) {
-    const mergeCount = featureBlocks.filter(b => b.endRow > b.startRow).length;
-    console.log(`Đang thực hiện gộp ${mergeCount} nhóm Feature và định dạng chuẩn cho cột Feature...`);
+    const fMergeCount = featureBlocks.filter(b => b.endRow > b.startRow).length;
+    const t1MergeCount = title1Blocks.filter(b => b.endRow > b.startRow).length;
+    console.log(`Đang thực hiện gộp ${fMergeCount} nhóm Feature, ${t1MergeCount} nhóm Title_1 và định dạng chuẩn cho cột Feature & Title_1...`);
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
       requestBody: { requests: postRequests }
     });
-    console.log("Đã gộp ô và định dạng cột Feature thành công!");
+    console.log("Đã gộp ô và định dạng cột Feature & Title_1 thành công!");
   }
 
   console.log(`\n🎉 Hoàn thành xuất sắc! Đã đẩy thành công tổng cộng ${totalUpdated} test cases lên Google Sheets.`);

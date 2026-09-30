@@ -17,13 +17,13 @@ Hệ thống tự động bóc tách từng dòng dữ liệu của bảng Markd
 | :---: | :--- | :--- | :--- |
 | **A** | **No. ID** (STT) | Tự động sinh | Đánh số thứ tự tăng dần từ `1, 2, 3...` (nếu ghi tiếp bên dưới dữ liệu cũ, tự động cộng tiếp STT). |
 | **B** | **Module** | Tên phân hệ / chức năng lớn | **Chỉ điền ở dòng đầu tiên** (`idx == 1`, ví dụ: `"Chi tiết nhân sự"`), **tất cả các dòng tiếp theo để trống `""`** để giữ giao diện bảng sạch và đúng chuẩn hiển thị của Google Sheets. |
-| **C** | **Feature** | Cột `Title 1` | Nhóm chức năng / Khối tính năng kiểm thử. **Bắt buộc tự động gộp ô (Merge Cells) theo chiều dọc cho các test case liên tiếp chung Feature**. Căn giữa (Center & Middle), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders) rõ ràng. |
-| **D** | **Test Case Title_1** | Cột `Title 2 (Nếu có)` | Tiêu đề kịch bản kiểm thử chi tiết. |
-| **E** | **Test Case Title_2** | Để trống | Mặc định để trống `""`. |
+| **C** | **Feature** | Cột `Feature` | Khối chức năng / Nhóm tính năng lớn. **Bắt buộc tự động gộp ô (Merge Cells) theo chiều dọc cho các test case liên tiếp chung Feature**. Căn giữa (Center & Middle), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders: SOLID 1px). |
+| **D** | **Test Case Title_1** | Cột `Test Case Title_1` | Tên nhóm con / Chủ đề kiểm thử cấp 1 (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`). **Bắt buộc tự động gộp ô (Merge Cells) theo chiều dọc cho các test case liên tiếp chung Title_1 trong cùng Feature**. Căn giữa dọc (Middle), căn lề trái (Left), in đậm (Bold), tự động xuống dòng (Wrap text) và đóng viền khung (Borders: SOLID 1px). |
+| **E** | **Test Case Title_2** | Cột `Test Case Title_2` | Tiêu đề kịch bản kiểm thử chi tiết. **Tuyệt đối KHÔNG lặp lại tiền tố của Title_1**. Đối với ca đơn lẻ (không có phân nhánh con): **Bắt buộc để trống `""`**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2. |
 | **F** | **Pre-Condition** | Cột `Pre-Condition` | Tiền điều kiện thực thi test case. |
-| **G** | **Steps** | Cột `Test Steps` | Các bước thao tác. **Bóc bỏ `->` và `<br>`, chuyển thành ký tự xuống dòng `\n` trực tiếp trong ô**. |
+| **G** | **Steps** | Cột `Test Steps` | Các bước thao tác. **Bóc bỏ `->` và `<br>`, chuyển thành ký tự xuống dòng; tạo dòng trống ngăn cách (`\n\n`) giữa các ý đánh số để thoáng mắt**. |
 | **H** | **Test Data** | Cột `Test Data` | Dữ liệu test cụ thể. **Chuyển `<br>` thành `\n`**. |
-| **I** | **Expected Result** | Cột `Expected Result` | Kết quả mong đợi. **Chuyển `<br>` thành `\n`**. |
+| **I** | **Expected Result** | Cột `Expected Result` | Kết quả mong đợi. **Bắt buộc tạo khoảng cách dòng trống (`\n\n`) giữa các ý đánh số (`1. ...`, `2. ...`)** để các ý tách bạch, thoáng đãng và dễ đọc. |
 | **J** | **Priority** | Cột `Priority` | Chuẩn hóa về 3 giá trị của Sheet:<br>• `Critical` / `High` ➔ **`High`**<br>• `Medium` ➔ **`Normal`**<br>• `Low` ➔ **`Low`** |
 | **K** | **Web** | Mặc định | Luôn điền giá trị **`UnTest`**. |
 | **L** | **Bug_ID** | Để trống | Giữ trống `""` để Tester điền khi bắt gặp lỗi trong quá trình thực thi. |
@@ -37,11 +37,13 @@ Hệ thống tự động bóc tách từng dòng dữ liệu của bảng Markd
 
 Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm sạch chuỗi:
 1. **Loại bỏ Markdown formatting:** Xóa sạch các dấu in đậm `**text**`, in nghiêng `*text*`, backticks `` `code` `` để nội dung trong ô phẳng, rõ ràng, không bị lỗi hiển thị.
-2. **Xử lý xuống dòng:**
-   - Thay thế toàn bộ thẻ `<br>`, `<br/>`, `<br >` thành ký tự xuống dòng thực tế `\n`.
-   - Thay thế dấu mũi tên phân tách bước ` -> ` thành ký tự xuống dòng `\n`.
-3. **Cắt tỉa khoảng trắng:** Loại bỏ toàn bộ khoảng trắng thừa ở đầu và cuối chuỗi (`strip()`).
-4. **Kế thừa Feature:** Nếu trong bảng Markdown cột `Title 1` chỉ điền ở dòng đầu của khối và để trống các dòng tiếp theo, hệ thống tự động kế thừa tên Feature cho các dòng con cùng nhóm.
+2. **Xử lý xuống dòng & Giãn cách dòng thoáng:**
+   - Thay thế toàn bộ thẻ `<br>`, `<br/>`, `<br >` và `\n` đứng trước các mục đánh số (`1. ...`, `2. ...`) thành **2 lần xuống dòng `\n\n`** để tạo khoảng cách dòng thoáng giữa các ý.
+   - Thay thế dấu mũi tên phân tách bước ` -> ` thành ký tự xuống dòng `\n\n`.
+3. **Cắt tỉa khoảng trắng & Chống trùng lặp:**
+   - Loại bỏ toàn bộ khoảng trắng thừa ở đầu và cuối chuỗi (`strip()`).
+   - Nếu `Test Case Title_2` có giá trị trùng hoàn toàn với `Test Case Title_1`, hệ thống tự động làm sạch `Title_2 = ""` để tránh lặp từ vô nghĩa.
+4. **Kế thừa Feature & Title_1:** Nếu trong bảng Markdown cột `Feature` hoặc `Test Case Title_1` chỉ điền ở dòng đầu của khối và để trống các dòng tiếp theo, hệ thống tự động kế thừa tên cho các dòng con cùng nhóm.
 
 ---
 
@@ -59,10 +61,10 @@ Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm s�
    - Nếu trong vùng dữ liệu (từ dòng 11 trở xuống) có các ô bị gộp (merge) do thao tác hoặc template trước đó để lại, script **bắt buộc tự động unmerge toàn bộ** để giải phóng ô trước khi ghi dữ liệu mới, ngăn ngừa triệt để lỗi ghi đè dữ liệu hoặc mất/nuốt giá trị.
 4. **Cơ chế Batch Update chống Timeout:**
    - Khi số lượng test cases lớn (từ 50 đến 200+ cases), script tự động chia thành các batch nhỏ từ 30 đến 50 dòng mỗi đợt gọi API Google Sheets để đảm bảo tốc độ và tránh bị timeout kết nối.
-5. **Tự Động Gộp Ô (Merge Cells) & Định Dạng Chuẩn Cột Feature:**
-   - **Gộp ô theo nhóm:** Tự động gom các test case liên tiếp có chung tên Feature và thực thi `mergeCells` theo chiều dọc (`startColumnIndex: 2, endColumnIndex: 3`).
-   - **Làm sạch giá trị trước khi merge:** Ô đầu tiên của nhóm lưu tên Feature, các ô phía dưới để trống `""` để bảng tính sạch sẽ và tối ưu bộ nhớ.
-   - **Định dạng chuẩn:** Áp dụng căn giữa ngang (`CENTER`), căn giữa dọc (`MIDDLE`), tự động ngắt dòng (`WRAP`), phông chữ `Arial 10pt` in đậm (`bold: true`) và đóng khung viền đen (`Borders: SOLID 1px`) bao quanh toàn bộ ô gộp.
+5. **Tự Động Gộp Ô (Merge Cells) & Định Dạng Chuẩn Cột Feature (C) và Title_1 (D):**
+   - **Gộp ô Cột Feature (Cột C):** Tự động gom các test case liên tiếp có chung tên Feature và thực thi `mergeCells` theo chiều dọc (`startColumnIndex: 2, endColumnIndex: 3`). Căn giữa ngang và dọc (`CENTER` & `MIDDLE`), in đậm (`bold: true`), `Arial 10pt`, đóng khung viền.
+   - **Gộp ô Cột Test Case Title_1 (Cột D):** Tự động gom các test case liên tiếp có chung tên Title_1 trong cùng khối Feature và thực thi `mergeCells` theo chiều dọc (`startColumnIndex: 3, endColumnIndex: 4`). Căn giữa dọc (`MIDDLE`), căn lề trái (`LEFT`), in đậm (`bold: true`), `Arial 10pt`, đóng khung viền.
+   - **Làm sạch giá trị trước khi merge:** Ô đầu tiên của mỗi nhóm lưu giá trị, các ô phía dưới để trống `""` để bảng tính sạch sẽ và tối ưu bộ nhớ.
 
 ---
 

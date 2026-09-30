@@ -72,17 +72,27 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 * Luôn tuân thủ chuẩn 15 cột A-O của dự án VNTEST.
 * **Cột Module (Cột B):** Chỉ điền ở dòng đầu tiên của sheet, các dòng tiếp theo để trống `""`.
 * **Cột Feature (Cột C):** 
+  - **Khối tính năng lớn** (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`...).
   - **Bắt buộc tự động gộp ô (Merge Cells):** Gom toàn bộ các test case liên tiếp thuộc cùng một nhóm Feature và thực hiện gộp ô theo chiều dọc (`mergeCells` trên Cột C).
   - **Làm sạch trước khi gộp:** Chỉ điền giá trị tên Feature tại dòng đầu tiên của khối, các dòng phía dưới trong cùng nhóm để trống `""` trước khi merge.
-  - **Định dạng chuẩn:**
-    - Căn lề: Căn giữa ngang và dọc (`horizontalAlignment: CENTER`, `verticalAlignment: MIDDLE`).
-    - Phông chữ: `Arial`, cỡ chữ `10pt`, in đậm (`bold: true`).
-    - Xuống dòng: Tự động xuống dòng (`wrapStrategy: WRAP`).
-    - Đóng khung: Viền đen (`Borders: SOLID 1px`) bao quanh toàn bộ ô gộp.
+  - **Định dạng chuẩn:** Căn giữa ngang và dọc (`horizontalAlignment: CENTER`, `verticalAlignment: MIDDLE`), `Arial 10pt`, in đậm (`bold: true`), tự động xuống dòng (`wrapStrategy: WRAP`), viền đen (`Borders: SOLID 1px`).
+* **Cột Test Case Title_1 (Cột D):**
+  - **Tên nhóm con / Chủ đề kiểm thử cấp 1** (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`, `Kiểm tra trường Mã KH`...).
+  - **Bắt buộc tự động gộp ô (Merge Cells):** Gom các test case liên tiếp có cùng nhóm Title_1 trong cùng Feature và thực hiện gộp ô theo chiều dọc (`mergeCells` trên Cột D).
+  - **Làm sạch trước khi gộp:** Chỉ điền giá trị Title_1 tại dòng đầu tiên của nhóm con, các dòng phía dưới để trống `""` trước khi merge.
+  - **Định dạng chuẩn:** Căn giữa dọc (`verticalAlignment: MIDDLE`), căn lề trái (`horizontalAlignment: LEFT`), `Arial 10pt`, in đậm (`bold: true`), tự động xuống dòng (`wrapStrategy: WRAP`), viền đen (`Borders: SOLID 1px`).
+* **Cột Test Case Title_2 (Cột E):**
+  - **Hành vi kiểm thử / Kịch bản chi tiết** (ví dụ: `Người dùng chỉ có quyền xem`, `Cố tình truy cập trái phép bằng đường dẫn trực tiếp`, `Nhân viên kinh doanh thông thường`...).
+  - **CỰC KỲ NGẮN GỌN & KHÔNG LẶP LẠI:** Tuyệt đối **KHÔNG lặp lại tiền tố của Title_1** (CẤM viết kiểu: `Quyền truy cập - Người dùng chỉ có quyền xem`).
+  - **Quy tắc ca đơn lẻ:** Nếu ca kiểm thử độc lập không có các nhánh con, điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. CẤM copy lặp lại y hệt nội dung của Title_1 sang Title_2.
+* **Quy tắc đặt tên giá trị biên / độ dài (Cực kỳ ngắn gọn, đi thẳng vào số liệu):**
+  - Đặt tên ngắn gọn, nêu rõ số lượng/kích thước giá trị thử nghiệm, không viết câu giải thích dài dòng kèm ngoặc đơn (Ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết: `Nhập thiếu chữ số (9 số hoặc 11 số)`).
+* **Quy tắc giãn cách dòng trong Steps & Expected Result (BẮT BUỘC):**
+  - Giữa các ý đánh số (`1. ...`, `2. ...`) hoặc gạch đầu dòng, **bắt buộc có 1 dòng trống** (`\n\n` trên Google Sheet hoặc `<br><br>` trong Markdown) để nhìn thoáng mắt, dễ theo dõi, tuyệt đối không viết dính sát một dòng.
 
 ### 🧹 Tự Động Unmerge Vùng Dữ Liệu Cũ Trước Khi Đẩy
 * Trước khi ghi dữ liệu và gộp ô mới, **bắt buộc unmerge toàn bộ** các dải ô bị gộp cũ trong vùng dữ liệu (từ dòng 11 trở xuống).
-* Tuyệt đối không ghi đè dữ liệu hoặc merge chồng chéo lên các ô merge cũ (gây mất dữ liệu, nuốt giá trị Feature hoặc lỗi API).
+* Tuyệt đối không ghi đè dữ liệu hoặc merge chồng chéo lên các ô merge cũ (gây mất dữ liệu, nuốt giá trị Feature/Title_1 hoặc lỗi API).
 
 ---
 
@@ -308,7 +318,10 @@ code:     TC_LOGIN_1712049200
 | Dùng test data hardcoded trùng lặp             | Sinh data random + traceable                   |
 | Dùng ngoặc tròn `](file.png)` cho ảnh Backlog  | Bắt buộc convert sang ngoặc vuông `![Alt][file.png]` cho cả Issue Description & Comment |
 | Viết testcase nửa nạc nửa mỡ, chèn class/selector/thuộc tính tiếng Anh (`(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`) | Viết thuần Tiếng Việt theo góc nhìn người dùng: `bị vô hiệu hóa`, `tiêu đề popup`, `biểu tượng chỉ đọc` |
-| Đẩy test case lên Sheet để rời rạc không gộp ô Feature hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô theo nhóm Feature và căn giữa định dạng chuẩn |
+| Viết Test Case Title_2 lặp lại tiền tố của Title_1 (như `Quyền truy cập - Người dùng chỉ có quyền xem`) hoặc lặp lại y hệt Title_1 | Tách biệt 3 tầng: Feature (C) ➔ Title_1 (D, gộp ô theo nhóm con) ➔ Title_2 (E, chi tiết ngắn gọn không lặp lại; ca đơn lẻ để trống `""`) |
+| Đặt tên ca kiểm thử giá trị biên dài dòng kèm ngoặc đơn (`Nhập thiếu chữ số (9 số hoặc 11 số)`) | Đặt tên cực kỳ ngắn gọn, đi thẳng vào số liệu: `Nhập 9 chữ số`, `Nhập 13 chữ số` |
+| Viết các ý đánh số trong Steps / Expected Result dính sát nhau không có dòng trống | Bắt buộc có dòng trống (`\n\n` trên Sheet, `<br><br>` trong Markdown) giữa các ý đánh số |
+| Đẩy test case lên Sheet để rời rạc không gộp ô Feature / Title_1 hoặc để sót merge cũ gây mất dữ liệu | Bắt buộc unmerge vùng cũ, gộp ô cả cột Feature (C) và cột Test Case Title_1 (D) theo nhóm và căn lề định dạng chuẩn |
 | Đặt tiêu đề bug tùy tiện hoặc đảo ngược Expected Result lên trước Actual Result | Bắt buộc format tiêu đề `[{Mã Task}][{Feature}]: {Hành vi lỗi}` và đặt Kết quả thực tế trước Kết quả mong đợi |
 | Tự ý gọi API tạo/đẩy Bug lên Backlog khi chưa được người dùng duyệt | Bắt buộc tạo bản nháp (Draft), trình bày cho người dùng duyệt/sửa và chỉ đẩy khi có xác nhận rõ ràng |
 

@@ -63,11 +63,20 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
    - 🟠 **Permission & Role Security (nếu có)**: Phân quyền theo vai trò (Admin, Manager, User), truy cập không hợp lệ qua URL.
 
 2. **Quy Tắc Viết Test Case (BẮT BUỘC NGUYÊN TẮC)**:
-   - **Tên Test Scenario & Test Case**: Viết bằng **TIẾNG VIỆT CỰC KỲ NGẮN GỌN, RÕ RÀNG**, câu từ chuẩn hóa để BrSE/Comtor có thể đọc hiểu và dịch ngay sang tiếng Nhật một cách dễ dàng. Không cần dịch sẵn tiếng Nhật trong bảng (trừ các tên nút/UI element bằng tiếng Nhật giữ nguyên trong ngoặc vuốt `[物件詳細]`).
-     * Cấu trúc tiêu chuẩn: `[Hành động / Hiển thị] + [Đối tượng] + [Màn hình / Điều kiện]`
-     * Ví dụ chuẩn gọn:
-       - Scenario: `Hiển thị nút bấm (Admin)`
-       - Test Case: `Hiển thị nút [物件詳細] trên Card (Admin)`
+   - **Quy chuẩn phân cấp tiêu đề 3 tầng (Feature ➔ Title_1 ➔ Title_2)**:
+     * **Feature**: Khối tính năng lớn (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`, `03. Luồng nghiệp vụ chính`, `04. Field Validation`...).
+     * **Test Case Title_1**: Tên nhóm con / Chủ đề kiểm thử cấp 1 (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`, `Tạo mới thông tin BĐS`). Các test case cùng chủ đề con này sẽ được gom nhóm để tự động gộp ô (Merge Cells).
+     * **Test Case Title_2**: Tiêu đề kịch bản chi tiết, phản ánh rõ hành vi (ví dụ: `Tạo thành công với dữ liệu hợp lệ (Property Manager)`, `Bỏ trống trường bắt buộc [物件名]`).
+     * **CẤM TUYỆT ĐỐI lặp lại tiền tố:** Không lặp lại tiền tố của Title_1 trong Title_2 (❌ CẤM: `Quyền truy cập - Người dùng chỉ có quyền xem` ➔ ✅ ĐÚNG: Title_1: `Quyền truy cập`, Title_2: `Người dùng chỉ có quyền xem`).
+     * **Quy tắc ca đơn lẻ (Không có kịch bản con):** Nếu ca kiểm thử độc lập không có các nhánh con, điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. CẤM copy lặp lại y hệt nội dung của Title_1 sang Title_2.
+   - **Quy tắc đặt tên giá trị biên / độ dài (Cực kỳ ngắn gọn, đi thẳng vào số liệu):**
+     * Đặt tên ngắn gọn, nêu rõ số lượng/kích thước giá trị thử nghiệm, không viết câu giải thích dài dòng kèm ngoặc đơn.
+     * ❌ CẤM: `Nhập thiếu chữ số (9 số hoặc 11 số)` ➔ ✅ ĐÚNG: `Nhập 9 chữ số` (hoặc `Nhập 11 chữ số`)
+     * ❌ CẤM: `Nhập vượt quá 12 chữ số (13 số)` ➔ ✅ ĐÚNG: `Nhập 13 chữ số`
+     * ❌ CẤM: `Nhập quá ký tự tối đa (256 ký tự)` ➔ ✅ ĐÚNG: `Nhập 256 ký tự`
+   - **Quy tắc giãn cách dòng trong Steps & Expected Result (BẮT BUỘC):**
+     * Giữa các ý đánh số (`1. ...`, `2. ...`) hoặc gạch đầu dòng, **bắt buộc có 1 dòng trống** (`<br><br>` trong Markdown hoặc 2 dấu xuống dòng `\n\n` trên Google Sheet) để nhìn thoáng mắt, dễ theo dõi, tuyệt đối không viết dính sát một dòng.
+   - **Tên Test Case**: Viết bằng **TIẾNG VIỆT CỰC KỲ NGẮN GỌN, RÕ RÀNG**, câu từ chuẩn hóa để BrSE/Comtor có thể đọc hiểu và dịch ngay sang tiếng Nhật một cách dễ dàng. Không cần dịch sẵn tiếng Nhật trong bảng (trừ các tên nút/UI element bằng tiếng Nhật giữ nguyên trong ngoặc vuông `[物件詳細]`).
    - **Test Data (BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DOMAIN)**:
      * ❌ **CẤM HOÀN TOÀN**: Dùng dữ liệu test kiểu chung chung, rập khuôn, ngây ngô (như `nhập email đúng`, `nhập pass sai`, `abc@gmail.com`, `admin@123`, `123456`, `test_data_1`).
      * ✅ **BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DỰ ÁN**:
@@ -81,15 +90,15 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
          | Form BĐS hợp lệ | `Tên: House 1`, `Giá: 1000`, `Địa chỉ: ABC` | `Tên: パークホームズ恵比寿`, `Giá: 65,000,000 JPY`, `Địa chỉ: 東京都渋谷区恵比寿1-2-3` |
          | Vượt giới hạn ký tự | `Tên dài: abcdefghijklmnopqrstuvwxyz...` | `Tên dài > 50 chars`: "Dự án căn hộ chung cư cao cấp Grand Maison Shinjuku Tower Block A (Phiên bản mở rộng 2026)" |
          | Tài khoản & Quyền | `User: admin`, `Role: user` | `Account: property_mgr_01@sdr.jp`, `Role: [Property Manager]` (đúng role trong task) |
-   - **Test Steps**: Các bước nguyên tử (Atomic steps), rõ ràng (1. Truy cập..., 2. Nhập..., 3. Click...).
-   - **Expected Result**: Cụ thể, định lượng/định tính đo lường được (Ví dụ: "Hiển thị alert đỏ với text 'Email đã tồn tại'").
+   - **Test Steps**: Các bước nguyên tử (Atomic steps), rõ ràng (1. Truy cập..., 2. Nhập..., 3. Click...), giữa các bước dùng `<br><br>`.
+   - **Expected Result**: Cụ thể, định lượng/định tính đo lường được, giữa các ý kết quả dùng `<br><br>`.
 
 3. **Định Dạng Bảng Output (Markdown Table)**:
 
 ```markdown
-| TC ID | Test Scenario | Test Case | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
-|---|---|---|---|---|---|---|---|
-| TC_01 | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS vào ô [物件コード]<br>2. Nhập Tên BĐS vào ô [物件名]<br>3. Nhập Giá bán vào ô [販売価格]<br>4. Click nút [登録する] | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
+| TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
+|---|---|---|---|---|---|---|---|---|
+| TC_01 | 01. Quản lý Bất Động Sản | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br><br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS vào ô [物件コード]<br><br>2. Nhập Tên BĐS vào ô [物件名]<br><br>3. Nhập Giá bán vào ô [販売価格]<br><br>4. Click nút [登録する] | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br><br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br><br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
 ```
 
 ---

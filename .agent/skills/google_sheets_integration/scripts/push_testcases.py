@@ -25,6 +25,18 @@ def clean_markdown(text):
     s = s.replace('**', '').replace('*', '').replace('`', '')
     return s.strip()
 
+def format_spaced_text(text):
+    if not text:
+        return ""
+    s = text
+    s = re.sub(r'<br\s*/?>', '\n', s, flags=re.IGNORECASE)
+    s = re.sub(r'\s*->\s*', '\n', s)
+    s = s.replace('**', '').replace('*', '').replace('`', '')
+    lines = [l.strip() for l in s.splitlines() if l.strip()]
+    if len(lines) <= 1:
+        return s.strip()
+    return "\n\n".join(lines)
+
 def normalize_priority(raw):
     if not raw:
         return 'Normal'
@@ -71,8 +83,14 @@ def parse_markdown_testcases(md_content):
         return -1
 
     col_tc_id = find_col(['tc id', 'mã tc', 'id'])
-    col_title1 = find_col(['title 1', 'feature', 'chức năng', 'tính năng', 'phân hệ', 'module'])
-    col_title2 = find_col(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'], col_title1)
+    col_feature = find_col(['feature', 'chức năng lớn', 'khối tính năng', 'phân hệ', 'module'])
+    if col_feature != -1:
+        col_title1 = find_col(['test case title_1', 'title 1', 'tiêu đề 1', 'test scenario', 'kịch bản', 'chủ đề'], col_feature)
+        col_title2 = find_col(['test case title_2', 'title 2', 'tiêu đề 2', 'test case', 'chi tiết', 'tiêu đề', 'mô tả'], col_title1)
+    else:
+        col_title1 = find_col(['title 1', 'feature', 'chức năng', 'tính năng', 'phân hệ', 'module'])
+        col_title2 = find_col(['title 2', 'test scenario', 'kịch bản', 'tiêu đề', 'mô tả', 'title'], col_title1)
+
     col_pre = find_col(['pre-condition', 'precondition', 'tiền điều kiện', 'điều kiện'])
     col_steps = find_col(['test steps', 'bước thực hiện', 'các bước', 'steps', 'step'])
     col_data = find_col(['test data', 'dữ liệu test', 'dữ liệu', 'data'])
@@ -81,30 +99,59 @@ def parse_markdown_testcases(md_content):
 
     test_cases = []
     current_feature = ""
+    current_title1 = ""
     for r in valid_rows[1:]:
         if len(r) < 5 or (r[0] and 'tc id' in r[0].lower()):
             continue
         tc_id = clean_markdown(r[col_tc_id]) if col_tc_id != -1 and col_tc_id < len(r) else ""
-        t1 = clean_markdown(r[col_title1]) if col_title1 != -1 and col_title1 < len(r) else ""
-        if t1:
-            current_feature = t1
+        
+        raw_feature = ""
+        raw_title1 = ""
+        raw_title2 = ""
+
+        if col_feature != -1:
+            raw_feature = clean_markdown(r[col_feature]) if col_feature < len(r) else ""
+            raw_title1 = clean_markdown(r[col_title1]) if col_title1 != -1 and col_title1 < len(r) else ""
+            raw_title2 = clean_markdown(r[col_title2]) if col_title2 != -1 and col_title2 < len(r) else ""
         else:
-            t1 = current_feature
-        t2 = clean_markdown(r[col_title2]) if col_title2 != -1 and col_title2 < len(r) else ""
+            raw_feature = clean_markdown(r[col_title1]) if col_title1 != -1 and col_title1 < len(r) else ""
+            old_t2 = clean_markdown(r[col_title2]) if col_title2 != -1 and col_title2 < len(r) else ""
+            if " - " in old_t2:
+                parts = old_t2.split(" - ")
+                raw_title1 = parts[0].strip()
+                raw_title2 = " - ".join(parts[1:]).strip()
+            else:
+                raw_title1 = old_t2
+                raw_title2 = ""
+
+        if raw_feature:
+            current_feature = raw_feature
+            current_title1 = raw_title1 or ""
+        else:
+            raw_feature = current_feature
+            if raw_title1:
+                current_title1 = raw_title1
+            else:
+                raw_title1 = current_title1
+
+        if raw_title2 and raw_title1 and raw_title2.strip().lower() == raw_title1.strip().lower():
+            raw_title2 = ""
+
         pre = clean_markdown(r[col_pre]) if col_pre != -1 and col_pre < len(r) else ""
-        steps = clean_markdown(r[col_steps]) if col_steps != -1 and col_steps < len(r) else ""
+        steps = format_spaced_text(r[col_steps]) if col_steps != -1 and col_steps < len(r) else ""
         data = clean_markdown(r[col_data]) if col_data != -1 and col_data < len(r) else ""
-        exp = clean_markdown(r[col_exp]) if col_exp != -1 and col_exp < len(r) else ""
+        exp = format_spaced_text(r[col_exp]) if col_exp != -1 and col_exp < len(r) else ""
         raw_pri = clean_markdown(r[col_priority]) if col_priority != -1 and col_priority < len(r) else "Normal"
         priority = normalize_priority(raw_pri)
 
-        if not t1 and not t2 and not steps and not exp:
+        if not raw_feature and not raw_title1 and not raw_title2 and not steps and not exp:
             continue
 
         test_cases.append({
             "tc_id": tc_id,
-            "feature": t1,
-            "title": t2 or t1,
+            "feature": raw_feature,
+            "title1": raw_title1,
+            "title2": raw_title2,
             "pre": pre,
             "steps": steps,
             "data": data,
@@ -239,12 +286,22 @@ def main():
         is_first = (idx == 0)
         is_new_feature = (idx == 0 or tc['feature'] != test_cases[idx - 1]['feature'])
         col_feature = tc['feature'] if is_new_feature else ""
+
+        # Col D: Test Case Title_1 (chỉ điền ở dòng đầu của nhóm Title_1 trong cùng Feature, các dòng sau để trống "" để gộp ô sạch sẽ)
+        is_new_title1 = is_new_feature or (tc['title1'] != test_cases[idx - 1]['title1'])
+        col_title1 = tc['title1'] if is_new_title1 else ""
+
+        # Col E: Test Case Title_2 (kịch bản chi tiết, không lặp lại tiền tố của Title_1; nếu ca đơn lẻ trùng title1 thì để trống "")
+        col_title2 = tc.get('title2') or (tc.get('title') if not tc.get('title1') else "")
+        if col_title2 and tc.get('title1') and col_title2.strip().lower() == tc.get('title1').strip().lower():
+            col_title2 = ""
+
         row = [
             str(next_stt + idx),
             (args.module or target_title) if is_first else "",
             col_feature,
-            tc['title'],
-            "",
+            col_title1,
+            col_title2,
             tc['pre'],
             tc['steps'],
             tc['data'],
@@ -275,7 +332,8 @@ def main():
         print(f"  -> Đã cập nhật xong: {rng} ({len(batch)} dòng)")
         curr_row = end_r + 1
 
-    # Tự động gộp ô (Merge) cột Feature cho các test case chung Feature & Định dạng
+    # Tự động gộp ô (Merge) cột Feature (C) và Test Case Title_1 (D) & Định dạng chuẩn
+    # 1. Gom nhóm Feature (Cột C)
     feature_blocks = []
     current_block = None
     for idx, tc in enumerate(test_cases):
@@ -290,7 +348,26 @@ def main():
     if current_block and current_block['name']:
         feature_blocks.append(current_block)
 
+    # 2. Gom nhóm Test Case Title_1 (Cột D) trong từng nhóm Feature
+    title1_blocks = []
+    current_t1_block = None
+    for idx, tc in enumerate(test_cases):
+        f_name = tc.get('feature', '')
+        t1_name = tc.get('title1', '')
+        curr_r = start_row + idx
+        group_key = f"{f_name}:::{t1_name}"
+        if not current_t1_block or current_t1_block['key'] != group_key:
+            if current_t1_block and current_t1_block['name']:
+                title1_blocks.append(current_t1_block)
+            current_t1_block = {'key': group_key, 'name': t1_name, 'start_row': curr_r, 'end_row': curr_r}
+        else:
+            current_t1_block['end_row'] = curr_r
+    if current_t1_block and current_t1_block['name']:
+        title1_blocks.append(current_t1_block)
+
     merge_requests = []
+
+    # Merge Cột Feature (Cột C: 2 to 3)
     for b in feature_blocks:
         if b['end_row'] > b['start_row']:
             merge_requests.append({
@@ -306,7 +383,24 @@ def main():
                 }
             })
 
+    # Merge Cột Test Case Title_1 (Cột D: 3 to 4)
+    for b in title1_blocks:
+        if b['end_row'] > b['start_row']:
+            merge_requests.append({
+                'mergeCells': {
+                    'range': {
+                        'sheetId': target_id,
+                        'startRowIndex': b['start_row'] - 1,
+                        'endRowIndex': b['end_row'],
+                        'startColumnIndex': 3,
+                        'endColumnIndex': 4
+                    },
+                    'mergeType': 'MERGE_ALL'
+                }
+            })
+
     end_data_row = start_row + len(test_cases)
+    # Định dạng Cột C: Center, Middle, Bold
     merge_requests.append({
         'repeatCell': {
             'range': {
@@ -332,6 +426,33 @@ def main():
         }
     })
 
+    # Định dạng Cột D: Left, Middle, Bold
+    merge_requests.append({
+        'repeatCell': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 3,
+                'endColumnIndex': 4
+            },
+            'cell': {
+                'userEnteredFormat': {
+                    'horizontalAlignment': 'LEFT',
+                    'verticalAlignment': 'MIDDLE',
+                    'wrapStrategy': 'WRAP',
+                    'textFormat': {
+                        'fontFamily': 'Arial',
+                        'fontSize': 10,
+                        'bold': True
+                    }
+                }
+            },
+            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+        }
+    })
+
+    # Borders cho Cột C và D
     border_style = {
         'style': 'SOLID',
         'width': 1,
@@ -344,7 +465,7 @@ def main():
                 'startRowIndex': start_row - 1,
                 'endRowIndex': end_data_row - 1,
                 'startColumnIndex': 2,
-                'endColumnIndex': 3
+                'endColumnIndex': 4
             },
             'top': border_style,
             'bottom': border_style,
@@ -356,13 +477,14 @@ def main():
     })
 
     if merge_requests:
-        merge_count = len([b for b in feature_blocks if b['end_row'] > b['start_row']])
-        print(f"Đang thực hiện gộp {merge_count} nhóm Feature và định dạng chuẩn cho cột Feature...")
+        f_merge_count = len([b for b in feature_blocks if b['end_row'] > b['start_row']])
+        t1_merge_count = len([b for b in title1_blocks if b['end_row'] > b['start_row']])
+        print(f"Đang thực hiện gộp {f_merge_count} nhóm Feature, {t1_merge_count} nhóm Title_1 và định dạng chuẩn cho cột Feature & Title_1...")
         service.spreadsheets().batchUpdate(
             spreadsheetId=spreadsheet_id,
             body={'requests': merge_requests}
         ).execute()
-        print("Đã gộp ô và định dạng cột Feature thành công!")
+        print("Đã gộp ô và định dạng cột Feature & Title_1 thành công!")
 
     print(f"\n🎉 Hoàn tất đẩy thành công {total_updated} test cases lên Google Sheet.")
 

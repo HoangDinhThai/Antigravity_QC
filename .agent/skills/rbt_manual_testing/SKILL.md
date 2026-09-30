@@ -26,21 +26,35 @@ description: Master skill sinh manual test cases chuẩn cho dự án VNTEST v�
 Tất cả các test cases sinh ra (dù ở Mode QUICK hay FULL RBT) **BẮT BUỘC** phải tuân theo cấu trúc bảng Markdown sau:
 
 ```markdown
-| TC ID | Title 1 | Title 2 (Nếu có) | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
+| TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 ```
 
 ### Chi tiết các cột:
 1. **`TC ID`**: Mã kịch bản chuẩn hóa dạng `VNTEST_[MODULE]_TC_[SỐ 3 CHỮ SỐ]` (Ví dụ: `VNTEST_PERSONNEL_DETAIL_TC_001`, `VNTEST_CONTRACT_TC_045`).
-2. **`Title 1`**: Tên Phân nhóm kịch bản / Khối tính năng / Feature (Ví dụ: `Mở / Đóng Sheet`, `Tab Thông tin — Khối 1: Thông tin cá nhân`, `Phân quyền truy cập`).
-3. **`Title 2 (Nếu có)`**: Tiêu đề kịch bản kiểm thử cụ thể, phản ánh rõ mục đích của ca kiểm thử.
-4. **`Pre-Condition`**: Tiền điều kiện rõ ràng (Tài khoản nào đã đăng nhập, đang đứng tại màn hình/URL nào, bản ghi nào đã tồn tại trong CSDL).
-5. **`Test Steps`**: Các hành động nguyên tử (Atomic actions), đánh số thứ tự và nối bằng ` -> ` hoặc xuống dòng bằng `<br>` trong cell.
+2. **`Feature`**: Khối chức năng / Nhóm tính năng lớn (Ví dụ: `01. Bố cục Giao diện & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`, `03. Luồng nghiệp vụ chính`, `04. Field Validation`...).
+   - Trên Google Sheet: Tự động gộp ô (Merge Cells) toàn bộ các test case thuộc nhóm Feature này.
+3. **`Test Case Title_1`**: Tên Nhóm con / Chủ đề kiểm thử cấp 1 (Ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`, `Kiểm tra trường Mã KH`...).
+   - Gom các test case liên tiếp cùng nhóm con này để tự động gộp ô (Merge Cells) trên Google Sheet.
+4. **`Test Case Title_2`**: Tiêu đề kịch bản kiểm thử chi tiết (Ví dụ: `Người dùng chỉ có quyền xem`, `Cố tình truy cập trái phép bằng đường dẫn trực tiếp`, `Nhân viên kinh doanh thông thường`).
+   - **Quy tắc CẤM LẶP LẠI TIỀN TỐ:** Tuyệt đối **KHÔNG lặp lại tiền tố của Test Case Title_1** trong cột này.
+     - ❌ CẤM: `Quyền truy cập - Người dùng chỉ có quyền xem` ➔ ✅ ĐÚNG: `Người dùng chỉ có quyền xem`
+     - ❌ CẤM: `Phân quyền trường Tên Sale - Trưởng phòng Kinh doanh` ➔ ✅ ĐÚNG: `Trưởng phòng Kinh doanh`
+   - **Quy tắc CẤM NHÂN ĐÔI TRÙNG LẶP (Case Đơn lẻ):** Nếu một kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. Tuyệt đối KHÔNG copy y hệt tên từ Title_1 sang Title_2.
+     - ❌ CẤM: Title_1: `Thêm mới một khối Người liên hệ`, Title_2: `Thêm mới một khối Người liên hệ`
+     - ✅ ĐÚNG: Title_1: `Thêm mới một khối Người liên hệ`, Title_2: `""` (Để trống)
+   - **Quy tắc đặt tên Ca kiểm thử Giá trị biên / Độ dài (Cực kỳ ngắn gọn & trực diện):**
+     - Đi thẳng vào số liệu cụ thể cần test, tuyệt đối không giải thích dài dòng hoặc chèn ngoặc đơn rườm rà.
+     - ❌ CẤM: `Nhập thiếu chữ số (9 số hoặc 11 số)` ➔ ✅ ĐÚNG: `Nhập 9 chữ số` (hoặc `Nhập 11 chữ số`)
+     - ❌ CẤM: `Nhập vượt quá 12 chữ số (13 số)` ➔ ✅ ĐÚNG: `Nhập 13 chữ số`
+     - ❌ CẤM: `Nhập chuỗi dài vượt quá biên tối đa (256 ký tự)` ➔ ✅ ĐÚNG: `Nhập 256 ký tự`
+5. **`Pre-Condition`**: Tiền điều kiện rõ ràng (Tài khoản nào đã đăng nhập, đang đứng tại màn hình/URL nào, bản ghi nào đã tồn tại trong CSDL).
+6. **`Test Steps`**: Các hành động nguyên tử (Atomic actions), đánh số thứ tự và nối bằng ` -> ` hoặc ngắt dòng có dòng trống `<br><br>` trong ô.
    * *Ví dụ:* `1. Tìm nhân sự NS-0028 -> 2. Nhấp vào liên kết Họ và tên -> 3. Quan sát góc phải màn hình.`
-6. **`Test Data`**: **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế:
+7. **`Test Data`**: **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế:
    * *Đúng:* `admin@vntest.vn`, `NS-0028`, `0987654321`, `001201012345`, `<script>alert(1)</script>`.
-7. **`Expected Result`**: Kết quả mong đợi đánh số tương ứng với các bước, dùng `<br>` xuống dòng:
-   * *Ví dụ:* `1. Sheet chi tiết trượt mở từ mép phải.<br>2. Hiển thị đúng hồ sơ nhân sự NS-0028.<br>3. Backdrop hiển thị làm mờ màn hình danh sách.`
-8. **`Priority`**: Mức độ ưu tiên chuẩn hóa theo 4 mức: `Critical`, `High`, `Medium`, `Low`.
+8. **`Expected Result`**: Kết quả mong đợi đánh số tương ứng với các bước. **BẮT BUỘC dùng `<br><br>` (hoặc 2 lần xuống dòng `\n\n`) để tạo khoảng cách dòng trống giữa các ý đánh số** giúp nội dung thoáng, trực quan và dễ đọc:
+   * *Ví dụ:* `1. Hộp thoại mở ra chính giữa màn hình.<br><br>2. Tiêu đề hiển thị đúng tên hồ sơ.<br><br>3. Chân hộp thoại có đủ nút Hủy và Cập nhật.`
+9. **`Priority`**: Mức độ ưu tiên chuẩn hóa theo 4 mức: `Critical`, `High`, `Medium`, `Low`.
 
 ---
 
