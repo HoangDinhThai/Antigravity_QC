@@ -424,10 +424,10 @@ async function main() {
 
   // 9.1. Tự động kiểm tra và mở rộng số dòng của sheet nếu dữ liệu vượt quá rowCount
   const currentMaxRows = targetSheet.properties.gridProperties ? targetSheet.properties.gridProperties.rowCount : 1000;
-  const neededRows = startRowIndex + preparedRows.length + 10;
+  const neededRows = startRowIndex + preparedRows.length - 1;
   if (neededRows > currentMaxRows) {
-    const addRows = (neededRows - currentMaxRows) + 50;
-    console.log(`Sheet chỉ có ${currentMaxRows} dòng. Cần tối thiểu ${neededRows} dòng. Đang mở rộng thêm ${addRows} dòng...`);
+    const addRows = (neededRows - currentMaxRows);
+    console.log(`Sheet chỉ có ${currentMaxRows} dòng. Cần chính xác ${neededRows} dòng. Đang mở rộng thêm ${addRows} dòng...`);
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
       requestBody: {
@@ -775,6 +775,35 @@ async function main() {
       requestBody: { requests: postRequests }
     });
     console.log("Đã gộp ô, thiết lập Dropdown và định dạng thành công!");
+  }
+
+  // 11.5 Tự động cắt tỉa / xóa sạch toàn bộ hàng thừa (empty trailing rows) bên dưới bảng test cases
+  const finalDataRow = endDataRow - 1; // 0-based exclusive -> index của dòng cuối cùng có dữ liệu
+  const updatedMeta = await sheets.spreadsheets.get({
+    spreadsheetId,
+    fields: 'sheets(properties(sheetId,gridProperties(rowCount)))'
+  });
+  const liveSheet = updatedMeta.data.sheets.find(s => s.properties.sheetId === targetSheetId);
+  const liveRowCount = liveSheet ? liveSheet.properties.gridProperties.rowCount : 0;
+
+  if (liveRowCount > finalDataRow) {
+    console.log(`Cắt tỉa hàng thừa: Sheet đang có ${liveRowCount} dòng, bảng kết thúc tại dòng ${finalDataRow}. Đang xóa ${liveRowCount - finalDataRow} dòng thừa...`);
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: [{
+          deleteDimension: {
+            range: {
+              sheetId: targetSheetId,
+              dimension: 'ROWS',
+              startIndex: finalDataRow,
+              endIndex: liveRowCount
+            }
+          }
+        }]
+      }
+    });
+    console.log(`Đã cắt gọn sheet vừa khít với ${finalDataRow} dòng dữ liệu.`);
   }
 
   console.log(`\n🎉 Hoàn thành xuất sắc! Đã đẩy thành công tổng cộng ${totalUpdated} test cases lên Google Sheets.`);

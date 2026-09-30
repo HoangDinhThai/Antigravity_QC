@@ -116,6 +116,10 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 * Trước khi ghi dữ liệu và gộp ô mới, **bắt buộc unmerge toàn bộ** các dải ô bị gộp cũ trong vùng dữ liệu (từ dòng 11 trở xuống).
 * Tuyệt đối không ghi đè dữ liệu hoặc merge chồng chéo lên các ô merge cũ (gây mất dữ liệu, nuốt giá trị Feature/Title_1 hoặc lỗi API).
 
+### 🚫 Cấm Để Thừa Dòng/Khoảng Trống Trắng Phía Dưới Bảng Test Case (MANDATORY)
+* **Tuyệt đối CẤM để thừa các hàng/khoảng trống trắng (empty trailing rows) bên dưới bảng test cases:** Bảng kết thúc ở dòng nào thì sheet phải dừng khít đúng ở dòng đó. Việc để thừa một khoảng trống trắng lớn phía dưới là lỗi giao diện nghiêm trọng, làm bảng tính trông dang dở và rất xấu.
+* **Bắt buộc tự động cắt tỉa / xóa sạch hàng thừa:** Sau khi đẩy dữ liệu hoặc chỉnh sửa testcase, script/agent phải tự động kiểm tra tổng số dòng của sheet (`rowCount`). Nếu `rowCount` lớn hơn dòng cuối cùng của bảng test cases, **bắt buộc tự động xóa toàn bộ các hàng thừa bên dưới** (dùng `deleteDimension: ROWS` để cắt gọn `rowCount` vừa khít với dòng cuối cùng của bảng dữ liệu).
+
 ---
 
 ## Bug Reporting Rules (MANDATORY)
@@ -341,6 +345,7 @@ code:     TC_LOGIN_1712049200
 | Đặt tiêu đề bug tùy tiện hoặc đảo ngược Expected Result lên trước Actual Result | Bắt buộc format tiêu đề `[{Mã Task}][{Feature}]: {Hành vi lỗi}` và đặt Kết quả thực tế trước Kết quả mong đợi |
 | Tự ý gọi API tạo/đẩy Bug lên Backlog khi chưa được người dùng duyệt | Bắt buộc tạo bản nháp (Draft), trình bày cho người dùng duyệt/sửa và chỉ đẩy khi có xác nhận rõ ràng |
 | Dùng Conditional Formatting tô màu nền ô Dropdown hoặc dùng API `setDataValidation` tự sinh làm mất màu Chip | Bắt buộc giữ nguyên nền ô màu trắng, sao chép Data Validation (`PASTE_DATA_VALIDATION`) từ template mẫu để bảo toàn 100% màu sắc Dropdown Chip chuẩn VNTEST |
+| Để thừa các hàng/khoảng trống trắng (empty trailing rows) mênh mông bên dưới bảng test cases | Bắt buộc tự động xóa bỏ toàn bộ hàng thừa (`deleteDimension: ROWS`), cắt gọn sheet vừa khít với dòng cuối cùng của bảng test cases |
 
 ## 10. Tham Chiếu Workflows
 

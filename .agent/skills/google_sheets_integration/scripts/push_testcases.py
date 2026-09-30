@@ -619,6 +619,32 @@ def main():
         ).execute()
         print("Đã gộp ô và định dạng cột Feature & Title_1 thành công!")
 
+    # Tự động cắt tỉa / xóa sạch toàn bộ hàng thừa (empty trailing rows) bên dưới bảng test cases
+    final_data_row = end_data_row - 1
+    updated_meta = service.spreadsheets().get(
+        spreadsheetId=spreadsheet_id,
+        fields='sheets(properties(sheetId,gridProperties(rowCount)))'
+    ).execute()
+    live_sheet = next((s for s in updated_meta.get('sheets', []) if s.get('properties', {}).get('sheetId') == target_id), None)
+    live_row_count = live_sheet.get('properties', {}).get('gridProperties', {}).get('rowCount', 0) if live_sheet else 0
+
+    if live_row_count > final_data_row:
+        print(f"Cắt tỉa hàng thừa: Sheet đang có {live_row_count} dòng, bảng kết thúc tại dòng {final_data_row}. Đang xóa {live_row_count - final_data_row} dòng thừa...")
+        service.spreadsheets().batchUpdate(
+            spreadsheetId=spreadsheet_id,
+            body={'requests': [{
+                'deleteDimension': {
+                    'range': {
+                        'sheetId': target_id,
+                        'dimension': 'ROWS',
+                        'startIndex': final_data_row,
+                        'endIndex': live_row_count
+                    }
+                }
+            }]}
+        ).execute()
+        print(f"Đã cắt gọn sheet vừa khít với {final_data_row} dòng dữ liệu.")
+
     print(f"\n🎉 Hoàn tất đẩy thành công {total_updated} test cases lên Google Sheet.")
 
 if __name__ == '__main__':

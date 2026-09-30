@@ -82,6 +82,9 @@ Trước khi ghi vào Google Sheets, hệ thống tự động xử lý làm s�
      - ❌ **CẤM dùng Conditional Formatting (Định dạng có điều kiện)** để tô màu nền ô (gây lem màu vàng/hồng kín toàn bộ cell, làm mất đi vẻ đẹp và sự đồng bộ của Dropdown Chip).
      - ❌ **CẤM dùng API `setDataValidation` tự sinh** của Google Sheets API v4 vì API này sẽ reset cấu hình Smart Canvas Dropdown Chip của Google Sheets về dạng plain text cũ (mũi tên trắng, mất màu bo tròn).
      - ❌ **CẤM tự ý thay đổi màu sắc** khác với form mẫu chuẩn của dự án.
+7. **Tự Động Cắt Tỉa & Xóa Sạch Hàng Trống Thừa Phía Dưới Bảng (Trim Trailing Empty Rows):**
+   - **Tuyệt đối CẤM để thừa khoảng trống trắng bên dưới bảng test cases:** Bảng kết thúc ở dòng nào thì sheet phải dừng khít đúng ở dòng đó. Việc để thừa hàng chục hàng trắng bên dưới làm mất tính chuyên nghiệp và gây xấu giao diện.
+   - **Cơ chế kỹ thuật tự động:** Sau khi đẩy dữ liệu hoặc chỉnh sửa testcase, script tự động kiểm tra số lượng dòng hiện tại của sheet (`rowCount`). Nếu `rowCount > (endDataRow - 1)` (tức là dòng cuối cùng của bảng dữ liệu), script tự động phát lệnh `deleteDimension: { dimension: 'ROWS', startIndex: endDataRow - 1, endIndex: rowCount }` để xóa sạch toàn bộ hàng thừa, đảm bảo sheet vừa khít 100% với bảng testcase.
 
 ---
 
