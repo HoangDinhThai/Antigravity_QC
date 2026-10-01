@@ -14,13 +14,15 @@ Use when QC provides raw bug description and optional evidence folder.
    - Trên Mobile (nếu cần chỉ định nền tảng/thiết bị): `[{Mã Task}][{Feature}][{Platform}]: <hành vi lỗi>`
 3. Build description using template:
    - `backlog-issue-manager/references/template_bug.md`
-   - Fill known fields from QC text.
+   - **Bắt buộc tuân theo thứ tự 4 phần duy nhất (TUYỆT ĐỐI KHÔNG thêm thông tin môi trường, nguồn, thiết bị, hệ điều hành, điều kiện tiên quyết làm loãng nội dung):**
+     1. Các bước tái hiện (Steps to Reproduce)
+     2. Kết quả thực tế (Actual Result): Trình bày trước kết quả mong đợi, mô tả chi tiết lỗi xảy ra, không kỹ thuật hóa.
+     3. Kết quả mong đợi (Expected Result): Trình bày sau kết quả thực tế, nêu rõ hành vi đúng theo đặc tả nghiệp vụ.
+     4. Tài liệu đính kèm / Bằng chứng (Evidence): Cú pháp ảnh bắt buộc dùng ngoặc vuông `![Tên ảnh][file.png]`.
    - **Tiêu chuẩn viết nội dung (CỰC KỲ QUAN TRỌNG):**
      - Viết **cực kỳ ngắn gọn, súc tích, dễ hiểu nhất có thể**.
      - Đảm bảo **PM Non-tech, Dev hoặc bất kỳ ai đọc vào cũng hiểu ngay lập tức** (lỗi ở đâu, làm sao để bị, hành vi sai là gì, hành vi đúng là gì).
      - Tuyệt đối không viết lan man dài dòng, không kỹ thuật hóa (không chèn selector CSS, mã code hay thuật ngữ backend phức tạp vào phần mô tả nghiệp vụ).
-   - Thứ tự chuẩn: Các bước tái hiện -> **Kết quả thực tế (Actual Result)** -> **Kết quả mong đợi (Expected Result)** -> Bằng chứng (Evidence).
-   - Unknown fields -> `[Cần QC bổ sung]`.
 4. Evidence handling:
    - Read files from `backlog/draft/<folder-name>/` when provided.
    - Images: Cú pháp ảnh khi lên Backlog bắt buộc dùng ngoặc vuông: `![Tên ảnh][file.png]` (tuyệt đối không dùng ngoặc tròn `](file.png)`).
