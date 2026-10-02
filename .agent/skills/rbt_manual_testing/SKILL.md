@@ -49,11 +49,12 @@ Tất cả các test cases sinh ra (dù ở Mode QUICK hay FULL RBT) **BẮT BU�
      - ❌ CẤM: `Nhập chuỗi dài vượt quá biên tối đa (256 ký tự)` ➔ ✅ ĐÚNG: `Nhập 256 ký tự`
 5. **`Pre-Condition`**: Tiền điều kiện rõ ràng (Tài khoản nào đã đăng nhập, đang đứng tại màn hình/URL nào, bản ghi nào đã tồn tại trong CSDL).
 6. **`Test Steps`**: Các hành động nguyên tử (Atomic actions), đánh số thứ tự và ngắt dòng có dòng trống `<br><br>` trong ô.
-   - **CHỈ GHI HÀNH ĐỘNG THAO TÁC CỦA NGƯỜI DÙNG**: Ví dụ: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].`
+   - **CHỈ GHI HÀNH ĐỘNG THAO TÁC CỦA NGƯỜI DÙNG**: Ví dụ: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`
+   - **QUY CHUẨN THAO TÁC NÚT BẤM (BẮT BUỘC)**: Luôn dùng cú pháp `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`). Tên nút đặt trong dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
    - **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Toàn bộ giá trị nhập liệu (như số điện thoại `'0987654321'`, email, mã số, CCCD...) hoặc các câu giải thích/ghi chú dữ liệu (như *"CCCD và Email giữ nguyên của CTV-001"*) BẮT BUỘC đặt ở cột `Test Data`. KHÔNG viết lặp lại vào `Test Steps`.
    - *Ví dụ chuẩn:*
      - ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
-     - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].`
+     - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`
 7. **`Test Data`**: Nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản (dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm). **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế:
    - *Ví dụ:* `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`, `admin@vntest.vn`, `NS-0028`, `<script>alert(1)</script>`.
 8. **`Expected Result`**: Kết quả mong đợi đánh số tương ứng với các bước. **BẮT BUỘC dùng `<br><br>` (hoặc 2 lần xuống dòng `\n\n`) để tạo khoảng cách dòng trống giữa các ý đánh số** giúp nội dung thoáng, trực quan và dễ đọc:
@@ -66,15 +67,16 @@ Tất cả các test cases sinh ra (dù ở Mode QUICK hay FULL RBT) **BẮT BU�
 
 ### 3.1. Ràng buộc Test Data & Tách biệt với Test Steps (BẮT BUỘC)
 - Cột `Test Data` là nơi DUY NHẤT khai báo toàn bộ giá trị dữ liệu kiểm thử cụ thể.
-- Cột `Test Steps` chỉ ghi hành động thao tác (ví dụ: `1. Nhập SĐT.`, `2. Nhập Email.`, `3. Bấm [Lưu].`), TUYỆT ĐỐI KHÔNG lặp lại giá trị dữ liệu cụ thể hoặc ghi chú dữ liệu vào Steps.
+- Cột `Test Steps` chỉ ghi hành động thao tác (ví dụ: `1. Nhập SĐT.`, `2. Nhập Email.`, `3. Nhấn nút "Lưu".`), TUYỆT ĐỐI KHÔNG lặp lại giá trị dữ liệu cụ thể hoặc ghi chú dữ liệu vào Steps.
+- Thao tác nút bấm luôn tuân thủ cú pháp: `Nhấn nút "<Tên nút>"`.
 
 ```
 ❌ Sai trong Test Steps: "1. Nhập email user01@vntest.vn -> 2. Nhập password Abc@123 -> 3. Click Đăng nhập"
-✅ Đúng trong Test Steps: "1. Nhập Email.<br><br>2. Nhập Mật khẩu.<br><br>3. Bấm nút [Đăng nhập]."
+✅ Đúng trong Test Steps: "1. Nhập Email.<br><br>2. Nhập Mật khẩu.<br><br>3. Nhấn nút "Đăng nhập"."
    (Dữ liệu ở cột Test Data: "Email: user01@vntest.vn, Mật khẩu: Abc@123")
 
 ❌ Sai trong Test Steps: "1. Nhập SĐT '0987654321' -> 2. CCCD và Email giữ nguyên của CTV-001 -> 3. Bấm [Cập nhật]"
-✅ Đúng trong Test Steps: "1. Nhập SĐT.<br><br>2. Bấm nút [Cập nhật]."
+✅ Đúng trong Test Steps: "1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật"."
    (Dữ liệu ở cột Test Data: "SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'")
 ```
 

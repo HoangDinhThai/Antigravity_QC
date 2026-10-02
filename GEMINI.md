@@ -110,7 +110,8 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Chống trùng lặp ca đơn lẻ (Single Case):** Nếu kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2.
   - **Quy tắc đặt tên giá trị biên / độ dài:** Đi thẳng vào số liệu cụ thể, cực kỳ ngắn gọn (ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết rườm rà kèm ngoặc đơn như `Nhập thiếu chữ số (9 số hoặc 11 số)`).
 * **Cột Steps (Cột G) - Chỉ Ghi Hành Động Thao Tác (Atomic Actions), CẤM Lặp Lại Dữ Liệu:**
-  - **Chỉ ghi hành động người dùng:** Ghi các thao tác nguyên tử (ví dụ: `1. Nhập SĐT.`, `2. Bấm [Cập nhật].` hoặc `1. Nhập SĐT.\n\n2. Bấm [Cập nhật].`).
+  - **Chỉ ghi hành động người dùng:** Ghi các thao tác nguyên tử (ví dụ: `1. Nhập SĐT.`, `2. Nhấn nút "Cập nhật".` hoặc `1. Nhập SĐT.\n\n2. Nhấn nút "Cập nhật".`).
+  - **Quy chuẩn thao tác nút bấm (Button Actions - BẮT BUỘC):** Luôn dùng cú pháp `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`). Tên nút phải nằm trong cặp dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông kiểu `Bấm [Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
   - **Tuyệt đối CẤM đưa giá trị dữ liệu cụ thể vào Bước test:** Không viết giá trị nhập liệu (như `'0987654321'`, email, CCCD, họ tên...) vào Steps vì toàn bộ giá trị đã được quy định ở Cột Test Data (Cột H).
   - **Tuyệt đối CẤM đưa các câu giải thích/ghi chú dữ liệu vào Bước test:** CẤM viết kiểu `"2. CCCD và Email giữ nguyên của CTV-001"` vào Steps. Mọi dữ liệu giữ nguyên/thay đổi đều khai báo ở cột Test Data.
   - **Bắt buộc có khoảng cách dòng trống:** Giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc.

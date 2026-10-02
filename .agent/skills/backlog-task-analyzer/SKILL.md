@@ -91,10 +91,11 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
          | Vượt giới hạn ký tự | `Tên dài: abcdefghijklmnopqrstuvwxyz...` | `Tên dài > 50 chars`: "Dự án căn hộ chung cư cao cấp Grand Maison Shinjuku Tower Block A (Phiên bản mở rộng 2026)" |
          | Tài khoản & Quyền | `User: admin`, `Role: user` | `Account: property_mgr_01@sdr.jp`, `Role: [Property Manager]` (đúng role trong task) |
    - **Test Steps (Chỉ ghi hành động thao tác, CẤM lặp lại dữ liệu)**:
-     * Các bước nguyên tử (Atomic steps), rõ ràng (ví dụ: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].`), giữa các bước dùng `<br><br>`.
+     * Các bước nguyên tử (Atomic steps), rõ ràng (ví dụ: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`), giữa các bước dùng `<br><br>`.
+     * **QUY CHUẨN THAO TÁC NÚT BẤM (BẮT BUỘC)**: Luôn dùng cú pháp `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`). Tên nút đặt trong dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
      * **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Không viết các giá trị cụ thể (như SĐT '0987654321', email, mã số...) hoặc các câu giải thích/ghi chú dữ liệu (như "giữ nguyên dữ liệu của CTV-001") vào Test Steps vì toàn bộ giá trị đã được quy định ở cột `Test Data`.
      * ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
-     * ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].` *(Cột Test Data ghi rõ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
+     * ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".` *(Cột Test Data ghi rõ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
    - **Expected Result**: Cụ thể, định lượng/định tính đo lường được, giữa các ý kết quả dùng `<br><br>`.
 
 3. **Định Dạng Bảng Output (Markdown Table)**:
@@ -102,7 +103,7 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
 ```markdown
 | TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 |---|---|---|---|---|---|---|---|---|
-| TC_01 | 01. Quản lý Bất Động Sản | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br><br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS vào ô [物件コード]<br><br>2. Nhập Tên BĐS vào ô [物件名]<br><br>3. Nhập Giá bán vào ô [販売価格]<br><br>4. Click nút [登録する] | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br><br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br><br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
+| TC_01 | 01. Quản lý Bất Động Sản | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br><br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS.<br><br>2. Nhập Tên BĐS.<br><br>3. Nhập Giá bán.<br><br>4. Nhấn nút "登録する". | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br><br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br><br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
 ```
 
 ---

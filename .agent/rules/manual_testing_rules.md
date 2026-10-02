@@ -12,16 +12,37 @@ trigger: always_on
    - BẮT BUỘC giá trị thực tế cụ thể: `SĐT: '0987654321'`, `CCCD: '001203004567'`, `Email: 'user01@test.com'`, `Mật khẩu: 'Abc@12345'`.
 
 2. **Cấu trúc Bước test (Test Steps - Chỉ ghi hành động thao tác, TUYỆT ĐỐI KHÔNG lặp lại giá trị dữ liệu):**
-   - **Chỉ ghi hành động nguyên tử (Atomic actions)** của người dùng trên giao diện (ví dụ: `1. Nhập SĐT.`, `2. Bấm [Cập nhật].`).
+   - **Chỉ ghi hành động nguyên tử (Atomic actions)** của người dùng trên giao diện (ví dụ: `1. Nhập SĐT.`, `2. Nhấn nút "Cập nhật".`).
    - **TUYỆT ĐỐI CẤM đưa/lặp lại giá trị dữ liệu cụ thể vào bước test** (vì toàn bộ giá trị dữ liệu đã được khai báo ở cột `Test Data`).
    - **TUYỆT ĐỐI CẤM đưa các câu giải thích/ghi chú dữ liệu vào bước test** (ví dụ: cấm viết kiểu "2. CCCD và Email giữ nguyên của CTV-001" vào steps).
    - **Bảng đối chiếu chuẩn:**
      - ❌ CẤM: `1. Nhập SĐT '0987654321' -> 2. CCCD và Email giữ nguyên của CTV-001 -> 3. Bấm [Cập nhật]`
-     - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].` *(Cột Test Data ghi: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
+     - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".` *(Cột Test Data ghi: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
      - ❌ CẤM: `1. Nhập email: abc@test.com -> 2. Nhập password: 123 -> 3. Click nút Đăng nhập`
-     - ✅ ĐÚNG: `1. Nhập Email.<br><br>2. Nhập Mật khẩu.<br><br>3. Bấm nút "Đăng nhập".` *(Cột Test Data ghi: `Email: abc@test.com, Mật khẩu: 123`)*
+     - ✅ ĐÚNG: `1. Nhập Email.<br><br>2. Nhập Mật khẩu.<br><br>3. Nhấn nút "Đăng nhập".` *(Cột Test Data ghi: `Email: abc@test.com, Mật khẩu: 123`)*
 
-3. **Quy Chuẩn Ngôn Ngữ & Cấm Kỹ Thuật Hóa (BẮT BUỘC & CỰC KỲ QUAN TRỌNG):**
+3. **Quy Chuẩn Thao Tác Nút Bấm (Button Actions - BẮT BUỘC):**
+   - Khi thực hiện thao tác tương tác với bất kỳ nút bấm (Button) nào, cú pháp chuẩn **BẮT BUỘC**:
+     `Nhấn nút "<Tên nút>"`
+   - Tên nút phải nằm trong cặp dấu ngoặc kép `"..."`.
+   - Từ khóa hành động thống nhất là `Nhấn nút` (không dùng "Bấm", "Click", "Nhấp", "Bấm nút").
+   - **Ví dụ chuẩn:**
+     - `Nhấn nút "Cập nhật"`
+     - `Nhấn nút "Lưu"`
+     - `Nhấn nút "Hủy"`
+     - `Nhấn nút "Đóng"`
+     - `Nhấn nút "Thêm mới"`
+     - `Nhấn nút "Đăng nhập"`
+     - `Nhấn nút "Xác nhận"`
+     - `Nhấn nút "Sửa"`
+     - `Nhấn nút "Xóa"`
+   - **CẤM TUYỆT ĐỐI (ANTI-PATTERNS):**
+     - ❌ CẤM dùng ngoặc vuông: `Bấm [Cập nhật]`, `Nhấn [Lưu]`, `[Cập nhật]`
+     - ❌ CẤM dùng từ "Bấm": `Bấm nút "Cập nhật"`, `Bấm Cập nhật`
+     - ❌ CẤM dùng từ tiếng Anh: `Click nút "Cập nhật"`, `Click "Lưu"`
+     - ❌ CẤM thiếu ngoặc kép: `Nhấn nút Cập nhật`
+
+4. **Quy Chuẩn Ngôn Ngữ & Cấm Kỹ Thuật Hóa (BẮT BUỘC & CỰC KỲ QUAN TRỌNG):**
    - **BẮT BUỘC:** Viết test case hoàn toàn bằng **Tiếng Việt thuần túy, tự nhiên, chuẩn mực theo góc nhìn người dùng cuối (End-User) và nghiệp vụ (Business)**.
    - **CẤM TUYỆT ĐỐI:**
      - CẤM viết test case nửa nạc nửa mỡ trộn tiếng Việt lẫn tiếng Anh kỹ thuật.
@@ -31,10 +52,10 @@ trigger: always_on
      - ❌ CẤM: `Tiêu đề (.modal-title) hiển thị...` ➔ ✅ ĐÚNG: `Tiêu đề cửa sổ/hộp thoại hiển thị...`
      - ❌ CẤM: `Biểu tượng CheckCircle class .is-readonly` ➔ ✅ ĐÚNG: `Biểu tượng dấu tích xanh ở trạng thái chỉ đọc`
      - ❌ CẤM: `Trường Email (readonly)` ➔ ✅ ĐÚNG: `Trường "Email" ở chế độ chỉ đọc (không thể chỉnh sửa)`
-     - ❌ CẤM: `Nhấp button .btn-close` ➔ ✅ ĐÚNG: `Nhấp vào nút "Đóng" [×]`
+     - ❌ CẤM: `Nhấp button .btn-close` ➔ ✅ ĐÚNG: `Nhấn nút "Đóng" [×]`
      - ❌ CẤM: `Hiển thị spinner loading` ➔ ✅ ĐÚNG: `Hiển thị biểu tượng vòng xoay đang tải dữ liệu`
 
-4. **Quy Chuẩn Phân Cấp Tiêu Đề 3 Tầng & Đặt Tên Kịch Bản (BẮT BUỘC):**
+5. **Quy Chuẩn Phân Cấp Tiêu Đề 3 Tầng & Đặt Tên Kịch Bản (BẮT BUỘC):**
    - **Tầng 1 - `Feature`**: Khối chức năng / nhóm tính năng lớn (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`, `03. Luồng nghiệp vụ chính`, `04. Field Validation`...).
    - **Tầng 2 - `Test Case Title_1`**: Nhóm con / Chủ đề kiểm thử cấp 1 (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`, `Kiểm tra trường Mã KH`...).
      - Tất cả các test case cùng chủ đề con này sẽ được gom nhóm liền kề để tự động gộp ô (Merge Cells).
@@ -51,11 +72,11 @@ trigger: always_on
      - ❌ CẤM: `Nhập vượt quá 12 chữ số (13 số)` ➔ ✅ ĐÚNG: `Nhập 13 chữ số`.
      - ❌ CẤM: `Nhập chuỗi dài vượt quá biên tối đa (256 ký tự)` ➔ ✅ ĐÚNG: `Nhập 256 ký tự`.
 
-5. **Quy Chuẩn Giãn Cách Dòng Trong Expected Result & Test Steps (BẮT BUỘC):**
+6. **Quy Chuẩn Giãn Cách Dòng Trong Expected Result & Test Steps (BẮT BUỘC):**
    - Khi trình bày các ý đánh số (`1. ...`, `2. ...`, `3. ...`) trong cột `Expected Result` (và `Test Steps`):
    - **BẮT BUỘC phải có khoảng cách dòng trống** giữa các ý (dùng `<br><br>` trong bảng Markdown, hoặc 2 dấu xuống dòng `\n\n` trên Google Sheets) để văn bản thoáng đãng, trực quan, dễ theo dõi, không bị dính chùm vào nhau thành khối chữ khó nhìn.
 
-6. **Xuất ra bảng Markdown chuẩn**
+7. **Xuất ra bảng Markdown chuẩn**
 
 ## Bảng Output
 
