@@ -109,7 +109,15 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Quy tắc quan trọng (CỰC KỲ NGẮN GỌN & KHÔNG LẶP LẠI):** Tuyệt đối **KHÔNG lặp lại tiền tố của Title_1** (CẤM viết kiểu: `Quyền truy cập - Người dùng chỉ có quyền xem`).
   - **Chống trùng lặp ca đơn lẻ (Single Case):** Nếu kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2.
   - **Quy tắc đặt tên giá trị biên / độ dài:** Đi thẳng vào số liệu cụ thể, cực kỳ ngắn gọn (ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết rườm rà kèm ngoặc đơn như `Nhập thiếu chữ số (9 số hoặc 11 số)`).
-* **Cột Steps (Cột G) & Expected Result (Cột I):**
+* **Cột Steps (Cột G) - Chỉ Ghi Hành Động Thao Tác (Atomic Actions), CẤM Lặp Lại Dữ Liệu:**
+  - **Chỉ ghi hành động người dùng:** Ghi các thao tác nguyên tử (ví dụ: `1. Nhập SĐT.`, `2. Bấm [Cập nhật].` hoặc `1. Nhập SĐT.\n\n2. Bấm [Cập nhật].`).
+  - **Tuyệt đối CẤM đưa giá trị dữ liệu cụ thể vào Bước test:** Không viết giá trị nhập liệu (như `'0987654321'`, email, CCCD, họ tên...) vào Steps vì toàn bộ giá trị đã được quy định ở Cột Test Data (Cột H).
+  - **Tuyệt đối CẤM đưa các câu giải thích/ghi chú dữ liệu vào Bước test:** CẤM viết kiểu `"2. CCCD và Email giữ nguyên của CTV-001"` vào Steps. Mọi dữ liệu giữ nguyên/thay đổi đều khai báo ở cột Test Data.
+  - **Bắt buộc có khoảng cách dòng trống:** Giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc.
+* **Cột Test Data (Cột H) - Nơi Duy Nhất Định Nghĩa Toàn Bộ Dữ Liệu Kiểm Thử:**
+  - Là nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản: Dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm cụ thể (ví dụ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`).
+  - **CẤM TUYỆT ĐỐI** dùng từ ngữ chung chung (`"Nhập đúng"`, `"Nhập sai mật khẩu"`).
+* **Cột Expected Result (Cột I):**
   - **Bắt buộc có khoảng cách dòng trống** giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc, không bị dính sát vào nhau thành khối chữ đặc.
 
 ### 🧹 Tự Động Unmerge Vùng Dữ Liệu Cũ Trước Khi Đẩy

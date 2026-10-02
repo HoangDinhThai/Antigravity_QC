@@ -6,13 +6,20 @@ trigger: always_on
 
 **Luật này áp dụng BẮT BUỘC cho mọi tác vụ sinh Test Case thủ công.**
 
-1. **Ràng buộc Dữ liệu (Test Data):**
-   - CẤM: "Nhập tài khoản đúng", "Nhập sai mật khẩu", "Mã giảm giá hết hạn".
-   - BẮT BUỘC: `user01@test.com`, `Abc@12345`, `EXPIRED_COUPON_2023`.
+1. **Ràng buộc Dữ liệu (Test Data - Nơi DUY NHẤT chứa giá trị kiểm thử):**
+   - Cột `Test Data` là nơi **DUY NHẤT** định nghĩa toàn bộ dữ liệu cụ thể cho kịch bản (dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm).
+   - CẤM dùng từ chung chung: "Nhập tài khoản đúng", "Nhập sai mật khẩu", "Mã giảm giá hết hạn".
+   - BẮT BUỘC giá trị thực tế cụ thể: `SĐT: '0987654321'`, `CCCD: '001203004567'`, `Email: 'user01@test.com'`, `Mật khẩu: 'Abc@12345'`.
 
-2. **Cấu trúc Bước test (Test Steps):**
-   - Phải là các hành động nguyên tử (Atomic actions).
-   - Ví dụ chuẩn: "1. Nhập email: abc@test.com -> 2. Nhập password: 123 -> 3. Click nút Đăng nhập".
+2. **Cấu trúc Bước test (Test Steps - Chỉ ghi hành động thao tác, TUYỆT ĐỐI KHÔNG lặp lại giá trị dữ liệu):**
+   - **Chỉ ghi hành động nguyên tử (Atomic actions)** của người dùng trên giao diện (ví dụ: `1. Nhập SĐT.`, `2. Bấm [Cập nhật].`).
+   - **TUYỆT ĐỐI CẤM đưa/lặp lại giá trị dữ liệu cụ thể vào bước test** (vì toàn bộ giá trị dữ liệu đã được khai báo ở cột `Test Data`).
+   - **TUYỆT ĐỐI CẤM đưa các câu giải thích/ghi chú dữ liệu vào bước test** (ví dụ: cấm viết kiểu "2. CCCD và Email giữ nguyên của CTV-001" vào steps).
+   - **Bảng đối chiếu chuẩn:**
+     - ❌ CẤM: `1. Nhập SĐT '0987654321' -> 2. CCCD và Email giữ nguyên của CTV-001 -> 3. Bấm [Cập nhật]`
+     - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].` *(Cột Test Data ghi: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
+     - ❌ CẤM: `1. Nhập email: abc@test.com -> 2. Nhập password: 123 -> 3. Click nút Đăng nhập`
+     - ✅ ĐÚNG: `1. Nhập Email.<br><br>2. Nhập Mật khẩu.<br><br>3. Bấm nút "Đăng nhập".` *(Cột Test Data ghi: `Email: abc@test.com, Mật khẩu: 123`)*
 
 3. **Quy Chuẩn Ngôn Ngữ & Cấm Kỹ Thuật Hóa (BẮT BUỘC & CỰC KỲ QUAN TRỌNG):**
    - **BẮT BUỘC:** Viết test case hoàn toàn bằng **Tiếng Việt thuần túy, tự nhiên, chuẩn mực theo góc nhìn người dùng cuối (End-User) và nghiệp vụ (Business)**.
