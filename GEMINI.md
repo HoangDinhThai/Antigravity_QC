@@ -111,15 +111,20 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Quy tắc đặt tên giá trị biên / độ dài:** Đi thẳng vào số liệu cụ thể, cực kỳ ngắn gọn (ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết rườm rà kèm ngoặc đơn như `Nhập thiếu chữ số (9 số hoặc 11 số)`).
 * **Cột Steps (Cột G) - Chỉ Ghi Hành Động Thao Tác (Atomic Actions), CẤM Lặp Lại Dữ Liệu:**
   - **Chỉ ghi hành động người dùng:** Ghi các thao tác nguyên tử (ví dụ: `1. Nhập SĐT.`, `2. Nhấn nút "Cập nhật".` hoặc `1. Nhập SĐT.\n\n2. Nhấn nút "Cập nhật".`).
-  - **Quy chuẩn thao tác nút bấm (Button Actions - BẮT BUỘC):** Luôn dùng cú pháp `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`). Tên nút phải nằm trong cặp dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông kiểu `Bấm [Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
+  - **Quy chuẩn thao tác nút bấm & tên nút (Button Actions - BẮT BUỘC):**
+    - **Tên nút bấm BẮT BUỘC nằm trong ngoặc kép `""` ở TẤT CẢ các vị trí** (Title, Pre-Condition, Steps, Expected Result). Ví dụ: `Nút "Sửa"`, `Nút "Lưu"`. CẤM viết cộc lốc thiếu ngoặc kép như `Nút Sửa`, `Nút Lưu`.
+    - Cú pháp thao tác chuẩn: `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`). Tên nút phải nằm trong cặp dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông kiểu `Bấm [Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
   - **Tuyệt đối CẤM đưa giá trị dữ liệu cụ thể vào Bước test:** Không viết giá trị nhập liệu (như `'0987654321'`, email, CCCD, họ tên...) vào Steps vì toàn bộ giá trị đã được quy định ở Cột Test Data (Cột H).
   - **Tuyệt đối CẤM đưa các câu giải thích/ghi chú dữ liệu vào Bước test:** CẤM viết kiểu `"2. CCCD và Email giữ nguyên của CTV-001"` vào Steps. Mọi dữ liệu giữ nguyên/thay đổi đều khai báo ở cột Test Data.
   - **Bắt buộc có khoảng cách dòng trống:** Giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc.
 * **Cột Test Data (Cột H) - Nơi Duy Nhất Định Nghĩa Toàn Bộ Dữ Liệu Kiểm Thử:**
   - Là nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản: Dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm cụ thể (ví dụ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`).
+  - **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát (Ví dụ: `Không chọn dòng nào`, `Chọn 2 dòng: NS-0028, NS-0029`, `""`; CẤM ghi kèm: `(chưa chọn dòng nào)`, `(chọn 2 dòng)`, `(chuỗi rỗng)`).
   - **CẤM TUYỆT ĐỐI** dùng từ ngữ chung chung (`"Nhập đúng"`, `"Nhập sai mật khẩu"`).
 * **Cột Expected Result (Cột I):**
   - **Bắt buộc có khoảng cách dòng trống** giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc, không bị dính sát vào nhau thành khối chữ đặc.
+  - **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn: `Nút "Sửa" ở trạng thái vô hiệu hóa` (hoặc `bị vô hiệu hóa`). Tuyệt đối CẤM ghi thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
+  - **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
 
 ### 🧹 Tự Động Unmerge Vùng Dữ Liệu Cũ Trước Khi Đẩy
 * Trước khi ghi dữ liệu và gộp ô mới, **bắt buộc unmerge toàn bộ** các dải ô bị gộp cũ trong vùng dữ liệu (từ dòng 11 trở xuống).
@@ -208,7 +213,7 @@ Test chỉ được coi là **hoàn thành** khi đáp ứng **toàn bộ** các
 - Luôn giao tiếp, giải thích ý tưởng và báo cáo bằng **Tiếng Việt**.
 - Diễn giải **ngắn gọn, rõ ràng, dễ hiểu**.
 - Tránh suy đoán lập trình hoặc giải thích mơ hồ về lỗi mà cần có căn cứ trực tiếp.
-- **Kịch bản kiểm thử (Test Cases):** BẮT BUỘC viết bằng **Tiếng Việt thuần túy, chuẩn mực theo góc nhìn người dùng cuối và nghiệp vụ**. Tuyệt đối KHÔNG viết pha trộn tiếng Anh kỹ thuật nửa nạc nửa mỡ, KHÔNG chèn tên CSS class, CSS selector, thẻ HTML, thuộc tính DOM kỹ thuật (như `(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`, `input readonly`, `.btn-close`). Mọi trạng thái phải được diễn đạt bằng lời văn tiếng Việt tự nhiên (ví dụ: `nút bị vô hiệu hóa`, `tiêu đề cửa sổ`, `ở chế độ chỉ đọc`).
+- **Kịch bản kiểm thử (Test Cases):** BẮT BUỘC viết bằng **Tiếng Việt thuần túy 100%, chuẩn mực theo góc nhìn người dùng cuối và nghiệp vụ**. Tuyệt đối KHÔNG viết pha trộn tiếng Anh kỹ thuật nửa nạc nửa mỡ (CẤM: `Click` ➔ `Nhấn nút / Nhấp`, `Option` ➔ `Lựa chọn`, `Input` ➔ `Ô nhập`, `Dropdown` ➔ `Danh sách thả xuống`, `Toast` ➔ `Thông báo nổi`), KHÔNG chèn tên CSS class, CSS selector, thẻ HTML, thuộc tính DOM kỹ thuật (như `(disabled)`, `(.modal-title)`, `CheckCircle class .is-readonly`, `input readonly`, `.btn-close`). Mọi trạng thái phải được diễn đạt bằng lời văn tiếng Việt tự nhiên (ví dụ: `Nút "Lưu" ở trạng thái vô hiệu hóa`, `tiêu đề cửa sổ`, `ở chế độ chỉ đọc`).
 
 ## 2. Quy Trình Làm Việc (Workflow)
 

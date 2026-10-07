@@ -50,15 +50,24 @@ Tất cả các test cases sinh ra (dù ở Mode QUICK hay FULL RBT) **BẮT BU�
 5. **`Pre-Condition`**: Tiền điều kiện rõ ràng (Tài khoản nào đã đăng nhập, đang đứng tại màn hình/URL nào, bản ghi nào đã tồn tại trong CSDL).
 6. **`Test Steps`**: Các hành động nguyên tử (Atomic actions), đánh số thứ tự và ngắt dòng có dòng trống `<br><br>` trong ô.
    - **CHỈ GHI HÀNH ĐỘNG THAO TÁC CỦA NGƯỜI DÙNG**: Ví dụ: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`
-   - **QUY CHUẨN THAO TÁC NÚT BẤM (BẮT BUỘC)**: Luôn dùng cú pháp `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`). Tên nút đặt trong dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
+   - **QUY CHUẨN THAO TÁC NÚT BẤM & TÊN NÚT (BẮT BUỘC)**:
+     - **Tên nút bấm BẮT BUỘC nằm trong cặp ngoặc kép `""` ở TẤT CẢ các vị trí** (Title, Pre-Condition, Test Steps, Expected Result). Ví dụ: `Nút "Sửa"`, `Nút "Lưu"`, `Nút "Thêm mới"`. CẤM viết cộc lốc thiếu ngoặc kép như `Nút Sửa`, `Nút Lưu`.
+     - Cú pháp thao tác nút chuẩn duy nhất: `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`).
+     - Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút", "Click nút".
    - **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Toàn bộ giá trị nhập liệu (như số điện thoại `'0987654321'`, email, mã số, CCCD...) hoặc các câu giải thích/ghi chú dữ liệu (như *"CCCD và Email giữ nguyên của CTV-001"*) BẮT BUỘC đặt ở cột `Test Data`. KHÔNG viết lặp lại vào `Test Steps`.
    - *Ví dụ chuẩn:*
      - ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
      - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`
-7. **`Test Data`**: Nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản (dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm). **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế:
-   - *Ví dụ:* `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`, `admin@vntest.vn`, `NS-0028`, `<script>alert(1)</script>`.
+7. **`Test Data`**: Nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản (dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm).
+   - **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát.
+     - ❌ CẤM: `Không chọn dòng nào (chưa chọn dòng nào)` ➔ ✅ ĐÚNG: `Không chọn dòng nào`
+     - ❌ CẤM: `Chọn 2 dòng: NS-0028, NS-0029 (chọn 2 dòng)` ➔ ✅ ĐÚNG: `Chọn 2 dòng: NS-0028, NS-0029`
+     - ❌ CẤM: `"" (chuỗi rỗng)`, `"" (để trống)`, `(chưa chọn)` ➔ ✅ ĐÚNG: `""` hoặc `Chưa chọn`
+   - **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế: `SĐT: '0987654321', CCCD: '001203004567'`, `admin@vntest.vn`.
 8. **`Expected Result`**: Kết quả mong đợi đánh số tương ứng với các bước. **BẮT BUỘC dùng `<br><br>` (hoặc 2 lần xuống dòng `\n\n`) để tạo khoảng cách dòng trống giữa các ý đánh số** giúp nội dung thoáng, trực quan và dễ đọc:
-   * *Ví dụ:* `1. Hộp thoại mở ra chính giữa màn hình.<br><br>2. Tiêu đề hiển thị đúng tên hồ sơ.<br><br>3. Chân hộp thoại có đủ nút Hủy và Cập nhật.`
+   - **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn `Nút "Sửa" ở trạng thái vô hiệu hóa` (hoặc `bị vô hiệu hóa`). Tuyệt đối CẤM chèn thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
+   - **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
+   - *Ví dụ:* `1. Hộp thoại mở ra chính giữa màn hình.<br><br>2. Tiêu đề hiển thị đúng tên hồ sơ.<br><br>3. Nút "Lưu" ở trạng thái vô hiệu hóa.`
 9. **`Priority`**: Mức độ ưu tiên chuẩn hóa theo 4 mức: `Critical`, `High`, `Medium`, `Low`.
 
 ---
@@ -108,18 +117,22 @@ Manual Test Case là tài liệu bàn giao cho Tester, Khách hàng, Product Own
 
 2. **BẢNG ĐỐI CHIẾU MẪU (BẮT BUỘC TUÂN THỦ):**
 
-| ❌ CẤM (Lẫn lộn tiếng Anh kỹ thuật / CSS / DOM) | ✅ ĐÚNG (Tiếng Việt thuần túy theo góc nhìn người dùng) |
+| ❌ CẤM (Lẫn lộn tiếng Anh kỹ thuật / CSS / DOM / Thừa thãi) | ✅ ĐÚNG (Tiếng Việt thuần túy theo góc nhìn người dùng) |
 |---|---|
-| `Nút Lưu (disabled)` | `Nút "Lưu" bị vô hiệu hóa (làm mờ, không thể bấm)` |
+| `Nút Lưu (disabled)` hoặc `Nút "Lưu" bị vô hiệu hóa (làm mờ, không thể bấm)` | `Nút "Lưu" ở trạng thái vô hiệu hóa.` |
 | `Tiêu đề (.modal-title) hiển thị...` | `Tiêu đề hộp thoại / cửa sổ bật lên hiển thị...` |
 | `Biểu tượng CheckCircle class .is-readonly` | `Biểu tượng dấu tích xanh ở trạng thái chỉ đọc` |
 | `Trường Email (readonly)` | `Trường "Email" ở chế độ chỉ đọc (không cho phép chỉnh sửa)` |
-| `Bấm button .btn-close` | `Nhấp vào nút "Đóng" [×]` |
+| `Bấm button .btn-close` hoặc `Click nút Đóng` | `Nhấn nút "Đóng" [×]` |
+| `Click nút + Thêm bằng cấp` | `Nhấn nút "+ Thêm bằng cấp"` |
 | `Hiển thị spinner loading` | `Hiển thị biểu tượng vòng xoay đang tải dữ liệu` |
-| `Dropdown status active` | `Trường trạng thái hiển thị giá trị "Đang hoạt động"` |
+| `Dropdown status active` | `Danh sách thả xuống trạng thái hiển thị giá trị "Đang hoạt động"` |
+| `Toast hiển thị thành công` | `Thông báo nổi hiển thị thành công` |
 | `Backdrop modal hiển thị` | `Màn hình tối mờ phía sau hộp thoại hiển thị` |
 | `Input placeholder="Nhập tên"` | `Ô nhập hiển thị văn bản gợi ý mờ: "Nhập tên"` |
 | `Click tab .nav-link-active` | `Nhấp vào tab "Thông tin chung"` |
+| `Click vào option thứ nhất` | `Nhấp vào lựa chọn thứ nhất` |
+| `«Vui lòng nhập lý do...»` | `"Vui lòng nhập lý do..."` |
 
 ---
 

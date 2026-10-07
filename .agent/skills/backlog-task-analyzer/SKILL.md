@@ -78,6 +78,10 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
      * Giữa các ý đánh số (`1. ...`, `2. ...`) hoặc gạch đầu dòng, **bắt buộc có 1 dòng trống** (`<br><br>` trong Markdown hoặc 2 dấu xuống dòng `\n\n` trên Google Sheet) để nhìn thoáng mắt, dễ theo dõi, tuyệt đối không viết dính sát một dòng.
    - **Tên Test Case**: Viết bằng **TIẾNG VIỆT CỰC KỲ NGẮN GỌN, RÕ RÀNG**, câu từ chuẩn hóa để BrSE/Comtor có thể đọc hiểu và dịch ngay sang tiếng Nhật một cách dễ dàng. Không cần dịch sẵn tiếng Nhật trong bảng (trừ các tên nút/UI element bằng tiếng Nhật giữ nguyên trong ngoặc vuông `[物件詳細]`).
    - **Test Data (BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DOMAIN)**:
+     * **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát.
+       - ❌ CẤM: `Không chọn dòng nào (chưa chọn dòng nào)` ➔ ✅ ĐÚNG: `Không chọn dòng nào`
+       - ❌ CẤM: `Chọn 2 dòng: NS-0028, NS-0029 (chọn 2 dòng)` ➔ ✅ ĐÚNG: `Chọn 2 dòng: NS-0028, NS-0029`
+       - ❌ CẤM: `"" (chuỗi rỗng)`, `"" (để trống)`, `(chưa chọn)` ➔ ✅ ĐÚNG: `""` hoặc `Chưa chọn`
      * ❌ **CẤM HOÀN TOÀN**: Dùng dữ liệu test kiểu chung chung, rập khuôn, ngây ngô (như `nhập email đúng`, `nhập pass sai`, `abc@gmail.com`, `admin@123`, `123456`, `test_data_1`).
      * ✅ **BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DỰ ÁN**:
        - **Trích xuất trực tiếp từ Task Spec & Comments**: Thu thập toàn bộ các trường thông tin, mã entity, role, trạng thái, định dạng, giới hạn ký tự (min/max), regex xuất hiện trong mô tả task, bình luận của BA/Dev hoặc tài liệu đính kèm để làm Test Data.
@@ -92,11 +96,16 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
          | Tài khoản & Quyền | `User: admin`, `Role: user` | `Account: property_mgr_01@sdr.jp`, `Role: [Property Manager]` (đúng role trong task) |
    - **Test Steps (Chỉ ghi hành động thao tác, CẤM lặp lại dữ liệu)**:
      * Các bước nguyên tử (Atomic steps), rõ ràng (ví dụ: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`), giữa các bước dùng `<br><br>`.
-     * **QUY CHUẨN THAO TÁC NÚT BẤM (BẮT BUỘC)**: Luôn dùng cú pháp `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`). Tên nút đặt trong dấu ngoặc kép `"..."`. Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút".
+     * **QUY CHUẨN THAO TÁC NÚT BẤM & TÊN NÚT (BẮT BUỘC)**:
+       - **Tên nút bấm BẮT BUỘC nằm trong ngoặc kép `""` ở TẤT CẢ các vị trí** (Title, Pre-Condition, Test Steps, Expected Result). Ví dụ: `Nút "Sửa"`, `Nút "Lưu"`, `Nút "Thêm mới"`. CẤM viết cộc lốc thiếu ngoặc kép như `Nút Sửa`, `Nút Lưu`.
+       - Cú pháp thao tác nút chuẩn: `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`).
+       - Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút", "Click nút".
      * **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Không viết các giá trị cụ thể (như SĐT '0987654321', email, mã số...) hoặc các câu giải thích/ghi chú dữ liệu (như "giữ nguyên dữ liệu của CTV-001") vào Test Steps vì toàn bộ giá trị đã được quy định ở cột `Test Data`.
      * ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
      * ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".` *(Cột Test Data ghi rõ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
    - **Expected Result**: Cụ thể, định lượng/định tính đo lường được, giữa các ý kết quả dùng `<br><br>`.
+     * **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn: `Nút "Sửa" ở trạng thái vô hiệu hóa` (hoặc `bị vô hiệu hóa`). Tuyệt đối CẤM chèn thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
+     * **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
 
 3. **Định Dạng Bảng Output (Markdown Table)**:
 

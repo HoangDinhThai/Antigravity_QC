@@ -8,6 +8,10 @@ trigger: always_on
 
 1. **Ràng buộc Dữ liệu (Test Data - Nơi DUY NHẤT chứa giá trị kiểm thử):**
    - Cột `Test Data` là nơi **DUY NHẤT** định nghĩa toàn bộ dữ liệu cụ thể cho kịch bản (dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm).
+   - **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát.
+     - ❌ CẤM: `Không chọn dòng nào (chưa chọn dòng nào)` ➔ ✅ ĐÚNG: `Không chọn dòng nào`
+     - ❌ CẤM: `Chọn 2 dòng: NS-0028, NS-0029 (chọn 2 dòng)` ➔ ✅ ĐÚNG: `Chọn 2 dòng: NS-0028, NS-0029`
+     - ❌ CẤM: `"" (chuỗi rỗng)`, `"" (để trống)`, `(chưa chọn dòng nào)` ➔ ✅ ĐÚNG: `""` hoặc `Chưa chọn`
    - CẤM dùng từ chung chung: "Nhập tài khoản đúng", "Nhập sai mật khẩu", "Mã giảm giá hết hạn".
    - BẮT BUỘC giá trị thực tế cụ thể: `SĐT: '0987654321'`, `CCCD: '001203004567'`, `Email: 'user01@test.com'`, `Mật khẩu: 'Abc@12345'`.
 
@@ -21,34 +25,27 @@ trigger: always_on
      - ❌ CẤM: `1. Nhập email: abc@test.com -> 2. Nhập password: 123 -> 3. Click nút Đăng nhập`
      - ✅ ĐÚNG: `1. Nhập Email.<br><br>2. Nhập Mật khẩu.<br><br>3. Nhấn nút "Đăng nhập".` *(Cột Test Data ghi: `Email: abc@test.com, Mật khẩu: 123`)*
 
-3. **Quy Chuẩn Thao Tác Nút Bấm (Button Actions - BẮT BUỘC):**
-   - Khi thực hiện thao tác tương tác với bất kỳ nút bấm (Button) nào, cú pháp chuẩn **BẮT BUỘC**:
-     `Nhấn nút "<Tên nút>"`
-   - Tên nút phải nằm trong cặp dấu ngoặc kép `"..."`.
+3. **Quy Chuẩn Thao Tác Nút Bấm & Tên Nút Bấm (Button Rules - BẮT BUỘC):**
+   - **Tên nút bấm BẮT BUỘC nằm trong ngoặc kép `""` ở TẤT CẢ các vị trí:** Dù xuất hiện ở Title, Pre-Condition, Test Steps hay Expected Result, tên nút luôn phải có cặp ngoặc kép `""` bao quanh (ví dụ: `Nút "Sửa"`, `Nút "Lưu"`, `Nút "Thêm mới"`, `Nút "Xóa"`). Tuyệt đối CẤM viết thiếu ngoặc kép như `Nút Sửa`, `Nút Lưu`.
+   - **Cú pháp thao tác nút chuẩn BẮT BUỘC:** `Nhấn nút "<Tên nút>"` (Ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`).
    - Từ khóa hành động thống nhất là `Nhấn nút` (không dùng "Bấm", "Click", "Nhấp", "Bấm nút").
-   - **Ví dụ chuẩn:**
-     - `Nhấn nút "Cập nhật"`
-     - `Nhấn nút "Lưu"`
-     - `Nhấn nút "Hủy"`
-     - `Nhấn nút "Đóng"`
-     - `Nhấn nút "Thêm mới"`
-     - `Nhấn nút "Đăng nhập"`
-     - `Nhấn nút "Xác nhận"`
-     - `Nhấn nút "Sửa"`
-     - `Nhấn nút "Xóa"`
    - **CẤM TUYỆT ĐỐI (ANTI-PATTERNS):**
      - ❌ CẤM dùng ngoặc vuông: `Bấm [Cập nhật]`, `Nhấn [Lưu]`, `[Cập nhật]`
      - ❌ CẤM dùng từ "Bấm": `Bấm nút "Cập nhật"`, `Bấm Cập nhật`
-     - ❌ CẤM dùng từ tiếng Anh: `Click nút "Cập nhật"`, `Click "Lưu"`
-     - ❌ CẤM thiếu ngoặc kép: `Nhấn nút Cập nhật`
+     - ❌ CẤM dùng từ tiếng Anh: `Click nút "Cập nhật"`, `Click "Lưu"`, `Click button`
+     - ❌ CẤM thiếu ngoặc kép: `Nhấn nút Cập nhật`, `Nút Sửa`
 
 4. **Quy Chuẩn Ngôn Ngữ & Cấm Kỹ Thuật Hóa (BẮT BUỘC & CỰC KỲ QUAN TRỌNG):**
    - **BẮT BUỘC:** Viết test case hoàn toàn bằng **Tiếng Việt thuần túy, tự nhiên, chuẩn mực theo góc nhìn người dùng cuối (End-User) và nghiệp vụ (Business)**.
-   - **CẤM TUYỆT ĐỐI:**
-     - CẤM viết test case nửa nạc nửa mỡ trộn tiếng Việt lẫn tiếng Anh kỹ thuật.
+   - **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn: `ở trạng thái vô hiệu hóa` hoặc `bị vô hiệu hóa`. Tuyệt đối CẤM ghi thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
+     - ❌ CẤM: `Nút "Sửa" ở trạng thái vô hiệu hóa (làm mờ, không thể bấm)` ➔ ✅ ĐÚNG: `Nút "Sửa" ở trạng thái vô hiệu hóa.`
+   - **Quy chuẩn thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng dấu ngoặc kép kiểu Pháp `«...»`, `“...”`, `”...”`.
+     - ❌ CẤM: `«Vui lòng nhập lý do chỉnh sửa chức vụ.»` ➔ ✅ ĐÚNG: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`
+   - **CẤM TUYỆT ĐỐI tiếng Anh lẫn lộn & Kỹ thuật hóa:**
+     - CẤM viết test case nửa nạc nửa mỡ trộn tiếng Việt lẫn tiếng Anh: `Click` ➔ `Nhấn nút / Nhấp`, `Option` ➔ `Lựa chọn`, `Input` ➔ `Ô nhập`, `Toast` ➔ `Thông báo nổi`, `Dropdown` ➔ `Danh sách thả xuống`.
      - CẤM đưa tên CSS class, CSS selector, DOM element, ID, HTML tag, HTML attribute vào các cột (`Test Steps`, `Expected Result`, `Pre-Condition`, `Title`).
    - **Bảng đối chiếu chuẩn:**
-     - ❌ CẤM: `Nút Lưu (disabled)` ➔ ✅ ĐÚNG: `Nút "Lưu" bị vô hiệu hóa (làm mờ, không thể bấm)`
+     - ❌ CẤM: `Nút Lưu (disabled)` hoặc `Nút "Lưu" bị vô hiệu hóa (làm mờ, không thể bấm)` ➔ ✅ ĐÚNG: `Nút "Lưu" ở trạng thái vô hiệu hóa`
      - ❌ CẤM: `Tiêu đề (.modal-title) hiển thị...` ➔ ✅ ĐÚNG: `Tiêu đề cửa sổ/hộp thoại hiển thị...`
      - ❌ CẤM: `Biểu tượng CheckCircle class .is-readonly` ➔ ✅ ĐÚNG: `Biểu tượng dấu tích xanh ở trạng thái chỉ đọc`
      - ❌ CẤM: `Trường Email (readonly)` ➔ ✅ ĐÚNG: `Trường "Email" ở chế độ chỉ đọc (không thể chỉnh sửa)`
