@@ -104,7 +104,12 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
      * **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Không viết các giá trị cụ thể (như SĐT '0987654321', email, mã số...) hoặc các câu giải thích/ghi chú dữ liệu (như "giữ nguyên dữ liệu của CTV-001") vào Test Steps vì toàn bộ giá trị đã được quy định ở cột `Test Data`.
      * ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
      * ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].` *(Cột Test Data ghi rõ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
-   - **Expected Result**: Cụ thể, định lượng/định tính đo lường được, giữa các ý kết quả dùng `<br><br>`.
+   - **Expected Result (Cực kỳ ngắn gọn, đúng trọng tâm)**:
+     * Cụ thể, đo lường được, giữa các ý kết quả dùng `<br><br>` (hoặc `\n\n` trên Sheets). Tuyệt đối CẤM viết dài dòng lan man.
+     * **Màn Tạo mới thành công**: Phải nêu rõ bản ghi mới hiển thị ngay ngoài màn list, các thông tin tạo mới hiển thị đúng và đủ tại các cột tương ứng bên ngoài màn list (nếu có cột tương ứng).
+       - *Ví dụ:* `1. Hiển thị thông báo "Thêm mới thành công." và đóng hộp thoại.<br><br>2. Bản ghi mới hiển thị ngay trên danh sách với đầy đủ và chính xác các thông tin tại các cột tương ứng.`
+     * **Màn Cập nhật thành công**: Phải nêu rõ giá trị mới hiển thị ngay tại màn chi tiết của bản ghi, hiển thị ngoài màn list, và khi mở lại bản ghi đó thì giá trị bên trong màn hình chỉnh sửa cũng hiển thị đúng giá trị mới.
+       - *Ví dụ:* `1. Hiển thị thông báo "Cập nhật thành công." và đóng hộp thoại.<br><br>2. Giá trị mới hiển thị ngay ngoài màn hình danh sách và màn chi tiết.<br><br>3. Khi mở lại bản ghi, các thông tin vừa chỉnh sửa hiển thị đúng giá trị mới.`
 
 3. **Định Dạng Bảng Output (Markdown Table)**:
 
