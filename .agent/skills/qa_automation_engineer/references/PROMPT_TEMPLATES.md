@@ -23,6 +23,7 @@ Phân tích requirement sau và sinh manual test cases:
 - Priority: Critical / High / Medium / Low
 - Test Data cụ thể, bám sát nghiệp vụ thực tế
 - Giữa các bước test và kết quả mong đợi bắt buộc dùng <br><br> để tạo dòng trống
+- Expected Result: Cực kỳ ngắn gọn, đúng trọng tâm. Khi tạo mới thành công: thông báo & điều hướng linh động theo dự án + hiển thị bản ghi mới ngoài list với đúng đủ các cột tương ứng. Khi cập nhật thành công: thông báo linh động theo dự án + hiển thị giá trị mới ở màn chi tiết và list + mở lại bản ghi bên trong màn sửa hiển thị đúng giá trị mới.
 ```
 
 ---
