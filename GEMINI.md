@@ -132,12 +132,14 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Bắt buộc có khoảng cách dòng trống** giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc, không bị dính sát vào nhau thành khối chữ đặc.
   - **Tiêu chuẩn viết CỰC KỲ NGẮN GỌN & ĐÚNG TRỌNG TÂM:** Đi thẳng vào kết quả kiểm chứng trực quan của người dùng, tuyệt đối CẤM viết dài dòng lan man hay mô tả quá trình backend/hệ thống xử lý.
   - **Quy chuẩn màn TẠO MỚI (Khi tạo mới thành công):**
-    - Bắt buộc nêu rõ: Bản ghi mới hiển thị ngay lập tức ngoài màn hình danh sách (màn list), đồng thời các thông tin khi tạo mới xong sẽ hiển thị đúng và đủ ở các cột bên ngoài màn list (nếu có các cột tương ứng).
-    - *Ví dụ chuẩn:*
+    - **Linh động thông báo & điều hướng theo dự án:** Nội dung câu thông báo thành công và hành động đóng hộp thoại (hoặc chuyển về màn list) phải linh động theo đúng đặc tả/thực tế của từng dự án (ví dụ: `"Đã thêm nền mẫu."`, `"Thêm mới thành công."`, `"Tạo khách hàng thành công."`...), không dập khuôn cứng nhắc một câu.
+    - **Bắt buộc nêu rõ:** Bản ghi mới hiển thị ngay lập tức ngoài màn hình danh sách (màn list), đồng thời các thông tin khi tạo mới xong sẽ hiển thị đúng và đủ ở các cột bên ngoài màn list (nếu có các cột tương ứng).
+    - *Ví dụ tham khảo:*
       `1. Hiển thị thông báo "Thêm mới thành công." và đóng hộp thoại.<br><br>2. Bản ghi mới hiển thị ngay trên danh sách với đầy đủ và chính xác các thông tin tại các cột tương ứng.`
   - **Quy chuẩn màn CẬP NHẬT / CHỈNH SỬA (Khi cập nhật thành công):**
-    - Bắt buộc nêu rõ: Giá trị mới hiển thị ngay tại màn chi tiết của bản ghi, hiển thị ngoài màn danh sách (list), và khi mở lại bản ghi đó thì các giá trị bên trong màn hình chỉnh sửa cũng phải hiển thị đúng giá trị mới.
-    - *Ví dụ chuẩn:*
+    - **Linh động thông báo & điều hướng theo dự án:** Nội dung câu thông báo thành công và đóng form linh động theo thực tế hệ thống (ví dụ: `"Đã cập nhật nền mẫu."`, `"Cập nhật thành công."`...).
+    - **Bắt buộc nêu rõ:** Giá trị mới hiển thị ngay tại màn chi tiết của bản ghi, hiển thị ngoài màn danh sách (list), và khi mở lại bản ghi đó thì các giá trị bên trong màn hình chỉnh sửa cũng phải hiển thị đúng giá trị mới.
+    - *Ví dụ tham khảo:*
       `1. Hiển thị thông báo "Cập nhật thành công." và đóng hộp thoại.<br><br>2. Giá trị mới hiển thị ngay ngoài màn hình danh sách và màn chi tiết.<br><br>3. Khi mở lại bản ghi, các thông tin vừa chỉnh sửa hiển thị đúng giá trị mới.`
   - **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn: `Nút "Sửa" ở trạng thái vô hiệu hóa` (hoặc `bị vô hiệu hóa`). Tuyệt đối CẤM ghi thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
   - **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
