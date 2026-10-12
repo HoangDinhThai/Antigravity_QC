@@ -39,31 +39,43 @@ Tất cả các test cases sinh ra (dù ở Mode QUICK hay FULL RBT) **BẮT BU�
    - **Quy tắc CẤM LẶP LẠI TIỀN TỐ:** Tuyệt đối **KHÔNG lặp lại tiền tố của Test Case Title_1** trong cột này.
      - ❌ CẤM: `Quyền truy cập - Người dùng chỉ có quyền xem` ➔ ✅ ĐÚNG: `Người dùng chỉ có quyền xem`
      - ❌ CẤM: `Phân quyền trường Tên Sale - Trưởng phòng Kinh doanh` ➔ ✅ ĐÚNG: `Trưởng phòng Kinh doanh`
-   - **Quy tắc CẤM NHÂN ĐÔI TRÙNG LẶP (Case Đơn lẻ):** Nếu một kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. Tuyệt đối KHÔNG copy y hệt tên từ Title_1 sang Title_2.
+   - **Quy tắc khi không có kịch bản con / Ca đơn lẻ (Single Case):** Nếu một kịch bản đứng độc lập hoặc không có phân nhánh con, chỉ điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống hoàn toàn (tuyệt đối KHÔNG dùng `""`, không điền chuỗi hai dấu ngoặc kép)**. Tuyệt đối KHÔNG copy y hệt tên từ Title_1 sang Title_2.
      - ❌ CẤM: Title_1: `Thêm mới một khối Người liên hệ`, Title_2: `Thêm mới một khối Người liên hệ`
-     - ✅ ĐÚNG: Title_1: `Thêm mới một khối Người liên hệ`, Title_2: `""` (Để trống)
+     - ❌ CẤM: Title_1: `Thêm mới một khối Người liên hệ`, Title_2: `""`
+     - ✅ ĐÚNG: Title_1: `Thêm mới một khối Người liên hệ`, Title_2: để trống (trong bảng Markdown để ô trống `| |`, không điền `""`)
    - **Quy tắc đặt tên Ca kiểm thử Giá trị biên / Độ dài (Cực kỳ ngắn gọn & trực diện):**
      - Đi thẳng vào số liệu cụ thể cần test, tuyệt đối không giải thích dài dòng hoặc chèn ngoặc đơn rườm rà.
      - ❌ CẤM: `Nhập thiếu chữ số (9 số hoặc 11 số)` ➔ ✅ ĐÚNG: `Nhập 9 chữ số` (hoặc `Nhập 11 chữ số`)
      - ❌ CẤM: `Nhập vượt quá 12 chữ số (13 số)` ➔ ✅ ĐÚNG: `Nhập 13 chữ số`
      - ❌ CẤM: `Nhập chuỗi dài vượt quá biên tối đa (256 ký tự)` ➔ ✅ ĐÚNG: `Nhập 256 ký tự`
+   - **Quy tắc đặt tên Ca kiểm thử Bỏ trống trường (CẤM GHI CHUNG CHUNG "TRƯỜNG BẮT BUỘC"):**
+     - Tuyệt đối CẤM ghi thêm "trường bắt buộc" một cách chung chung như `Bỏ trống trường bắt buộc`, `Để trống trường bắt buộc`.
+     - Bắt buộc chọn 1 trong 2 cách viết chuẩn:
+       1. **Cách 1 (Khuyến nghị - Cực kỳ ngắn gọn):** Chỉ ghi đúng: `Bỏ trống` (vì cột `Test Case Title_1` đã ghi rõ tên trường, ví dụ: Title_1: `Kiểm tra trường Tên khách hàng` ➔ Title_2: `Bỏ trống`).
+       2. **Cách 2:** Ghi đích danh tên trường: `Bỏ trống trường <Tên trường chính xác>` (sau chữ "Bỏ trống trường" là tên chính xác của trường đó, ví dụ: `Bỏ trống trường Tên khách hàng`).
+     - ❌ CẤM: `Bỏ trống trường bắt buộc`, `Để trống trường bắt buộc`, `Không nhập trường bắt buộc`
+     - ✅ ĐÚNG: `Bỏ trống` hoặc `Bỏ trống trường Tên khách hàng`
 5. **`Pre-Condition`**: Tiền điều kiện rõ ràng (Tài khoản nào đã đăng nhập, đang đứng tại màn hình/URL nào, bản ghi nào đã tồn tại trong CSDL).
+   - **Quy tắc gộp ô khi trùng Pre-condition:** Khi các test case liên tiếp trong cùng nhóm có cùng tiền điều kiện, **được phép gộp ô theo chiều dọc (Merge Cells) trên Google Sheets** để bảng tính thoáng và dễ theo dõi hơn.
+   - **Ràng buộc nghiêm ngặt:** CHỈ ĐƯỢC PHÉP gộp khi các ca kiểm thử đó thực sự trùng khớp 100% về Pre-condition. Ca nào có tiền điều kiện khác bắt buộc giữ nguyên từng ô riêng biệt, tuyệt đối không gộp bừa bãi.
 6. **`Test Steps`**: Các hành động nguyên tử (Atomic actions), đánh số thứ tự và ngắt dòng có dòng trống `<br><br>` trong ô.
    - **CHỈ GHI HÀNH ĐỘNG THAO TÁC CỦA NGƯỜI DÙNG**: Ví dụ: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`
    - **QUY CHUẨN THAO TÁC NÚT BẤM & TÊN NÚT (BẮT BUỘC)**:
      - **Tên nút bấm BẮT BUỘC nằm trong cặp ngoặc kép `""` ở TẤT CẢ các vị trí** (Title, Pre-Condition, Test Steps, Expected Result). Ví dụ: `Nút "Sửa"`, `Nút "Lưu"`, `Nút "Thêm mới"`. CẤM viết cộc lốc thiếu ngoặc kép như `Nút Sửa`, `Nút Lưu`.
      - Cú pháp thao tác nút chuẩn duy nhất: `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`, `Nhấn nút "Hủy"`).
      - Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút", "Click nút".
-   - **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Toàn bộ giá trị nhập liệu (như số điện thoại `'0987654321'`, email, mã số, CCCD...) hoặc các câu giải thích/ghi chú dữ liệu (như *"CCCD và Email giữ nguyên của CTV-001"*) BẮT BUỘC đặt ở cột `Test Data`. KHÔNG viết lặp lại vào `Test Steps`.
+   - **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Toàn bộ giá trị nhập liệu (như số điện thoại `0987654321`, email, mã số, CCCD...) hoặc các câu giải thích/ghi chú dữ liệu (như *"CCCD và Email giữ nguyên của CTV-001"*) BẮT BUỘC đặt ở cột `Test Data`. KHÔNG viết lặp lại vào `Test Steps`.
    - *Ví dụ chuẩn:*
-     - ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
+     - ❌ CẤM: `1. Nhập SĐT 0987654321<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
      - ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`
 7. **`Test Data`**: Nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản (dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm).
+   - **Tuyệt đối KHÔNG thêm dấu nháy đơn `''` vào giá trị:** Chỉ ghi giá trị thuần túy (ví dụ: `SĐT: 0912345678`, CẤM ghi `SĐT: '0912345678'`) để thuận tiện cho việc quan sát và sao chép (copy) trực tiếp vào form mà không bị dính dấu nháy thừa.
+   - **Bắt buộc xuống dòng khi có nhiều trường dữ liệu:** Trường hợp có nhiều dữ liệu test trong một kịch bản, **bắt buộc xuống dòng** (dùng `<br>` trong bảng Markdown, `\n` trên Google Sheets) giữa các dòng dữ liệu để dễ dàng quan sát và copy từng trường.
    - **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát.
      - ❌ CẤM: `Không chọn dòng nào (chưa chọn dòng nào)` ➔ ✅ ĐÚNG: `Không chọn dòng nào`
      - ❌ CẤM: `Chọn 2 dòng: NS-0028, NS-0029 (chọn 2 dòng)` ➔ ✅ ĐÚNG: `Chọn 2 dòng: NS-0028, NS-0029`
      - ❌ CẤM: `"" (chuỗi rỗng)`, `"" (để trống)`, `(chưa chọn)` ➔ ✅ ĐÚNG: `""` hoặc `Chưa chọn`
-   - **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế: `SĐT: '0987654321', CCCD: '001203004567'`, `admin@vntest.vn`.
+   - **NGHIÊM CẤM** dùng từ chung chung/placeholder như `"Nhập đúng"`, `"Nhập sai mật khẩu"`, `"Nhập email hợp lệ"`. **BẮT BUỘC** dữ liệu thực tế: `SĐT: 0987654321`, `CCCD: 001203004567`, `Email: admin@vntest.vn`.
 8. **`Expected Result`**: Kết quả mong đợi đánh số tương ứng với các bước. **BẮT BUỘC dùng `<br><br>` (hoặc 2 lần xuống dòng `\n\n`) để tạo khoảng cách dòng trống giữa các ý đánh số** giúp nội dung thoáng, trực quan và dễ đọc:
    - **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn `Nút "Sửa" ở trạng thái vô hiệu hóa` (hoặc `bị vô hiệu hóa`). Tuyệt đối CẤM chèn thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
    - **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
@@ -113,7 +125,9 @@ Manual Test Case là tài liệu bàn giao cho Tester, Khách hàng, Product Own
 1. **CẤM TUYỆT ĐỐI:**
    - CẤM viết test case nửa nạc nửa mỡ, pha trộn tiếng Việt lẫn tiếng Anh kỹ thuật.
    - CẤM đưa tên CSS class, CSS selector, DOM element, ID, HTML tag, HTML attribute vào kịch bản test (ví dụ: `.modal-title`, `class .is-readonly`, `input[readonly]`, `button.btn-close`, `.badge-success`).
-   - CẤM dùng các từ kỹ thuật tiếng Anh để mô tả trạng thái UI khi đã có từ tiếng Việt tương ứng (ví dụ: `(disabled)`, `readonly`, `active`, `hover`, `spinner loading`).
+   - CẤM dùng các từ kỹ thuật tiếng Anh để mô tả thao tác hoặc trạng thái UI (ví dụ: `Click`, `option`, `input`, `dropdown`, `toast`, `banner`, `(disabled)`, `readonly`, `active`, `hover`, `spinner loading`).
+   - **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn: `ở trạng thái vô hiệu hóa` hoặc `bị vô hiệu hóa`. Tuyệt đối CẤM ghi thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
+   - **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
 
 2. **BẢNG ĐỐI CHIẾU MẪU (BẮT BUỘC TUÂN THỦ):**
 

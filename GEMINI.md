@@ -107,8 +107,13 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 * **Cột Test Case Title_2 (Cột E):**
   - **Hành vi kiểm thử / Kịch bản chi tiết** (ví dụ: `Người dùng chỉ có quyền xem`, `Cố tình truy cập trái phép bằng đường dẫn trực tiếp`, `Nhân viên kinh doanh thông thường`...).
   - **Quy tắc quan trọng (CỰC KỲ NGẮN GỌN & KHÔNG LẶP LẠI):** Tuyệt đối **KHÔNG lặp lại tiền tố của Title_1** (CẤM viết kiểu: `Quyền truy cập - Người dùng chỉ có quyền xem`).
-  - **Chống trùng lặp ca đơn lẻ (Single Case):** Nếu kịch bản đứng độc lập, không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2.
+  - **Khi không có kịch bản con / Ca đơn lẻ (Single Case):** Nếu kịch bản đứng độc lập hoặc không có phân nhánh con thì điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống hoàn toàn (tuyệt đối KHÔNG dùng `""`, không điền chuỗi hai dấu ngoặc kép)**, TUYỆT ĐỐI KHÔNG copy trùng lặp y hệt tên từ Title_1 sang Title_2.
   - **Quy tắc đặt tên giá trị biên / độ dài:** Đi thẳng vào số liệu cụ thể, cực kỳ ngắn gọn (ví dụ: `Nhập 9 chữ số`, `Nhập 13 chữ số`, `Nhập 256 ký tự`; CẤM viết rườm rà kèm ngoặc đơn như `Nhập thiếu chữ số (9 số hoặc 11 số)`).
+  - **Quy tắc đặt tên ca kiểm thử bỏ trống (CẤM GHI CHUNG CHUNG "TRƯỜNG BẮT BUỘC"):** Tuyệt đối CẤM ghi thêm "trường bắt buộc" chung chung như `Bỏ trống trường bắt buộc`, `Để trống trường bắt buộc`. Bắt buộc dùng 1 trong 2 cách: (1) Khuyến nghị cực kỳ ngắn gọn: `Bỏ trống` (vì Title_1 đã ghi rõ tên trường); (2) Đích danh tên trường: `Bỏ trống trường <Tên trường chính xác>`.
+* **Cột Pre-Condition (Cột F):**
+  - **Quy tắc gộp ô khi trùng Pre-condition:** Trong trường hợp các test case liên tiếp có cùng tiền điều kiện (trùng Pre-condition) trong cùng một khối, **được phép tự động gộp ô theo chiều dọc (`mergeCells` trên Cột F)** để giao diện bảng tính liền mạch, thoáng đãng và dễ theo dõi hơn.
+  - **Ràng buộc chính xác tuyệt đối:** CHỈ ĐƯỢC PHÉP gộp khi các ca kiểm thử đó thực sự trùng khớp 100% về nội dung Pre-condition. Nếu các test case có Pre-condition khác nhau thì **bắt buộc giữ nguyên từng ô riêng biệt**, tuyệt đối không gộp bừa bãi.
+  - **Định dạng chuẩn:** Căn giữa dọc (`verticalAlignment: MIDDLE`), căn lề trái (`horizontalAlignment: LEFT`), `Arial 10pt`, tự động xuống dòng (`wrapStrategy: WRAP`), viền đen (`Borders: SOLID 1px`).
 * **Cột Steps (Cột G) - Chỉ Ghi Hành Động Thao Tác (Atomic Actions), CẤM Lặp Lại Dữ Liệu:**
   - **Chỉ ghi hành động người dùng:** Ghi các thao tác nguyên tử (ví dụ: `1. Nhập SĐT.`, `2. Nhấn nút "Cập nhật".` hoặc `1. Nhập SĐT.\n\n2. Nhấn nút "Cập nhật".`).
   - **Quy chuẩn thao tác nút bấm & tên nút (Button Actions - BẮT BUỘC):**
@@ -118,7 +123,9 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Tuyệt đối CẤM đưa các câu giải thích/ghi chú dữ liệu vào Bước test:** CẤM viết kiểu `"2. CCCD và Email giữ nguyên của CTV-001"` vào Steps. Mọi dữ liệu giữ nguyên/thay đổi đều khai báo ở cột Test Data.
   - **Bắt buộc có khoảng cách dòng trống:** Giữa các ý đánh số (`1. ...`, `2. ...`, `3. ...`) bằng cách dùng `\n\n` trên Google Sheets (hoặc `<br><br>` trong Markdown) để giao diện thoáng đãng, dễ đọc.
 * **Cột Test Data (Cột H) - Nơi Duy Nhất Định Nghĩa Toàn Bộ Dữ Liệu Kiểm Thử:**
-  - Là nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản: Dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm cụ thể (ví dụ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`).
+  - Là nơi **DUY NHẤT** lưu trữ các giá trị dữ liệu cụ thể dùng cho kịch bản: Dữ liệu nhập mới, dữ liệu giữ nguyên, dữ liệu bỏ trống `""`, hoặc dữ liệu vi phạm cụ thể (ví dụ: `SĐT: 0987654321`, `CCCD: 001203004567`, `Email: nguyenvanan@example.com`).
+  - **Tuyệt đối KHÔNG thêm dấu nháy đơn `''` vào giá trị:** Chỉ ghi giá trị thuần túy (ví dụ: `SĐT: 0912345678`, CẤM ghi `SĐT: '0912345678'`) để thuận tiện cho việc quan sát và sao chép (copy) trực tiếp vào form mà không bị dính dấu nháy thừa.
+  - **Bắt buộc xuống dòng khi có nhiều trường dữ liệu:** Trường hợp có nhiều dữ liệu test trong một kịch bản, **bắt buộc xuống dòng** (dùng `<br>` trong bảng Markdown hoặc `\n` trên Google Sheets) giữa các dòng dữ liệu để dễ dàng quan sát và copy từng trường.
   - **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát (Ví dụ: `Không chọn dòng nào`, `Chọn 2 dòng: NS-0028, NS-0029`, `""`; CẤM ghi kèm: `(chưa chọn dòng nào)`, `(chọn 2 dòng)`, `(chuỗi rỗng)`).
   - **CẤM TUYỆT ĐỐI** dùng từ ngữ chung chung (`"Nhập đúng"`, `"Nhập sai mật khẩu"`).
 * **Cột Expected Result (Cột I):**

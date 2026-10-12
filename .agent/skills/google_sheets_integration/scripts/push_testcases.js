@@ -15,6 +15,8 @@ function cleanMarkdown(text) {
   str = str.replace(/\*/g, '');
   str = str.replace(/`/g, '');
   str = str.replace(/\\\|/g, '|');
+  // Bóc nháy đơn bọc quanh giá trị (vd: : 'abc' -> : abc)
+  str = str.replace(/:\s*['']([^'']+)['']/g, ': $1');
   return str.trim();
 }
 
@@ -188,7 +190,7 @@ function parseMarkdownTestCases(mdContent) {
       }
     }
 
-    if (rawTitle2 && rawTitle1 && rawTitle2.trim().toLowerCase() === rawTitle1.trim().toLowerCase()) {
+    if (rawTitle2 && (rawTitle2 === '""' || rawTitle2 === "''" || (rawTitle1 && rawTitle2.trim().toLowerCase() === rawTitle1.trim().toLowerCase()))) {
       rawTitle2 = '';
     }
 
@@ -395,11 +397,17 @@ async function main() {
     const isNewTitle1 = isNewFeature || (tc.title1 !== testCases[idx - 1].title1);
     const colTitle1 = isNewTitle1 ? tc.title1 : "";
 
-    // Col E: Test Case Title_2 (kịch bản chi tiết, không lặp lại tiền tố của Title_1; nếu ca đơn lẻ trùng title1 thì để trống "")
+    // Col E: Test Case Title_2 (kịch bản chi tiết, không lặp lại tiền tố của Title_1; nếu không có hoặc ca đơn lẻ trùng title1 thì để trống hoàn toàn)
     let colTitle2 = tc.title2 || (!tc.title1 ? (tc.title || "") : "");
-    if (colTitle2 && tc.title1 && colTitle2.trim().toLowerCase() === tc.title1.trim().toLowerCase()) {
+    if (colTitle2 && (colTitle2 === '""' || colTitle2 === "''" || (tc.title1 && colTitle2.trim().toLowerCase() === tc.title1.trim().toLowerCase()))) {
       colTitle2 = "";
     }
+
+    // Col F: Pre-Condition (chỉ điền ở dòng đầu của nhóm trùng Pre-condition trong cùng Title_1 & Feature, các dòng sau để trống "" để gộp ô sạch sẽ)
+    const currPre = (tc.preCondition || '').trim();
+    const prevPre = idx > 0 ? (testCases[idx - 1].preCondition || '').trim() : '';
+    const isNewPre = isNewTitle1 || !currPre || (currPre !== prevPre);
+    const colPre = isNewPre ? tc.preCondition : "";
 
     const row = [
       String(currentSTT),         // Col A: No. ID
@@ -407,7 +415,7 @@ async function main() {
       colFeature,                 // Col C: Feature
       colTitle1,                  // Col D: Test Case Title_1
       colTitle2,                  // Col E: Test Case Title_2
-      tc.preCondition,            // Col F: Pre-Condition
+      colPre,                     // Col F: Pre-Condition
       tc.steps,                   // Col G: Steps (đã chuyển -> và <br> thành \n)
       tc.testData,                // Col H: Test Data (đã chuyển <br> thành \n)
       tc.expectedResult,          // Col I: Expected Result (đã chuyển <br> thành \n)
@@ -523,6 +531,35 @@ async function main() {
     title1Blocks.push(currentT1Block);
   }
 
+  // 11.3 Gom nhóm Pre-Condition (Cột F) trong từng nhóm Title_1 & Feature khi các test case liên tiếp trùng Pre-condition
+  const preBlocks = [];
+  let currentPreBlock = null;
+
+  for (let idx = 0; idx < testCases.length; idx++) {
+    const fName = testCases[idx].feature || '';
+    const t1Name = testCases[idx].title1 || '';
+    const preVal = (testCases[idx].preCondition || '').trim();
+    const currRow = startRowIndex + idx;
+    const groupKey = `${fName}:::${t1Name}:::${preVal}`;
+
+    if (!currentPreBlock || currentPreBlock.key !== groupKey) {
+      if (currentPreBlock && currentPreBlock.name) {
+        preBlocks.push(currentPreBlock);
+      }
+      currentPreBlock = {
+        key: groupKey,
+        name: preVal,
+        startRow: currRow,
+        endRow: currRow
+      };
+    } else {
+      currentPreBlock.endRow = currRow;
+    }
+  }
+  if (currentPreBlock && currentPreBlock.name) {
+    preBlocks.push(currentPreBlock);
+  }
+
   const postRequests = [];
 
   // Tạo request merge cho cột Feature (Cột C, startColumnIndex: 2, endColumnIndex: 3)
@@ -554,6 +591,24 @@ async function main() {
             endRowIndex: block.endRow,
             startColumnIndex: 3,               // Column D
             endColumnIndex: 4
+          },
+          mergeType: 'MERGE_ALL'
+        }
+      });
+    }
+  }
+
+  // Tạo request merge cho cột Pre-Condition (Cột F, startColumnIndex: 5, endColumnIndex: 6) khi trùng Pre-condition
+  for (const block of preBlocks) {
+    if (block.endRow > block.startRow && block.name) {
+      postRequests.push({
+        mergeCells: {
+          range: {
+            sheetId: targetSheetId,
+            startRowIndex: block.startRow - 1,
+            endRowIndex: block.endRow,
+            startColumnIndex: 5,               // Column F
+            endColumnIndex: 6
           },
           mergeType: 'MERGE_ALL'
         }
@@ -614,7 +669,32 @@ async function main() {
     }
   });
 
-  // 11.3 Gộp ô toàn bộ cột Module (Cột B) và Tester (Cột M)
+  // Định dạng toàn bộ cột F (Pre-Condition) từ startRowIndex đến endDataRow - 1 (Left, Middle, Arial 10pt)
+  postRequests.push({
+    repeatCell: {
+      range: {
+        sheetId: targetSheetId,
+        startRowIndex: startRowIndex - 1,
+        endRowIndex: endDataRow - 1,
+        startColumnIndex: 5,
+        endColumnIndex: 6
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: 'LEFT',
+          verticalAlignment: 'MIDDLE',
+          wrapStrategy: 'WRAP',
+          textFormat: {
+            fontFamily: 'Arial',
+            fontSize: 10
+          }
+        }
+      },
+      fields: 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+    }
+  });
+
+  // 11.4 Gộp ô toàn bộ cột Module (Cột B) và Tester (Cột M)
   if (preparedRows.length > 1) {
     // Merge cột Module (Cột B, startColumnIndex: 1, endColumnIndex: 2)
     postRequests.push({
@@ -769,7 +849,8 @@ async function main() {
   if (postRequests.length > 0) {
     const fMergeCount = featureBlocks.filter(b => b.endRow > b.startRow).length;
     const t1MergeCount = title1Blocks.filter(b => b.endRow > b.startRow).length;
-    console.log(`Đang thực hiện gộp Module (B), Tester (M), ${fMergeCount} nhóm Feature, ${t1MergeCount} nhóm Title_1, cài đặt Dropdown Priority (J), Web (K) và định dạng chuẩn...`);
+    const preMergeCount = preBlocks.filter(b => b.endRow > b.startRow && b.name).length;
+    console.log(`Đang thực hiện gộp Module (B), Tester (M), ${fMergeCount} nhóm Feature, ${t1MergeCount} nhóm Title_1, ${preMergeCount} nhóm Pre-Condition, cài đặt Dropdown Priority (J), Web (K) và định dạng chuẩn...`);
     await sheets.spreadsheets.batchUpdate({
       spreadsheetId,
       requestBody: { requests: postRequests }

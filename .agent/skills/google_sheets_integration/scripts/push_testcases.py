@@ -23,6 +23,8 @@ def clean_markdown(text):
     s = re.sub(r'<br\s*/?>', '\n', s, flags=re.IGNORECASE)
     s = re.sub(r'\s*->\s*', '\n', s)
     s = s.replace('**', '').replace('*', '').replace('`', '')
+    # Bóc nháy đơn bọc quanh giá trị (vd: : 'abc' -> : abc)
+    s = re.sub(r':\s*[\'"]([^\'"]+)[\'"]', r': \1', s)
     return s.strip()
 
 def format_spaced_text(text):
@@ -140,7 +142,7 @@ def parse_markdown_testcases(md_content):
             else:
                 raw_title1 = current_title1
 
-        if raw_title2 and raw_title1 and raw_title2.strip().lower() == raw_title1.strip().lower():
+        if raw_title2 and (raw_title2 in ['""', "''"] or (raw_title1 and raw_title2.strip().lower() == raw_title1.strip().lower())):
             raw_title2 = ""
 
         pre = clean_markdown(r[col_pre]) if col_pre != -1 and col_pre < len(r) else ""
@@ -301,10 +303,16 @@ def main():
         is_new_title1 = is_new_feature or (tc['title1'] != test_cases[idx - 1]['title1'])
         col_title1 = tc['title1'] if is_new_title1 else ""
 
-        # Col E: Test Case Title_2 (kịch bản chi tiết, không lặp lại tiền tố của Title_1; nếu ca đơn lẻ trùng title1 thì để trống "")
+        # Col E: Test Case Title_2 (kịch bản chi tiết, không lặp lại tiền tố của Title_1; nếu không có hoặc ca đơn lẻ trùng title1 thì để trống hoàn toàn)
         col_title2 = tc.get('title2') or (tc.get('title') if not tc.get('title1') else "")
-        if col_title2 and tc.get('title1') and col_title2.strip().lower() == tc.get('title1').strip().lower():
+        if col_title2 and (col_title2 in ['""', "''"] or (tc.get('title1') and col_title2.strip().lower() == tc.get('title1').strip().lower())):
             col_title2 = ""
+
+        # Col F: Pre-Condition (chỉ điền ở dòng đầu của nhóm trùng Pre-condition trong cùng Title_1 & Feature, các dòng sau để trống "" để gộp ô sạch sẽ)
+        curr_pre = (tc.get('pre') or '').strip()
+        prev_pre = (test_cases[idx - 1].get('pre') or '').strip() if idx > 0 else ''
+        is_new_pre = is_new_title1 or not curr_pre or (curr_pre != prev_pre)
+        col_pre = tc['pre'] if is_new_pre else ""
 
         row = [
             str(next_stt + idx),
@@ -312,7 +320,7 @@ def main():
             col_feature,
             col_title1,
             col_title2,
-            tc['pre'],
+            col_pre,
             tc['steps'],
             tc['data'],
             tc['exp'],
@@ -375,6 +383,24 @@ def main():
     if current_t1_block and current_t1_block['name']:
         title1_blocks.append(current_t1_block)
 
+    # 3. Gom nhóm Pre-Condition (Cột F) trong từng nhóm Title_1 & Feature khi trùng Pre-condition
+    pre_blocks = []
+    current_pre_block = None
+    for idx, tc in enumerate(test_cases):
+        f_name = tc.get('feature', '')
+        t1_name = tc.get('title1', '')
+        pre_val = (tc.get('pre') or '').strip()
+        curr_r = start_row + idx
+        group_key = f"{f_name}:::{t1_name}:::{pre_val}"
+        if not current_pre_block or current_pre_block['key'] != group_key:
+            if current_pre_block and current_pre_block['name']:
+                pre_blocks.append(current_pre_block)
+            current_pre_block = {'key': group_key, 'name': pre_val, 'start_row': curr_r, 'end_row': curr_r}
+        else:
+            current_pre_block['end_row'] = curr_r
+    if current_pre_block and current_pre_block['name']:
+        pre_blocks.append(current_pre_block)
+
     merge_requests = []
 
     # Merge Cột Feature (Cột C: 2 to 3)
@@ -404,6 +430,22 @@ def main():
                         'endRowIndex': b['end_row'],
                         'startColumnIndex': 3,
                         'endColumnIndex': 4
+                    },
+                    'mergeType': 'MERGE_ALL'
+                }
+            })
+
+    # Merge Cột Pre-Condition (Cột F: 5 to 6) khi trùng Pre-condition
+    for b in pre_blocks:
+        if b['end_row'] > b['start_row'] and b['name']:
+            merge_requests.append({
+                'mergeCells': {
+                    'range': {
+                        'sheetId': target_id,
+                        'startRowIndex': b['start_row'] - 1,
+                        'endRowIndex': b['end_row'],
+                        'startColumnIndex': 5,
+                        'endColumnIndex': 6
                     },
                     'mergeType': 'MERGE_ALL'
                 }
@@ -455,6 +497,31 @@ def main():
                         'fontFamily': 'Arial',
                         'fontSize': 10,
                         'bold': True
+                    }
+                }
+            },
+            'fields': 'userEnteredFormat(horizontalAlignment,verticalAlignment,wrapStrategy,textFormat)'
+        }
+    })
+
+    # Định dạng Cột F (Pre-Condition): Left, Middle, Arial 10pt
+    merge_requests.append({
+        'repeatCell': {
+            'range': {
+                'sheetId': target_id,
+                'startRowIndex': start_row - 1,
+                'endRowIndex': end_data_row - 1,
+                'startColumnIndex': 5,
+                'endColumnIndex': 6
+            },
+            'cell': {
+                'userEnteredFormat': {
+                    'horizontalAlignment': 'LEFT',
+                    'verticalAlignment': 'MIDDLE',
+                    'wrapStrategy': 'WRAP',
+                    'textFormat': {
+                        'fontFamily': 'Arial',
+                        'fontSize': 10
                     }
                 }
             },
@@ -612,12 +679,13 @@ def main():
     if merge_requests:
         f_merge_count = len([b for b in feature_blocks if b['end_row'] > b['start_row']])
         t1_merge_count = len([b for b in title1_blocks if b['end_row'] > b['start_row']])
-        print(f"Đang thực hiện gộp {f_merge_count} nhóm Feature, {t1_merge_count} nhóm Title_1 và định dạng chuẩn cho cột Feature & Title_1...")
+        pre_merge_count = len([b for b in pre_blocks if b['end_row'] > b['start_row'] and b['name']])
+        print(f"Đang thực hiện gộp {f_merge_count} nhóm Feature, {t1_merge_count} nhóm Title_1, {pre_merge_count} nhóm Pre-Condition và định dạng chuẩn...")
         service.spreadsheets().batchUpdate(
             spreadsheetId=spreadsheet_id,
             body={'requests': merge_requests}
         ).execute()
-        print("Đã gộp ô và định dạng cột Feature & Title_1 thành công!")
+        print("Đã gộp ô và định dạng thành công!")
 
     # Tự động cắt tỉa / xóa sạch toàn bộ hàng thừa (empty trailing rows) bên dưới bảng test cases
     final_data_row = end_data_row - 1

@@ -66,22 +66,27 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
    - **Quy chuẩn phân cấp tiêu đề 3 tầng (Feature ➔ Title_1 ➔ Title_2)**:
      * **Feature**: Khối tính năng lớn (ví dụ: `01. Bố cục & Hiển thị`, `02. Phân quyền & Điều kiện kích hoạt`, `03. Luồng nghiệp vụ chính`, `04. Field Validation`...).
      * **Test Case Title_1**: Tên nhóm con / Chủ đề kiểm thử cấp 1 (ví dụ: `Quyền truy cập`, `Phiên đăng nhập`, `Phân quyền trường Tên Sale`, `Tạo mới thông tin BĐS`). Các test case cùng chủ đề con này sẽ được gom nhóm để tự động gộp ô (Merge Cells).
-     * **Test Case Title_2**: Tiêu đề kịch bản chi tiết, phản ánh rõ hành vi (ví dụ: `Tạo thành công với dữ liệu hợp lệ (Property Manager)`, `Bỏ trống trường bắt buộc [物件名]`).
+     * **Test Case Title_2**: Tiêu đề kịch bản chi tiết, phản ánh rõ hành vi (ví dụ: `Tạo thành công với dữ liệu hợp lệ (Property Manager)`, `Bỏ trống` hoặc `Bỏ trống trường [物件名]`).
      * **CẤM TUYỆT ĐỐI lặp lại tiền tố:** Không lặp lại tiền tố của Title_1 trong Title_2 (❌ CẤM: `Quyền truy cập - Người dùng chỉ có quyền xem` ➔ ✅ ĐÚNG: Title_1: `Quyền truy cập`, Title_2: `Người dùng chỉ có quyền xem`).
-     * **Quy tắc ca đơn lẻ (Không có kịch bản con):** Nếu ca kiểm thử độc lập không có các nhánh con, điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống `""`**. CẤM copy lặp lại y hệt nội dung của Title_1 sang Title_2.
+     * **Quy tắc khi không có kịch bản con / Ca đơn lẻ (Single Case):** Nếu ca kiểm thử độc lập không có các nhánh con, chỉ điền tên vào `Test Case Title_1`, còn `Test Case Title_2` **bắt buộc để trống hoàn toàn (tuyệt đối KHÔNG dùng `""`, không điền chuỗi hai dấu ngoặc kép)**. CẤM copy lặp lại y hệt nội dung của Title_1 sang Title_2.
    - **Quy tắc đặt tên giá trị biên / độ dài (Cực kỳ ngắn gọn, đi thẳng vào số liệu):**
      * Đặt tên ngắn gọn, nêu rõ số lượng/kích thước giá trị thử nghiệm, không viết câu giải thích dài dòng kèm ngoặc đơn.
      * ❌ CẤM: `Nhập thiếu chữ số (9 số hoặc 11 số)` ➔ ✅ ĐÚNG: `Nhập 9 chữ số` (hoặc `Nhập 11 chữ số`)
      * ❌ CẤM: `Nhập vượt quá 12 chữ số (13 số)` ➔ ✅ ĐÚNG: `Nhập 13 chữ số`
      * ❌ CẤM: `Nhập quá ký tự tối đa (256 ký tự)` ➔ ✅ ĐÚNG: `Nhập 256 ký tự`
+   - **Quy tắc đặt tên Ca kiểm thử Bỏ trống trường (CẤM GHI CHUNG CHUNG "TRƯỜNG BẮT BUỘC"):**
+     * Tuyệt đối CẤM ghi thêm "trường bắt buộc" một cách chung chung như `Bỏ trống trường bắt buộc`, `Để trống trường bắt buộc`.
+     * Bắt buộc chọn 1 trong 2 cách viết chuẩn:
+       - **Cách 1 (Khuyến nghị - Cực kỳ ngắn gọn):** Chỉ ghi đúng: `Bỏ trống` (vì cột `Test Case Title_1` đã ghi rõ tên trường, ví dụ: Title_1: `Kiểm tra trường Tên khách hàng` ➔ Title_2: `Bỏ trống`).
+       - **Cách 2:** Ghi đích danh tên trường: `Bỏ trống trường <Tên trường chính xác>` (sau chữ "Bỏ trống trường" là tên chính xác của trường đó, ví dụ: `Bỏ trống trường Tên khách hàng`).
+     * ❌ CẤM: `Bỏ trống trường bắt buộc`, `Để trống trường bắt buộc`, `Không nhập trường bắt buộc`
+     * ✅ ĐÚNG: `Bỏ trống` hoặc `Bỏ trống trường Tên khách hàng`
    - **Quy tắc giãn cách dòng trong Steps & Expected Result (BẮT BUỘC):**
      * Giữa các ý đánh số (`1. ...`, `2. ...`) hoặc gạch đầu dòng, **bắt buộc có 1 dòng trống** (`<br><br>` trong Markdown hoặc 2 dấu xuống dòng `\n\n` trên Google Sheet) để nhìn thoáng mắt, dễ theo dõi, tuyệt đối không viết dính sát một dòng.
    - **Tên Test Case**: Viết bằng **TIẾNG VIỆT CỰC KỲ NGẮN GỌN, RÕ RÀNG**, câu từ chuẩn hóa để BrSE/Comtor có thể đọc hiểu và dịch ngay sang tiếng Nhật một cách dễ dàng. Không cần dịch sẵn tiếng Nhật trong bảng (trừ các tên nút/UI element bằng tiếng Nhật giữ nguyên trong ngoặc vuông `[物件詳細]`).
    - **Test Data (BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DOMAIN)**:
-     * **CẤM TUYỆT ĐỐI mở ngoặc đơn lặp lại ý giải thích:** Chỉ ghi 1 giá trị duy nhất, ngắn gọn, dứt khoát.
-       - ❌ CẤM: `Không chọn dòng nào (chưa chọn dòng nào)` ➔ ✅ ĐÚNG: `Không chọn dòng nào`
-       - ❌ CẤM: `Chọn 2 dòng: NS-0028, NS-0029 (chọn 2 dòng)` ➔ ✅ ĐÚNG: `Chọn 2 dòng: NS-0028, NS-0029`
-       - ❌ CẤM: `"" (chuỗi rỗng)`, `"" (để trống)`, `(chưa chọn)` ➔ ✅ ĐÚNG: `""` hoặc `Chưa chọn`
+     * **Tuyệt đối KHÔNG thêm dấu nháy đơn `''` vào giá trị:** Chỉ ghi giá trị thuần túy (ví dụ: `SĐT: 0912345678`, CẤM ghi `SĐT: '0912345678'`) để người dùng dễ quan sát và copy trực tiếp vào hệ thống.
+     * **Bắt buộc xuống dòng khi có nhiều trường dữ liệu:** Khi có nhiều dữ liệu test trong một kịch bản, **bắt buộc xuống dòng** (dùng `<br>` trong Markdown, `\n` trên Google Sheets) giữa các dòng dữ liệu để dễ dàng quan sát và copy từng trường.
      * ❌ **CẤM HOÀN TOÀN**: Dùng dữ liệu test kiểu chung chung, rập khuôn, ngây ngô (như `nhập email đúng`, `nhập pass sai`, `abc@gmail.com`, `admin@123`, `123456`, `test_data_1`).
      * ✅ **BẮT BUỘC BÁM SÁT NGỮ CẢNH TASK & DỰ ÁN**:
        - **Trích xuất trực tiếp từ Task Spec & Comments**: Thu thập toàn bộ các trường thông tin, mã entity, role, trạng thái, định dạng, giới hạn ký tự (min/max), regex xuất hiện trong mô tả task, bình luận của BA/Dev hoặc tài liệu đính kèm để làm Test Data.
@@ -95,24 +100,18 @@ Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử d�
          | Vượt giới hạn ký tự | `Tên dài: abcdefghijklmnopqrstuvwxyz...` | `Tên dài > 50 chars`: "Dự án căn hộ chung cư cao cấp Grand Maison Shinjuku Tower Block A (Phiên bản mở rộng 2026)" |
          | Tài khoản & Quyền | `User: admin`, `Role: user` | `Account: property_mgr_01@sdr.jp`, `Role: [Property Manager]` (đúng role trong task) |
    - **Test Steps (Chỉ ghi hành động thao tác, CẤM lặp lại dữ liệu)**:
-     * Các bước nguyên tử (Atomic steps), rõ ràng (ví dụ: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".`), giữa các bước dùng `<br><br>`.
-     * **QUY CHUẨN THAO TÁC NÚT BẤM & TÊN NÚT (BẮT BUỘC)**:
-       - **Tên nút bấm BẮT BUỘC nằm trong ngoặc kép `""` ở TẤT CẢ các vị trí** (Title, Pre-Condition, Test Steps, Expected Result). Ví dụ: `Nút "Sửa"`, `Nút "Lưu"`, `Nút "Thêm mới"`. CẤM viết cộc lốc thiếu ngoặc kép như `Nút Sửa`, `Nút Lưu`.
-       - Cú pháp thao tác nút chuẩn: `Nhấn nút "<Tên nút>"` (ví dụ: `Nhấn nút "Cập nhật"`, `Nhấn nút "Lưu"`).
-       - Thống nhất từ khóa `Nhấn nút`. Tuyệt đối CẤM dùng ngoặc vuông `[Cập nhật]`, CẤM dùng từ "Bấm", "Click", "Bấm nút", "Click nút".
+     * Các bước nguyên tử (Atomic steps), rõ ràng (ví dụ: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].`), giữa các bước dùng `<br><br>`.
      * **TUYỆT ĐỐI CẤM LẶP LẠI GIÁ TRỊ DỮ LIỆU CỤ THỂ VÀO BƯỚC TEST**: Không viết các giá trị cụ thể (như SĐT '0987654321', email, mã số...) hoặc các câu giải thích/ghi chú dữ liệu (như "giữ nguyên dữ liệu của CTV-001") vào Test Steps vì toàn bộ giá trị đã được quy định ở cột `Test Data`.
      * ❌ CẤM: `1. Nhập SĐT '0987654321'<br><br>2. CCCD và Email giữ nguyên của CTV-001<br><br>3. Bấm [Cập nhật]`
-     * ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Nhấn nút "Cập nhật".` *(Cột Test Data ghi rõ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
+     * ✅ ĐÚNG: `1. Nhập SĐT.<br><br>2. Bấm [Cập nhật].` *(Cột Test Data ghi rõ: `SĐT: '0987654321', CCCD: '001203004567', Email: 'nguyenvanan@example.com'`)*
    - **Expected Result**: Cụ thể, định lượng/định tính đo lường được, giữa các ý kết quả dùng `<br><br>`.
-     * **Mô tả trạng thái vô hiệu hóa (Disabled State):** Chỉ ghi ngắn gọn: `Nút "Sửa" ở trạng thái vô hiệu hóa` (hoặc `bị vô hiệu hóa`). Tuyệt đối CẤM chèn thêm cụm từ giải thích thừa thãi `(làm mờ, không thể bấm)` hay `(mờ đi, không click được)`.
-     * **Thông báo & nhãn hiển thị:** BẮT BUỘC dùng dấu ngoặc kép chuẩn `""` (ví dụ: `"Vui lòng nhập lý do chỉnh sửa chức vụ."`). Tuyệt đối CẤM dùng ngoặc kiểu Pháp `«...»` hoặc dấu lạ (`“...”`, `”...”`).
 
 3. **Định Dạng Bảng Output (Markdown Table)**:
 
 ```markdown
 | TC ID | Feature | Test Case Title_1 | Test Case Title_2 | Pre-Condition | Test Steps | Test Data | Expected Result | Priority |
 |---|---|---|---|---|---|---|---|---|
-| TC_01 | 01. Quản lý Bất Động Sản | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br><br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS.<br><br>2. Nhập Tên BĐS.<br><br>3. Nhập Giá bán.<br><br>4. Nhấn nút "登録する". | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br><br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br><br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
+| TC_01 | 01. Quản lý Bất Động Sản | Tạo mới thông tin BĐS | Tạo mới BĐS thành công với dữ liệu hợp lệ (Property Manager) | 1. Đã đăng nhập bằng tài khoản `property_mgr_01@sdr.jp`<br><br>2. Đã ở trang `/properties/create` | 1. Nhập Mã BĐS vào ô [物件コード]<br><br>2. Nhập Tên BĐS vào ô [物件名]<br><br>3. Nhập Giá bán vào ô [販売価格]<br><br>4. Click nút [登録する] | Mã BĐS: `RE-2026-TK01`<br>Tên BĐS: `パークホームズ恵比寿`<br>Giá bán: `65000000` | 1. Tạo BĐS thành công<br><br>2. Hiển thị thông báo Toast "物件情報が正常に登録されました"<br><br>3. Chuyển hướng sang màn hình chi tiết BĐS `/properties/RE-2026-TK01` | High |
 ```
 
 ---
