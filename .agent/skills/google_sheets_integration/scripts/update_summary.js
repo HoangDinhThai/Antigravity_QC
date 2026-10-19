@@ -7,6 +7,7 @@ const EXCLUDE_SHEETS = [
   'SUMMARY',
   'REPORT',
   'DASHBOARD',
+  'COVER',
   'TEMPLATE',
   'CONFIG',
   'SETTING',
@@ -17,6 +18,17 @@ function parseSpreadsheetId(url) {
   const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
   if (!match) throw new Error(`Không tìm thấy Spreadsheet ID trong URL: ${url}`);
   return match[1];
+}
+
+function colIndexToLetter(colIndex) {
+  let temp, letter = '';
+  let col = colIndex + 1;
+  while (col > 0) {
+    temp = (col - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    col = Math.floor((col - temp - 1) / 26);
+  }
+  return letter;
 }
 
 async function main() {
@@ -75,6 +87,7 @@ async function main() {
     const title = s.properties.title.trim();
     const upper = title.toUpperCase();
     if (upper === summarySheetTitle.toUpperCase()) return false;
+    if (upper.startsWith('COPY OF') || upper.startsWith('BẢN SAO')) return false;
     for (const ex of EXCLUDE_SHEETS) {
       if (upper === ex || upper.startsWith(ex + '_') || upper.startsWith(ex + ' ')) return false;
     }
@@ -89,30 +102,69 @@ async function main() {
     return;
   }
 
-  const START_ROW = 14; // Dòng 14
+  // 2. Nhận diện cột Web/Status của từng sheet dựa trên Header dòng 11
+  const headerRanges = moduleSheets.map(s => `'${s.properties.title.replace(/'/g, "''")}'!A11:Q11`);
+  const headerRes = await sheets.spreadsheets.values.batchGet({
+    spreadsheetId,
+    ranges: headerRanges
+  });
+
+  const sheetWebCols = [];
+  (headerRes.data.valueRanges || []).forEach((vr, idx) => {
+    const vals = vr.values?.[0] || [];
+    let webIdx = -1;
+    for (let c = 0; c < vals.length; c++) {
+      const colName = String(vals[c] || '').trim().toLowerCase();
+      if (['web', 'status', 'kết quả'].includes(colName)) {
+        webIdx = c;
+        break;
+      }
+    }
+    // Mặc định là cột K (index 10) nếu không tìm thấy
+    sheetWebCols.push(webIdx >= 0 ? colIndexToLetter(webIdx) : 'K');
+  });
+
+  const START_ROW = 14;
   const numModules = moduleSheets.length;
 
-  // 2. Xóa các hàng dữ liệu cũ từ dòng 14 đến dòng 100 trong Summary
+  // 3. Unmerge và xóa dữ liệu cũ
   console.log(`Đang làm sạch dữ liệu cũ từ dòng ${START_ROW} trên sheet '${summarySheetTitle}'...`);
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [{
+        unmergeCells: {
+          range: {
+            sheetId: summarySheetId,
+            startRowIndex: START_ROW - 1,
+            startColumnIndex: 1,
+            endColumnIndex: 8
+          }
+        }
+      }]
+    }
+  });
+
   await sheets.spreadsheets.values.clear({
     spreadsheetId,
     range: `'${summarySheetTitle}'!B${START_ROW}:H200`
   });
 
-  // 3. Chuẩn bị hàng dữ liệu và công thức
+  // 4. Chuẩn bị hàng dữ liệu và công thức
   const formulasAndValues = [];
   for (let i = 0; i < numModules; i++) {
     const s = moduleSheets[i];
     const sTitle = s.properties.title;
     const sId = s.properties.sheetId;
+    const webCol = sheetWebCols[i];
     const row = START_ROW + i;
     const escapedName = sTitle.replace(/'/g, "''");
 
     const colNo = i + 1;
     const formulaC = `=HYPERLINK("#gid=${sId}", "${sTitle.replace(/"/g, '""')}")`;
-    const formulaD = `=COUNTIF('${escapedName}'!K12:K, "Pass")`;
-    const formulaE = `=COUNTIF('${escapedName}'!K12:K, "Fail")`;
-    const formulaG = `=COUNTIF('${escapedName}'!K12:K, "N/A") + COUNTIF('${escapedName}'!K12:K, "NA")`;
+    const formulaD = `=COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Pass") + COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Passed")`;
+    const formulaE = `=COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Fail") + COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Failed")`;
+    const formulaG = `=COUNTIF('${escapedName}'!${webCol}12:${webCol}, "N/A") + COUNTIF('${escapedName}'!${webCol}12:${webCol}, "NA")`;
     const formulaH = `=COUNTA('${escapedName}'!A12:A)`;
     const formulaF = `=MAX(0, H${row} - D${row} - E${row} - G${row})`;
 
@@ -127,7 +179,7 @@ async function main() {
     ]);
   }
 
-  // 4. Hàng Sub total
+  // 5. Hàng Sub total
   const subTotalRow = START_ROW + numModules;
   const lastDataRow = subTotalRow - 1;
   const subTotalRowData = [
@@ -140,9 +192,28 @@ async function main() {
     `=SUM(H${START_ROW}:H${lastDataRow})`
   ];
 
-  // 5. Hai hàng Coverage
+  // 6. Hai hàng Coverage
   const covRow1 = subTotalRow + 2;
   const covRow2 = subTotalRow + 3;
+
+  // Mở rộng dòng nếu cần
+  const summaryMaxRows = summarySheet.properties.gridProperties ? summarySheet.properties.gridProperties.rowCount : 60;
+  if (covRow2 > summaryMaxRows) {
+    const addRows = covRow2 - summaryMaxRows + 10;
+    console.log(`Sheet Summary chỉ có ${summaryMaxRows} dòng, cần ${covRow2} dòng. Đang thêm ${addRows} dòng...`);
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: [{
+          appendDimension: {
+            sheetId: summarySheet.properties.sheetId,
+            dimension: 'ROWS',
+            length: addRows
+          }
+        }]
+      }
+    });
+  }
 
   // Đẩy dữ liệu bảng lên Google Sheets
   const updateRange = `'${summarySheetTitle}'!B${START_ROW}:H${subTotalRow}`;
@@ -160,18 +231,59 @@ async function main() {
   // Đẩy 2 hàng Coverage
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `'${summarySheetTitle}'!C${covRow1}:G${covRow2}`,
+    range: `'${summarySheetTitle}'!C${covRow1}:F${covRow2}`,
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [
-        ['Test coverage', '', '', `=IF(H${subTotalRow}>0, (H${subTotalRow}-F${subTotalRow})/H${subTotalRow}, 0)`, ''],
-        ['Test successful coverage', '', '', `=IF(H${subTotalRow}>0, D${subTotalRow}/H${subTotalRow}, 0)`, '']
+        ['Test coverage', '', '', `=IF(H${subTotalRow}>0, (H${subTotalRow}-F${subTotalRow})/H${subTotalRow}, 0)`],
+        ['Test successful coverage', '', '', `=IF(H${subTotalRow}>0, D${subTotalRow}/H${subTotalRow}, 0)`]
       ]
     }
   });
 
-  // 6. Format giao diện (Merge Sub total B:C, borders, màu sắc)
+  // 7. Định dạng giao diện (Merge, Format, Borders, Cắt tỉa hàng thừa)
   const requests = [
+    // Format chuẩn font và số nguyên cho toàn bộ bảng data
+    {
+      repeatCell: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: START_ROW - 1,
+          endRowIndex: lastDataRow,
+          startColumnIndex: 1,
+          endColumnIndex: 8
+        },
+        cell: {
+          userEnteredFormat: {
+            backgroundColor: { red: 1, green: 1, blue: 1 },
+            textFormat: { bold: false, fontSize: 10, fontFamily: 'Arial' },
+            numberFormat: { type: 'NUMBER', pattern: '#,##0' },
+            horizontalAlignment: 'CENTER',
+            verticalAlignment: 'MIDDLE'
+          }
+        },
+        fields: 'userEnteredFormat(backgroundColor,textFormat,numberFormat,horizontalAlignment,verticalAlignment)'
+      }
+    },
+    // Riêng Module code căn trái và bỏ gạch dưới
+    {
+      repeatCell: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: START_ROW - 1,
+          endRowIndex: lastDataRow,
+          startColumnIndex: 2,
+          endColumnIndex: 3
+        },
+        cell: {
+          userEnteredFormat: {
+            horizontalAlignment: 'LEFT',
+            textFormat: { underline: false }
+          }
+        },
+        fields: 'userEnteredFormat(horizontalAlignment,textFormat.underline)'
+      }
+    },
     // Merge B:C ở hàng Sub total
     {
       mergeCells: {
@@ -179,8 +291,8 @@ async function main() {
           sheetId: summarySheetId,
           startRowIndex: subTotalRow - 1,
           endRowIndex: subTotalRow,
-          startColumnIndex: 1, // Col B
-          endColumnIndex: 3    // Col D (B, C)
+          startColumnIndex: 1,
+          endColumnIndex: 3
         },
         mergeType: 'MERGE_ALL'
       }
@@ -197,49 +309,80 @@ async function main() {
         },
         cell: {
           userEnteredFormat: {
-            backgroundColor: { red: 0.93, green: 0.85, blue: 0.86 }, // Hồng nhạt #edd8dc
+            backgroundColor: { red: 0.93, green: 0.85, blue: 0.86 },
             textFormat: { bold: true, fontSize: 10, fontFamily: 'Arial' },
+            numberFormat: { type: 'NUMBER', pattern: '#,##0' },
             horizontalAlignment: 'CENTER',
             verticalAlignment: 'MIDDLE'
           }
         },
-        fields: 'userEnteredFormat(backgroundColor,textFormat,horizontalAlignment,verticalAlignment)'
+        fields: 'userEnteredFormat(backgroundColor,textFormat,numberFormat,horizontalAlignment,verticalAlignment)'
       }
     },
-    // Định dạng NumberFormat % cho 2 ô Coverage
+    // Merge C:D cho 2 dòng Coverage
+    {
+      mergeCells: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: covRow1 - 1,
+          endRowIndex: covRow1,
+          startColumnIndex: 2,
+          endColumnIndex: 4
+        },
+        mergeType: 'MERGE_ALL'
+      }
+    },
+    {
+      mergeCells: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: covRow2 - 1,
+          endRowIndex: covRow2,
+          startColumnIndex: 2,
+          endColumnIndex: 4
+        },
+        mergeType: 'MERGE_ALL'
+      }
+    },
+    // Format chữ tiêu đề Coverage
     {
       repeatCell: {
         range: {
           sheetId: summarySheetId,
           startRowIndex: covRow1 - 1,
           endRowIndex: covRow2,
-          startColumnIndex: 5, // Col F
-          endColumnIndex: 7    // Col H
+          startColumnIndex: 2,
+          endColumnIndex: 4
         },
         cell: {
           userEnteredFormat: {
-            numberFormat: { type: 'PERCENT', pattern: '0%' },
-            textFormat: { bold: true, foregroundColor: { blue: 1.0 } }
+            textFormat: { bold: true, fontSize: 10, fontFamily: 'Arial', foregroundColor: { red: 0.706, green: 0.373, blue: 0.024 } },
+            horizontalAlignment: 'CENTER',
+            verticalAlignment: 'MIDDLE'
           }
         },
-        fields: 'userEnteredFormat(numberFormat,textFormat)'
-      },
-    // Bỏ gạch dưới (underline: false) cho cột Module code (Cột C)
+        fields: 'userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)'
+      }
+    },
+    // Định dạng NumberFormat % cho 2 ô Coverage (Cột F)
     {
       repeatCell: {
         range: {
           sheetId: summarySheetId,
-          startRowIndex: START_ROW - 1,
-          endRowIndex: START_ROW + numModules - 1,
-          startColumnIndex: 2, // Col C
-          endColumnIndex: 3
+          startRowIndex: covRow1 - 1,
+          endRowIndex: covRow2,
+          startColumnIndex: 5,
+          endColumnIndex: 6
         },
         cell: {
           userEnteredFormat: {
-            textFormat: { underline: false }
+            numberFormat: { type: 'PERCENT', pattern: '0%' },
+            textFormat: { bold: true, fontSize: 10, fontFamily: 'Arial', foregroundColor: { blue: 1.0, red: 0, green: 0 } },
+            horizontalAlignment: 'CENTER',
+            verticalAlignment: 'MIDDLE'
           }
         },
-        fields: 'userEnteredFormat.textFormat.underline'
+        fields: 'userEnteredFormat(numberFormat,textFormat,horizontalAlignment,verticalAlignment)'
       }
     }
   ];
@@ -256,4 +399,3 @@ main().catch(err => {
   console.error("Lỗi thực thi:", err);
   process.exit(1);
 });
-

@@ -2,7 +2,7 @@
 
 Before final response:
 
-- [ ] `bug_rules.md` has been used for classification.
+- [ ] `bug_rules.md` has been used for classification (Program Logic Bug Type, Bug Severity, Bug Priority, Phase Detected).
 - [ ] Draft follows bug template structure.
 - [ ] Title follows format: `[{Mã Task}][{Feature}]: <hành vi lỗi>` (hoặc `[{Feature}]: <hành vi lỗi>`).
 - [ ] Thứ tự mô tả: Các bước tái hiện -> Kết quả thực tế -> Kết quả mong đợi -> Bằng chứng.

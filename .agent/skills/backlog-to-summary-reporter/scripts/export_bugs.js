@@ -188,7 +188,10 @@ async function run() {
     const spreadsheetId = extractSpreadsheetId(sheetParam);
 
     // Resolve credentials
-    const credsPath = args.creds || process.env.GOOGLE_APPLICATION_CREDENTIALS || '/home/thai.hoang.dinh/Downloads/angelic-bee-497009-i4-bd9614749d55.json';
+    const defaultCredsPath = fs.existsSync('/home/thai.hoang.dinh/VNTEST/.agent/skills/google_sheets_integration/credentials/service_account.json')
+      ? '/home/thai.hoang.dinh/VNTEST/.agent/skills/google_sheets_integration/credentials/service_account.json'
+      : '/home/thai.hoang.dinh/Downloads/angelic-bee-497009-i4-bd9614749d55.json';
+    const credsPath = args.creds || process.env.GOOGLE_APPLICATION_CREDENTIALS || defaultCredsPath;
     if (!fs.existsSync(credsPath)) {
       console.error(`Google credentials file not found at: ${credsPath}`);
       process.exit(1);
@@ -196,7 +199,7 @@ async function run() {
     const creds = JSON.parse(fs.readFileSync(credsPath, 'utf8'));
 
     // Backlog credentials from env or fallback to provided defaults
-    const backlogApiKey = process.env.BACKLOG_API_KEY || 'l9KKEZfJVpJfRYSXbS4w8inL2htkQa9hCvfpjI83Umo9zf5MR97KvPHngAw9p29R';
+    const backlogApiKey = process.env.BACKLOG_API_KEY || 'kkvzajIuTGNxWPmcknQFm1EpSIxZc24P6B4Pmpu7J7dQ4rkaddyJP0YvhArDkSDB';
     const backlogDomain = process.env.BACKLOG_DOMAIN || 'piragovn.backlog.com';
 
     // Fetch project ID and issue types
@@ -256,7 +259,12 @@ async function run() {
       const bugName = issue.summary || '';
       const bugDesc = issue.description || '';
       const createDate = formatSheetDate(issue.created);
-      const phase = (issue.milestone && issue.milestone.length > 0) ? issue.milestone.map(m => m.name).join(', ') : ((issue.versions && issue.versions.length > 0) ? issue.versions.map(v => v.name).join(', ') : '');
+      let phase = '';
+      const createD = new Date(issue.created);
+      if (!isNaN(createD.getTime())) {
+        const q = Math.ceil((createD.getMonth() + 1) / 3);
+        phase = `Q${q}/${createD.getFullYear()}`;
+      }
       const bugType = getCustomFieldValue(issue, fieldMap['bug type'], 6);
       const bugSeverity = getCustomFieldValue(issue, fieldMap['bug severity'], 6);
       const bugPriority = issue.priority ? issue.priority.name : '';
@@ -377,7 +385,17 @@ async function run() {
           processedKeys.add(key);
         }
       } else {
-        // Outside the date range or not found, keep as is
+        // Outside the date range or not found, ensure Phase is formatted
+        if (row[3]) {
+          const parts = String(row[3]).trim().split('/');
+          if (parts.length === 3) {
+            const m = parseInt(parts[1], 10);
+            const y = parseInt(parts[2], 10);
+            if (!isNaN(m) && !isNaN(y)) {
+              row[4] = `Q${Math.ceil(m / 3)}/${y}`;
+            }
+          }
+        }
         updatedDataRows.push(row);
       }
     });
@@ -402,6 +420,14 @@ async function run() {
         updatedDataRows.push(newRow);
       }
     });
+
+    // Sort updatedDataRows by Issue Key descending (newest on top)
+    function getIssueNumber(row) {
+      if (!row || !row[0]) return 0;
+      const match = String(row[0]).match(/-(\d+)$/);
+      return match ? parseInt(match[1], 10) : 0;
+    }
+    updatedDataRows.sort((a, b) => getIssueNumber(b) - getIssueNumber(a));
 
     // Pad or trim to clear old rows if needed
     const finalRowsCount = Math.max(updatedDataRows.length, dataRows.length);
@@ -448,6 +474,163 @@ async function run() {
 
     if (batchRes.statusCode !== 200) {
       throw new Error(`Failed to batch update sheet: status ${batchRes.statusCode}, body: ${batchRes.body}`);
+    }
+
+    // Automatically format data cells and borders
+    console.log('Fetching sheetId for formatting and borders...');
+    const metaUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties`;
+    const metaRes = await makeRequest(metaUrl, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${googleToken}` }
+    });
+    if (metaRes.statusCode === 200) {
+      const metaData = JSON.parse(metaRes.body);
+      const targetSheet = (metaData.sheets || []).find(s => s.properties && s.properties.title === tabName);
+      if (targetSheet) {
+        const summarySheetId = targetSheet.properties.sheetId;
+        const startRow = headerRowIndex + 1;
+        const endRow = startRow + finalRowsCount;
+
+        const formatRequests = [
+          // 1. Text format Arial 10pt, vertical MIDDLE, wrap WRAP
+          {
+            repeatCell: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 0,
+                endColumnIndex: 17
+              },
+              cell: {
+                userEnteredFormat: {
+                  textFormat: { fontFamily: 'Arial', fontSize: 10 },
+                  verticalAlignment: 'MIDDLE',
+                  wrapStrategy: 'WRAP'
+                }
+              },
+              fields: 'userEnteredFormat(textFormat,verticalAlignment,wrapStrategy)'
+            }
+          },
+          // 2. Col A: horizontal CENTER
+          {
+            repeatCell: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 0,
+                endColumnIndex: 1
+              },
+              cell: {
+                userEnteredFormat: { horizontalAlignment: 'CENTER' }
+              },
+              fields: 'userEnteredFormat.horizontalAlignment'
+            }
+          },
+          // 3. Col B & C: horizontal LEFT
+          {
+            repeatCell: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 1,
+                endColumnIndex: 3
+              },
+              cell: {
+                userEnteredFormat: { horizontalAlignment: 'LEFT' }
+              },
+              fields: 'userEnteredFormat.horizontalAlignment'
+            }
+          },
+          // 4. Col D: horizontal CENTER, numberFormat DATE
+          {
+            repeatCell: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 3,
+                endColumnIndex: 4
+              },
+              cell: {
+                userEnteredFormat: {
+                  horizontalAlignment: 'CENTER',
+                  numberFormat: { type: 'DATE', pattern: 'd/m/yyyy' }
+                }
+              },
+              fields: 'userEnteredFormat(horizontalAlignment,numberFormat)'
+            }
+          },
+          // 5. Col E: horizontal CENTER, numberFormat TEXT
+          {
+            repeatCell: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 4,
+                endColumnIndex: 5
+              },
+              cell: {
+                userEnteredFormat: {
+                  horizontalAlignment: 'CENTER',
+                  numberFormat: { type: 'TEXT' }
+                }
+              },
+              fields: 'userEnteredFormat(horizontalAlignment,numberFormat)'
+            }
+          },
+          // 6. Col F..Q: horizontal CENTER
+          {
+            repeatCell: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 5,
+                endColumnIndex: 17
+              },
+              cell: {
+                userEnteredFormat: { horizontalAlignment: 'CENTER' }
+              },
+              fields: 'userEnteredFormat.horizontalAlignment'
+            }
+          },
+          // 7. Solid 1px black borders on entire data range
+          {
+            updateBorders: {
+              range: {
+                sheetId: summarySheetId,
+                startRowIndex: startRow,
+                endRowIndex: endRow,
+                startColumnIndex: 0,
+                endColumnIndex: 17
+              },
+              top: { style: 'SOLID', width: 1, color: { red: 0, green: 0, blue: 0 } },
+              bottom: { style: 'SOLID', width: 1, color: { red: 0, green: 0, blue: 0 } },
+              left: { style: 'SOLID', width: 1, color: { red: 0, green: 0, blue: 0 } },
+              right: { style: 'SOLID', width: 1, color: { red: 0, green: 0, blue: 0 } },
+              innerHorizontal: { style: 'SOLID', width: 1, color: { red: 0, green: 0, blue: 0 } },
+              innerVertical: { style: 'SOLID', width: 1, color: { red: 0, green: 0, blue: 0 } }
+            }
+          }
+        ];
+
+        const formatUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`;
+        const formatPayload = JSON.stringify({ requests: formatRequests });
+        console.log(`Applying formatting and borders for rows ${startRow + 1} to ${endRow}...`);
+        await makeRequest(formatUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${googleToken}`,
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(formatPayload)
+          }
+        }, formatPayload);
+        console.log('Successfully formatted data cells and borders.');
+      }
     }
 
     console.log('Successfully synchronized Backlog issues to Google Sheet (upsert completed)!');

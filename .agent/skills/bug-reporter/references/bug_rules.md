@@ -4,31 +4,43 @@
 
 ## 1. Program Logic Bug Type
 
-* **Interface Error:** UI errors (wrong size, wrong label/message, wrong position/size...)
-* **Workflow:** User Navigation: wrong back, Save and Exit, Previous Page...
-* **Functional Bug:** Functional errors related to the functionality of a specific software component. Any component in the app or website that does not work as intended is a functional error.
-  *(Example: Login button doesn't work, clicking Add to Cart but button doesn't work, searching but no response...)*
-* **Logical Bug:** Logic bugs usually relate to the software's flow of operation
-  *(Wrong validation / Wrong calculation / Crash / Wrong data processing....)*
-* **Security Bug:** Authorization / Permission
-* **Performance Problem:** Related to performance, response time, page processing speed, memory....
-* **UAT Bug:** Bug returned from customer
-* **Release Bug:** Bug arising when releasing
+* **Interface Error:** Lỗi giao diện.
+  *(VD: Kích thước không đúng, label/message sai, vị trí/size sai...)*
+* **Workflow:** Lỗi User Navigation.
+  *(VD: Back sai, Save and Exit, Previous Page...)*
+* **Functional Bug:** Các lỗi chức năng có liên quan đến chức năng của một thành phần phần mềm cụ thể. Bất kỳ thành phần nào trong ứng dụng hoặc trang web không hoạt động như dự định đều là lỗi chức năng.
+  *(Ví dụ: Button Login không thực hiện được, bấm thêm giỏ hàng nhưng button không hoạt động, tìm kiếm nhưng không phản hồi...)*
+* **Logical Bug:** Bug logic thường liên quan tới luồng hoạt động của phần mềm.
+  *(VD: Validate sai, tính toán sai, crash, xử lý data sai...)*
+* **Security Bug:**
+  - Phân quyền / Permission
+  - Các lỗi security khác (SQL injection, XSS attack,...)
+* **Performance Problem:** Liên quan tới hiệu năng, thời gian phản hồi, tốc độ xử lý trang, bộ nhớ....
+* **UAT Bug:** Bug từ khách hàng trả về.
+* **Release Bug:** Bug phát sinh khi release.
 
 ---
 
 ## 2. Bug Severity
 
-* **Critical:** Errors that seriously affect the product. Affects the schedule or may make users unable to continue using the system.
-  *(Example: Installation failed, a feature completely broken. Crashing the system, corrupting data files or completely disrupting the service).*
-* **Major:** Errors that affect but are not critical to the product, may stop part of the system, but some other functions still work normally.
-  *(Example: Performance issue. Data loss from serial device under heavy load).*
-* **Minor:** Errors that cause unexpected behavior but the system is still functional, not affecting any functionality of the system.
-  *(Example: Documentation error. Missing default values for required fields).*
+* **Critical:** Lỗi gây ảnh hưởng nghiêm trọng đến sản phẩm. Ảnh hưởng đến schedule hoặc có thể khiến người dùng không thể tiếp tục sử dụng hệ thống.
+  *(Ví dụ: Cài đặt không thành công, lỗi hoàn toàn một tính năng; Làm sập hệ thống, làm hỏng tệp dữ liệu hoặc làm gián đoạn hoàn toàn dịch vụ).*
+* **Major:** Lỗi gây ảnh hưởng nhưng không nghiêm trọng đối với sản phẩm, có thể làm ngừng hoạt động 1 phần hệ thống, tuy nhiên một số chức năng khác vẫn hoạt động bình thường.
+  *(Ví dụ: Vấn đề hiệu năng; Mất dữ liệu từ thiết bị nối tiếp khi tải nặng).*
+* **Minor:** Lỗi gây ra những hành vi không mong muốn nhưng hệ thống vẫn hoạt động được, không gây ảnh hưởng đến bất kì chức năng nào của hệ thống.
+  *(Ví dụ: Lỗi tài liệu; Thiếu giá trị mặc định cho các trường bắt buộc).*
 
 ---
 
-## 3. Phase Detected
+## 3. Bug Priority
+
+* **High:** Lỗi phải được giải quyết càng sớm càng tốt vì nó ảnh hưởng nghiêm trọng đến hệ thống và không thể được sử dụng cho đến khi được khắc phục.
+* **Medium (Normal):** Lỗi nên được giải quyết trong tiến trình dự án hoặc có thể đợi đến khi version mới ra.
+* **Low:** Lỗi ảnh hưởng đến hoạt động hệ thống nhưng nó có thể giải quyết sau khi những defect nghiêm trọng hơn đã được giải quyết.
+
+---
+
+## 4. Phase Detected
 
 * **Unit Testing:** Component/unit-level testing for small modules (function/class/method), usually performed by Developer directly in code. Field-level validation checks belong to this phase.
 * **Intergration Testing:** Integration testing performed by Tester, focused on interfaces/interactions between components. Includes checks across fields within one screen and cross-component behavior.

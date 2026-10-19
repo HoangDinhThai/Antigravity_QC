@@ -22,9 +22,7 @@ ProgramLogicBugType: {CustomField_LogicBugType}
 BugSeverity: {CustomField_Severity}
 PhaseDetected: {CustomField_PhaseDetected}
 ---
-
-# {Summary}
-<!-- Cú pháp {Summary}: [{Mã Task}][{Feature}]: <hành vi lỗi> (hoặc [{Feature}]: <hành vi lỗi> nếu không có task cha) -->
+<!-- Cú pháp Summary: [{Mã Task}][{Feature}]: <hành vi lỗi> (hoặc [{Feature}]: <hành vi lỗi> nếu không có task cha) -->
 
 ### 1. Các bước tái hiện:
 {StepsToReproduce}

@@ -29,9 +29,10 @@ Use when QC provides raw bug description and optional evidence folder.
    - Non-image/video: `- [Tên file](backlog/draft/<folder-name>/<file>)`
    - If no evidence folder: `[Chưa có bằng chứng]`.
 5. Classify custom fields from `references/bug_rules.md`:
-   - ProgramLogicBugType
-   - BugSeverity
-   - PhaseDetected
+   - ProgramLogicBugType: Phân loại chuẩn xác theo 8 loại (`Interface Error`, `Workflow`, `Functional Bug`, `Logical Bug`, `Security Bug`, `Performance Problem`, `UAT Bug`, `Release Bug`).
+   - BugSeverity: (`Critical`, `Major`, `Minor`).
+   - Priority (Bug Priority): (`High`, `Medium` / `Normal`, `Low`).
+   - PhaseDetected: (`Unit Testing`, `Intergration Testing`, `System Testing`, `Acceptance Testing`).
 6. Save draft:
    - `backlog/draft/bug-<feature-name>.md` (kebab-case)
    - Keep YAML IDs blank (`IssueKey`, `IssueId`, `ProjectId`, `ProjectKey`)

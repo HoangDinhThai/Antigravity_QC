@@ -167,6 +167,7 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   2. **Kết quả thực tế (Actual Result):** Trình bày trước kết quả mong đợi, mô tả chi tiết lỗi xảy ra, không kỹ thuật hóa.
   3. **Kết quả mong đợi (Expected Result):** Trình bày sau kết quả thực tế, nêu rõ hành vi đúng theo đặc tả nghiệp vụ.
   4. **Tài liệu đính kèm / Bằng chứng (Evidence):** Cú pháp ảnh bắt buộc dùng ngoặc vuông `![Tên ảnh][file.png]`.
+* **CẤM TUYỆT ĐỐI chèn dòng tiêu đề `# <Title>` (Heading 1) vào đầu phần mô tả:** Giao diện Backlog đã hiển thị sẵn tiêu đề Issue (Summary) ở trên cùng. Việc chèn lại Heading 1 trong Description sẽ gây trùng lặp tiêu đề và tạo đường kẻ gạch chân xanh lá thừa thãi rất xấu. Phần mô tả luôn bắt đầu trực tiếp từ: `### 1. Các bước tái hiện:` (hoặc `**Các bước tái hiện:**`).
 
 ### 🎯 Tiêu Chuẩn Ngôn Ngữ: Cực Kỳ Ngắn Gọn & Dễ Hiểu (Non-Tech & Dev Friendly)
 * **Đối tượng tiếp nhận:** Viết sao cho **PM Non-tech, Dev hoặc bất kỳ ai đọc vào cũng hiểu ngay lập tức** mà không cần giải thích thêm.
@@ -174,6 +175,29 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **Cực kỳ ngắn gọn, súc tích:** Đi thẳng vào trọng tâm vấn đề, không viết văn miêu tả dài dòng lan man.
   - **Không kỹ thuật hóa:** Tuyệt đối không dùng thuật ngữ backend/code phức tạp, không chèn selector HTML/CSS hay mã lỗi khó hiểu vào phần mô tả nghiệp vụ.
   - **Rõ ràng, trực quan:** Dùng từ ngữ đời thường, chuẩn nghiệp vụ người dùng cuối (ví dụ: "Bấm nút Lưu nhưng hệ thống không phản hồi" thay vì "Sự kiện onClick không trigger payload gửi lên API").
+
+### 🏷️ Phân Loại Lỗi (Program Logic Bug Type)
+* Bắt buộc phân loại lỗi chính xác theo 8 nhóm chuẩn sau:
+  - **`Interface Error`:** Lỗi giao diện *(VD: Kích thước không đúng, label/message sai, vị trí/size sai...)*.
+  - **`Workflow`:** Lỗi User Navigation *(VD: Back sai, Save and Exit, Previous Page...)*.
+  - **`Functional Bug`:** Các lỗi chức năng có liên quan đến chức năng của một thành phần phần mềm cụ thể. Bất kỳ thành phần nào trong ứng dụng hoặc trang web không hoạt động như dự định đều là lỗi chức năng *(VD: Button Login không thực hiện được, bấm thêm giỏ hàng nhưng button không hoạt động, tìm kiếm nhưng không phản hồi...)*.
+  - **`Logical Bug`:** Bug logic thường liên quan tới luồng hoạt động của phần mềm *(VD: Validate sai, tính toán sai, crash, xử lý data sai...)*.
+  - **`Security Bug`:** Phân quyền / Permission, các lỗi security khác (SQL injection, XSS attack,...).
+  - **`Performance Problem`:** Liên quan tới hiệu năng, thời gian phản hồi, tốc độ xử lý trang, bộ nhớ....
+  - **`UAT Bug`:** Bug từ khách hàng trả về.
+  - **`Release Bug`:** Bug phát sinh khi release.
+
+### ⚠️ Mức Độ Nghiêm Trọng (Bug Severity)
+* Bắt buộc phân loại mức độ nghiêm trọng theo 3 mức chuẩn sau:
+  - **`Critical`:** Lỗi gây ảnh hưởng nghiêm trọng đến sản phẩm. Ảnh hưởng đến schedule hoặc có thể khiến người dùng không thể tiếp tục sử dụng hệ thống *(VD: Cài đặt không thành công, lỗi hoàn toàn một tính năng; Làm sập hệ thống, làm hỏng tệp dữ liệu hoặc làm gián đoạn hoàn toàn dịch vụ)*.
+  - **`Major`:** Lỗi gây ảnh hưởng nhưng không nghiêm trọng đối với sản phẩm, có thể làm ngừng hoạt động 1 phần hệ thống, tuy nhiên một số chức năng khác vẫn hoạt động bình thường *(VD: Vấn đề hiệu năng; Mất dữ liệu từ thiết bị nối tiếp khi tải nặng)*.
+  - **`Minor`:** Lỗi gây ra những hành vi không mong muốn nhưng hệ thống vẫn hoạt động được, không gây ảnh hưởng đến bất kì chức năng nào của hệ thống *(VD: Lỗi tài liệu; Thiếu giá trị mặc định cho các trường bắt buộc)*.
+
+### 🎯 Mức Độ Ưu Tiên (Bug Priority)
+* Bắt buộc phân loại mức độ ưu tiên theo 3 mức chuẩn sau:
+  - **`High`:** Lỗi phải được giải quyết càng sớm càng tốt vì nó ảnh hưởng nghiêm trọng đến hệ thống và không thể được sử dụng cho đến khi được khắc phục.
+  - **`Medium` (hoặc `Normal` trên Backlog):** Lỗi nên được giải quyết trong tiến trình dự án hoặc có thể đợi đến khi version mới ra.
+  - **`Low`:** Lỗi ảnh hưởng đến hoạt động hệ thống nhưng nó có thể giải quyết sau khi những defect nghiêm trọng hơn đã được giải quyết.
 
 ### 🛑 Quy Trình Duyệt Bug (Bắt Buộc Phê Duyệt Từ Người Dùng)
 * **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
