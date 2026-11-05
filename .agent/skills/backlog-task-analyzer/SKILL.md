@@ -31,22 +31,37 @@ Tự động kích hoạt khi người dùng:
 
 ---
 
-### Bước 2: Phân Tích & Giải Thích Task Chi Tiết, Cực Kỳ Dễ Hiểu
+### Bước 2: Phân Tích & Xuất File Tài Liệu (Analysis Artifact File - BẮT BUỘC)
 
-Trình bày nội dung phân tích nghiệp vụ rõ ràng, chi tiết, sử dụng ngôn phong dễ tiếp cận (có thể giải thích cho cả QC mới hoặc Stakeholder cùng hiểu):
+> [!IMPORTANT]
+> **NGUYÊN TẮC BẮT BUỘC:** Tuyệt đối **KHÔNG xả tài liệu phân tích dài lê thê vào khung chat**. Bắt buộc dùng tool `write_file` để tạo file Markdown Artifact `analysis_<issueKey>.md` trong thư mục Artifact (`<appDataDir>/brain/<conversation-id>/analysis_<issueKey>.md` với `ArtifactMetadata: { UserFacing: true, RequestFeedback: false }`) để Antigravity mở tab xem trực quan. Khung chat chỉ tóm tắt ngắn 2–3 câu và dẫn link đến file Artifact.
 
-1. 📌 **Tóm Tắt Mục Tiêu (Executive Summary)**:
-   - Task này làm gì? Giải quyết bài toán gì? Cho đối tượng người dùng nào?
-2. 🔄 **Luồng Nghiệp Vụ Thực Tế (User Journey / Workflow)**:
-   - Diễn giải từng bước thao tác từ góc nhìn người dùng (Who - When - What - How).
-   - Ví dụ minh họa thực tế dễ hình dung.
-3. ⚙️ **Quy Tắc Nghiệp Vụ & Logic Kiểm Tra (Business Rules & Validation Rules)**:
-   - **Điều kiện đầu vào (Pre-conditions)**: Người dùng phải có quyền gì, trạng thái hệ thống ban đầu ra sao.
-   - **Ràng buộc trường dữ liệu (Field Constraints)**: Bắt buộc/Không bắt buộc, độ dài min/max, ký tự cho phép, tính duy nhất (unique), định dạng (Email, Phone, Date...).
-   - **Xử lý logic backend (Business Logic)**: Quy trình tính toán, lưu trữ DB, gửi notification, gọi API bên thứ 3.
-   - **Kết quả đầu ra (Output / Post-conditions)**: Giao diện thay đổi như thế nào, thông báo thành công/lỗi ra sao.
-4. ⚠️ **Các Điểm Cần Lưu Ý / Edge Cases Nghiệp Vụ**:
-   - Rủi ro logic, trường hợp tiềm ẩn lỗi (Corner cases), sự tương tác với các tính năng/module khác.
+**Cấu trúc chuẩn của File `analysis_<issueKey>.md`:**
+1. **Tiêu đề chính**: `# Phân tích task {Mã Task} - [{Module}] {Tên Task}`
+2. **Bảng thuộc tính (Metadata Table)**:
+   | Thuộc tính | Giá trị |
+   |---|---|
+   | Link | `https://<space>.backlog.com/view/{issueKey}` |
+   | Loại / Ưu tiên | `{issueType} / {priority}` |
+   | Trạng thái | `{status}` |
+   | Người làm | `{assignee}` |
+   | Milestone | `{milestone}` |
+   | Task cha | `{parentIssue}` |
+   | Merge Request | `{MR Link nếu có}` |
+   | Đính kèm | `{file attachments}` |
+3. **Hộp cảnh báo / Điểm lưu ý trọng yếu (Alert Box)**:
+   - Dùng `> [!NOTE]`, `> [!IMPORTANT]`, `> [!WARNING]` nêu bật phạm vi ngầm (comment Dev/MR, commit), rủi ro, điểm khác biệt giữa tiêu đề task và thực tế triển khai.
+4. **1. Tóm tắt mục tiêu (Executive Summary)**:
+   - **Trước đây:** Hiện trạng cũ của hệ thống.
+   - **Sau thay đổi:** Cơ chế và hành vi mới.
+   - **Người dùng bị ảnh hưởng:** Các vai trò / đối tượng liên quan.
+5. **2. Mô hình trạng thái / Luồng nghiệp vụ (Mermaid Diagram)**:
+   - Bắt buộc vẽ sơ đồ bằng Mermaid (`stateDiagram-v2` hoặc `flowchart TD / LR`) mô tả trực quan các trạng thái và hành động tương ứng.
+6. **3. Bảng quy tắc & Hành vi chi tiết (Rules / Behavior Matrix)**:
+   - Bảng phân định trạng thái, nhãn trên UI, quyền hạn của từng vai trò (Ai được sửa? Nút nào enable/disable?).
+7. **4. Quy tắc nghiệp vụ & Ràng buộc dữ liệu (Validation Rules & Constraints)**:
+   - Điều kiện đầu vào, giới hạn ký tự, unique, format.
+8. **5. Điểm cần lưu ý & Rủi ro tiềm ẩn (Edge Cases / Caveats)**.
 
 ---
 

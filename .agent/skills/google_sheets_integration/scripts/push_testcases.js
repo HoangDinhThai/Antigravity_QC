@@ -278,9 +278,14 @@ async function main() {
   const targetSheetId = targetSheet.properties.sheetId;
   console.log(`Tab mục tiêu ban đầu: "${targetSheetTitle}" (Sheet ID: ${targetSheetId})`);
 
-  // Đổi tên tab sheet CHỈ KHI người dùng truyền rõ ràng --rename-tab
-  if (renameTab && targetSheetTitle !== renameTab) {
-    console.log(`Đang đổi tên tab từ "${targetSheetTitle}" thành "${renameTab}"...`);
+  // Đổi tên tab sheet nếu truyền --rename-tab hoặc nếu tên tab hiện tại là số placeholder (ví dụ: "1", "2"...)
+  let effectiveRenameTab = renameTab;
+  if (!effectiveRenameTab && /^\d+$/.test(targetSheetTitle) && moduleName) {
+    effectiveRenameTab = moduleName;
+  }
+
+  if (effectiveRenameTab && targetSheetTitle !== effectiveRenameTab) {
+    console.log(`Đang đổi tên tab từ "${targetSheetTitle}" thành "${effectiveRenameTab}"...`);
     try {
       await sheets.spreadsheets.batchUpdate({
         spreadsheetId,
@@ -289,23 +294,46 @@ async function main() {
             updateSheetProperties: {
               properties: {
                 sheetId: targetSheetId,
-                title: renameTab
+                title: effectiveRenameTab
               },
               fields: 'title'
             }
           }]
         }
       });
-      console.log(`Đã đổi tên tab thành công sang: "${renameTab}"!`);
-      targetSheetTitle = renameTab;
+      console.log(`Đã đổi tên tab thành công sang: "${effectiveRenameTab}"!`);
+      targetSheetTitle = effectiveRenameTab;
     } catch (renameErr) {
-      console.warn(`Cảnh báo: Không thể đổi tên tab thành "${renameTab}": ${renameErr.message}`);
+      console.warn(`Cảnh báo: Không thể đổi tên tab thành "${effectiveRenameTab}": ${renameErr.message}`);
     }
   }
 
   // Tên module cho Cột B: nếu không truyền thì mặc định lấy chính tên tab
   if (!moduleName) {
     moduleName = targetSheetTitle;
+  }
+
+  // Cập nhật bảng thông tin Header Metadata (C1:C6) của sheet
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `'${targetSheetTitle}'!C1:C6`,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: {
+        values: [
+          ['VNTEST'],
+          [cleanModuleName(moduleName)],
+          [testerName || 'ThaiHD'],
+          [today],
+          [today],
+          ['']
+        ]
+      }
+    });
+    console.log(`Đã cập nhật bảng thông tin Header Metadata (Module: "${cleanModuleName(moduleName)}", Creator: "${testerName || 'ThaiHD'}", Ngày: "${today}").`);
+  } catch (hdrErr) {
+    console.warn(`Cảnh báo: Không thể cập nhật bảng thông tin Header Metadata: ${hdrErr.message}`);
   }
 
   // 7. Giải phóng Unmerge vùng dữ liệu từ dòng 11 trở xuống nếu có

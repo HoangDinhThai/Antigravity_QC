@@ -163,16 +163,20 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
 
 ### 📝 Thứ Tự Trình Bày Mô Tả Lỗi (Description)
 * Bắt buộc tuân theo thứ tự sau:
-  1. **Các bước tái hiện (Steps to Reproduce)**
-  2. **Kết quả thực tế (Actual Result):** Trình bày trước kết quả mong đợi, mô tả chi tiết lỗi xảy ra, không kỹ thuật hóa.
-  3. **Kết quả mong đợi (Expected Result):** Trình bày sau kết quả thực tế, nêu rõ hành vi đúng theo đặc tả nghiệp vụ.
-  4. **Tài liệu đính kèm / Bằng chứng (Evidence):** Cú pháp ảnh bắt buộc dùng ngoặc vuông `![Tên ảnh][file.png]`.
+  1. **Các bước tái hiện (Steps to Reproduce):** Chỉ ghi thao tác ngắn gọn, **CẤM** kèm câu giải thích trong ngoặc hoặc câu `"và quan sát..."` thừa thãi.
+  2. **Kết quả thực tế (Actual Result):** Trình bày trước kết quả mong đợi, chỉ viết **1 câu ngắn gọn** đi thẳng vào hành vi lỗi, **CẤM** liệt kê dài dòng tên từng trường hay giải thích lý do UX.
+  3. **Kết quả mong đợi (Expected Result):** Trình bày sau kết quả thực tế, chỉ viết **1 câu ngắn gọn** nêu hành vi đúng, **CẤM** lặp lại vế điều kiện `"Khi..., hệ thống phải..."`.
+  4. **Tài liệu đính kèm / Bằng chứng (Evidence):** Câu dẫn cực ngắn (dưới 10 chữ) + cú pháp ảnh ngoặc vuông `![Tên ảnh][file.png]`.
 * **CẤM TUYỆT ĐỐI chèn dòng tiêu đề `# <Title>` (Heading 1) vào đầu phần mô tả:** Giao diện Backlog đã hiển thị sẵn tiêu đề Issue (Summary) ở trên cùng. Việc chèn lại Heading 1 trong Description sẽ gây trùng lặp tiêu đề và tạo đường kẻ gạch chân xanh lá thừa thãi rất xấu. Phần mô tả luôn bắt đầu trực tiếp từ: `### 1. Các bước tái hiện:` (hoặc `**Các bước tái hiện:**`).
+* **Quy tắc khoảng cách dòng (Line Spacing) trong mô tả Bug (BẮT BUỘC):**
+  - **Giữa các bước / các ý:** Bắt buộc cách **1 dòng trống** (`\n\n`) giữa các bước trong `Các bước tái hiện` (`1. ...`, `2. ...`, `3. ...`) và giữa các gạch đầu dòng (`- ...`) trong `Kết quả thực tế`, `Kết quả mong đợi` để giao diện hiển thị trên Backlog thoáng đãng, dễ đọc, không bị dính sát vào nhau.
+  - **Tại phần Bằng chứng (Evidence):** Bắt buộc cách **1 dòng trống** (`\n\n`) giữa câu dẫn mô tả với thẻ ảnh `![Tên ảnh][file.png]` và cách **1 dòng trống** sau mỗi thẻ ảnh trước khi sang mục tiếp theo.
 
 ### 🎯 Tiêu Chuẩn Ngôn Ngữ: Cực Kỳ Ngắn Gọn & Dễ Hiểu (Non-Tech & Dev Friendly)
 * **Đối tượng tiếp nhận:** Viết sao cho **PM Non-tech, Dev hoặc bất kỳ ai đọc vào cũng hiểu ngay lập tức** mà không cần giải thích thêm.
-* **Nguyên tắc cốt lõi:**
-  - **Cực kỳ ngắn gọn, súc tích:** Đi thẳng vào trọng tâm vấn đề, không viết văn miêu tả dài dòng lan man.
+* **Nguyên tắc cốt lõi (CẤM VIẾT DÀI DÒNG):**
+  - **Cực kỳ ngắn gọn, súc tích:** Mỗi ý chỉ tối đa **1 câu ngắn**, đi thẳng vào trọng tâm vấn đề.
+  - **CẤM liệt kê & giải thích thừa:** Không liệt kê hàng loạt tên trường trên màn hình khi có thể gọi chung ("các trường bên dưới"), không thêm bình luận cảm tính ("gây bất tiện cho người dùng..."), không lặp lại câu điều kiện ở phần Kết quả mong đợi.
   - **Không kỹ thuật hóa:** Tuyệt đối không dùng thuật ngữ backend/code phức tạp, không chèn selector HTML/CSS hay mã lỗi khó hiểu vào phần mô tả nghiệp vụ.
   - **Rõ ràng, trực quan:** Dùng từ ngữ đời thường, chuẩn nghiệp vụ người dùng cuối (ví dụ: "Bấm nút Lưu nhưng hệ thống không phản hồi" thay vì "Sự kiện onClick không trigger payload gửi lên API").
 
@@ -199,12 +203,39 @@ navigate → resize(1920×1080) → wait_for(page_load) → snapshot → interac
   - **`Medium` (hoặc `Normal` trên Backlog):** Lỗi nên được giải quyết trong tiến trình dự án hoặc có thể đợi đến khi version mới ra.
   - **`Low`:** Lỗi ảnh hưởng đến hoạt động hệ thống nhưng nó có thể giải quyết sau khi những defect nghiêm trọng hơn đã được giải quyết.
 
+### 🚫 Quy Tắc Trường Category Khi Tạo Bug
+* **TUYỆT ĐỐI CẤM để giá trị trường `Category` (`Categories`) khi lên bản nháp hoặc đẩy Bug lên Backlog:** Luôn để trống trường `Category` (không truyền `categoryId` khi gọi API `add_issue`).
+
 ### 🛑 Quy Trình Duyệt Bug (Bắt Buộc Phê Duyệt Từ Người Dùng)
 * **Tuyệt đối KHÔNG tự ý gọi API tạo/đẩy bug lên Backlog ngay khi tiếp nhận hoặc phát hiện lỗi.**
 * **Quy trình 3 bước bắt buộc:**
   1. **Lên bản nháp (Draft) & Bắt buộc xuất file MD:** Soạn thảo đầy đủ nội dung bug theo template chuẩn (tiêu đề chuẩn, các bước, kết quả thực tế, kết quả mong đợi, bằng chứng). **Bắt buộc lưu bản nháp ra file Markdown (.md) tại thư mục `backlog/draft/bug-<ten-loi>.md` kèm thư mục chứa ảnh/video bằng chứng tương ứng trước khi trình bày.**
   2. **Trình bày cho người dùng duyệt & sửa:** Xuất bản nháp ra chat trực quan kèm đường dẫn file `.md` đã lưu tại `backlog/draft/`, yêu cầu người dùng kiểm tra, chỉnh sửa bổ sung thông tin.
   3. **Chỉ đẩy khi có lệnh duyệt:** CHỈ KHI người dùng phản hồi phê duyệt rõ ràng (ví dụ: "Duyệt rồi, đẩy đi", "OK đẩy bug lên", "Tạo bug nhé") thì Agent mới được gọi API tạo issue lên Backlog.
+
+---
+
+## Analysis & Documentation Rules (MANDATORY) - Quy Tắc Xuất File Phân Tích (Artifacts)
+
+* **BẮT BUỘC xuất ra File Markdown (Artifact) khi phân tích tài liệu/nghiệp vụ:**
+  - Bất cứ khi nào thực hiện phân tích yêu cầu, phân tích Backlog task, phân tích tính năng/màn hình hoặc tổng hợp tài liệu nghiệp vụ, **tuyệt đối CẤM xả một đoạn văn bản dài lê thê vào khung chat**.
+  - **Bắt buộc tạo file Markdown (.md)** dưới dạng **Artifact** (lưu tại thư mục Artifact với `ArtifactMetadata: { UserFacing: true, RequestFeedback: false }`) để hệ thống Antigravity tự động mở tab xem tài liệu chuyên biệt (như `analysis_<Mã Task>.md`).
+  - Trong khung chat, Agent chỉ tóm tắt ngắn gọn 2–3 câu và dẫn link trực tiếp đến file Artifact vừa tạo để người dùng tiện mở và theo dõi.
+
+* **Cấu trúc chuẩn của File Tài liệu Phân Tích (Analysis Document Structure):**
+  1. **Tiêu đề chính (Heading 1):** `# Phân tích task {Mã Task} - [{Module/Component}] {Tên Task}`
+  2. **Bảng thuộc tính / Metadata (Key-Value Table):**
+     - Đặt ngay dưới tiêu đề: `Thuộc tính` | `Giá trị` (Bao gồm: Link task, Loại / Ưu tiên, Trạng thái, Người làm, Milestone, Task cha, Merge Request, Đính kèm...).
+  3. **Hộp cảnh báo / Điểm lưu ý trọng yếu (GitHub-style Alerts):**
+     - Sử dụng `> [!NOTE]`, `> [!IMPORTANT]`, `> [!WARNING]` để làm nổi bật các thông tin đặc biệt: phạm vi thực tế ngầm (comment Dev/MR, commit), rủi ro, điểm khác biệt giữa tiêu đề task và thực tế triển khai.
+  4. **Tóm tắt mục tiêu (Executive Summary):**
+     - Phân định rõ ràng: `Trước đây` (Hiện trạng cũ) ➔ `Sau thay đổi` (Cơ chế mới) ➔ `Người dùng bị ảnh hưởng`.
+  5. **Mô hình trạng thái & Luồng nghiệp vụ trực quan (Mermaid Diagram):**
+     - Bắt buộc vẽ sơ đồ trực quan bằng **Mermaid** (dùng `stateDiagram-v2` hoặc `flowchart TD / LR`) để mô tả luồng chuyển dịch trạng thái, tương tác giữa các vai trò (KNV, Trưởng BP, Admin...).
+  6. **Bảng quy tắc & So sánh chi tiết (Rules / Behavior Matrix):**
+     - Trình bày dạng bảng kẻ viền rõ ràng: Trạng thái | Nhãn hiển thị trên UI | Quyền hạn của từng vai trò (Ai được sửa? Ai được chọn/thao tác?)...
+  7. **Đặc tả logic, trường dữ liệu & kịch bản kiểm thử (nếu có):**
+     - Trình bày mạch lạc, dễ đọc, khoảng cách dòng thoáng đãng.
 
 ---
 
@@ -294,6 +325,7 @@ Agent sử dụng các kỹ năng chuyên biệt trong `.agent/skills/` tùy the
 
 | Skill | Vai trò |
 | :--- | :--- |
+| `qc-task-tester` | Chuyên viên kiểm thử thực tế trên web (chạy Chrome 1920x1080 headed, verify tính năng theo task, chụp evidence khoanh đỏ, bắt bug, lập báo cáo evidence, và cập nhật kết quả Passed/Failed/Bug_ID/Date lên Google Sheets) |
 | `rbt_manual_testing` | Master skill sinh manual test cases theo 2 modes: QUICK (nhanh) và FULL RBT (6 bước có đánh giá rủi ro) |
 | `requirements_analyzer` | Phân tích màn hình/tính năng/UI Prototype, sinh Tài liệu Đặc tả Yêu cầu Chức năng (SRS) chuẩn 10-12 phần |
 | `backlog-task-analyzer` | Đọc task từ link/key Backlog, phân tích nghiệp vụ và tự động sinh bộ manual test cases toàn diện |
@@ -402,6 +434,7 @@ code:     TC_LOGIN_1712049200
 | Tự ý gọi API tạo/đẩy Bug lên Backlog khi chưa được người dùng duyệt | Bắt buộc tạo bản nháp (Draft), trình bày cho người dùng duyệt/sửa và chỉ đẩy khi có xác nhận rõ ràng |
 | Dùng Conditional Formatting tô màu nền ô Dropdown hoặc dùng API `setDataValidation` tự sinh làm mất màu Chip | Bắt buộc giữ nguyên nền ô màu trắng, sao chép Data Validation (`PASTE_DATA_VALIDATION`) từ template mẫu để bảo toàn 100% màu sắc Dropdown Chip chuẩn VNTEST |
 | Để thừa các hàng/khoảng trống trắng (empty trailing rows) mênh mông bên dưới bảng test cases | Bắt buộc tự động xóa bỏ toàn bộ hàng thừa (`deleteDimension: ROWS`), cắt gọn sheet vừa khít với dòng cuối cùng của bảng test cases |
+| Xuất nội dung phân tích nghiệp vụ/task dài lê thê vào khung chat | Bắt buộc tạo file Artifact (.md) với `UserFacing: true` để mở tab xem trực quan, gồm: bảng Metadata, Alert callout, sơ đồ luồng Mermaid và ma trận quy tắc |
 
 ## 10. Tham Chiếu Workflows
 

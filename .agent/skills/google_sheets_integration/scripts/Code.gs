@@ -83,12 +83,30 @@ function updateSummarySheet() {
   const moduleSheets = allSheets.filter(s => {
     if (s.isSheetHidden()) return false;
     const name = s.getName().trim();
+    if (/^\d+$/.test(name)) return false; // Loại bỏ các sheet tạm/nháp như '3', '4', '5'
     const upper = name.toUpperCase();
     if (upper === summarySheet.getName().trim().toUpperCase()) return false;
     for (const ex of EXCLUDE_SHEETS) {
       if (upper === ex || upper.startsWith(ex + '_') || upper.startsWith(ex + ' ')) return false;
     }
     return true;
+  });
+
+  // Tự động sắp xếp theo thứ tự mã phân hệ (1.1, 1.2, ..., 42.3)
+  moduleSheets.sort((a, b) => {
+    const parse = (title) => {
+      const match = title.trim().match(/^(\d+(?:\.\d+)*)/);
+      if (!match) return [9999];
+      return match[1].split('.').map(n => parseInt(n, 10) || 0);
+    };
+    const partsA = parse(a.getName());
+    const partsB = parse(b.getName());
+    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+      const valA = partsA[i] !== undefined ? partsA[i] : -1;
+      const valB = partsB[i] !== undefined ? partsB[i] : -1;
+      if (valA !== valB) return valA - valB;
+    }
+    return a.getName().localeCompare(b.getName());
   });
 
   if (moduleSheets.length === 0) {
@@ -235,6 +253,16 @@ function updateSummarySheet() {
   summarySheet.getRange(covRow1, 3, 2, 2).setFontColor('#B45F06').setHorizontalAlignment('center');
   summarySheet.getRange(covRow1, 5, 2, 1).setFontColor('#0000FF').setHorizontalAlignment('center');
   covBlock.setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.DOTTED);
+
+  // 7. Cập nhật khối Scope (Hàng 8 & 9)
+  summarySheet.getRange(8, 4).setFormula(`=COUNTIF(D${START_ROW}:D${lastDataRow}, ">0") + COUNTIFS(D${START_ROW}:D${lastDataRow}, "=0", E${START_ROW}:E${lastDataRow}, ">0")`);
+  summarySheet.getRange(9, 4).setFormula(`=COUNTIFS(D${START_ROW}:D${lastDataRow}, "=0", E${START_ROW}:E${lastDataRow}, "=0")`);
+
+  // 8. Tự động cắt tỉa hàng trống thừa phía dưới
+  const currentMaxRows = summarySheet.getMaxRows();
+  if (currentMaxRows > covRow2) {
+    summarySheet.deleteRows(covRow2 + 1, currentMaxRows - covRow2);
+  }
 
   SpreadsheetApp.getActiveSpreadsheet().toast(
     `✅ Đã cập nhật xong ${numModules} sheets vào bảng SUMMARY!`,

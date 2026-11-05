@@ -251,6 +251,29 @@ def main():
         except Exception as e:
             print(f"Cảnh báo: Không thể đổi tên tab thành '{args.module}': {e}", file=sys.stderr)
 
+    # Cập nhật Header Metadata (C1:C6)
+    try:
+        from datetime import date
+        today_str = date.today().isoformat()
+        hdr_module = clean_module_name(args.module or target_title)
+        hdr_tester = args.tester or 'ThaiHD'
+        service.spreadsheets().values().update(
+            spreadsheetId=spreadsheet_id,
+            range=f"'{target_title}'!C1:C6",
+            valueInputOption='USER_ENTERED',
+            body={'values': [
+                ['VNTEST'],
+                [hdr_module],
+                [hdr_tester],
+                [today_str],
+                [today_str],
+                ['']
+            ]}
+        ).execute()
+        print(f"Đã cập nhật Header Metadata (Module: '{hdr_module}', Creator: '{hdr_tester}', Ngày: '{today_str}').")
+    except Exception as e:
+        print(f"Cảnh báo: Không thể cập nhật Header Metadata: {e}", file=sys.stderr)
+
     # Unmerge nếu có
     merges = target_sheet.get('merges', [])
     data_merges = [m for m in merges if m.get('startRowIndex', 0) >= 10]

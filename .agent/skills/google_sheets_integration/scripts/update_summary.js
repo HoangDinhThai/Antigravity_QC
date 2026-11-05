@@ -14,6 +14,23 @@ const EXCLUDE_SHEETS = [
   'DATA'
 ];
 
+function parseModuleOrder(title) {
+  const match = title.trim().match(/^(\d+(?:\.\d+)*)/);
+  if (!match) return [9999];
+  return match[1].split('.').map(n => parseInt(n, 10) || 0);
+}
+
+function compareModuleOrder(a, b) {
+  const partsA = parseModuleOrder(a.properties.title);
+  const partsB = parseModuleOrder(b.properties.title);
+  for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+    const valA = partsA[i] !== undefined ? partsA[i] : -1;
+    const valB = partsB[i] !== undefined ? partsB[i] : -1;
+    if (valA !== valB) return valA - valB;
+  }
+  return a.properties.title.localeCompare(b.properties.title);
+}
+
 function parseSpreadsheetId(url) {
   const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
   if (!match) throw new Error(`Không tìm thấy Spreadsheet ID trong URL: ${url}`);
@@ -85,6 +102,7 @@ async function main() {
   const moduleSheets = allSheets.filter(s => {
     if (s.properties.hidden) return false;
     const title = s.properties.title.trim();
+    if (/^\d+$/.test(title)) return false; // Loại bỏ các sheet nháp/tạm thời như '3', '4', '5'
     const upper = title.toUpperCase();
     if (upper === summarySheetTitle.toUpperCase()) return false;
     if (upper.startsWith('COPY OF') || upper.startsWith('BẢN SAO')) return false;
@@ -94,7 +112,10 @@ async function main() {
     return true;
   });
 
-  console.log(`Phát hiện ${moduleSheets.length} sheet testcase chức năng:`);
+  // Tự động sắp xếp theo thứ tự mã phân hệ (1.1, 1.2, ..., 42.3)
+  moduleSheets.sort(compareModuleOrder);
+
+  console.log(`Phát hiện ${moduleSheets.length} sheet testcase chức năng (đã sắp xếp chuẩn):`);
   moduleSheets.forEach((s, idx) => console.log(`  ${idx + 1}. ${s.properties.title}`));
 
   if (moduleSheets.length === 0) {
@@ -165,7 +186,7 @@ async function main() {
     const formulaD = `=COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Pass") + COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Passed")`;
     const formulaE = `=COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Fail") + COUNTIF('${escapedName}'!${webCol}12:${webCol}, "Failed")`;
     const formulaG = `=COUNTIF('${escapedName}'!${webCol}12:${webCol}, "N/A") + COUNTIF('${escapedName}'!${webCol}12:${webCol}, "NA")`;
-    const formulaH = `=COUNTA('${escapedName}'!A12:A)`;
+    const formulaH = `=IF(COUNTA('${escapedName}'!A12:A)>0, COUNTA('${escapedName}'!A12:A), COUNTA('${escapedName}'!${webCol}12:${webCol}))`;
     const formulaF = `=MAX(0, H${row} - D${row} - E${row} - G${row})`;
 
     formulasAndValues.push([
@@ -228,17 +249,23 @@ async function main() {
     }
   });
 
-  // Đẩy 2 hàng Coverage
+  // Đẩy 2 hàng Coverage (Cột C:D nhãn, Cột E giá trị %)
   await sheets.spreadsheets.values.update({
     spreadsheetId,
-    range: `'${summarySheetTitle}'!C${covRow1}:F${covRow2}`,
+    range: `'${summarySheetTitle}'!C${covRow1}:E${covRow2}`,
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [
-        ['Test coverage', '', '', `=IF(H${subTotalRow}>0, (H${subTotalRow}-F${subTotalRow})/H${subTotalRow}, 0)`],
-        ['Test successful coverage', '', '', `=IF(H${subTotalRow}>0, D${subTotalRow}/H${subTotalRow}, 0)`]
+        ['Test coverage', '', `=IF(H${subTotalRow}>0, (H${subTotalRow}-F${subTotalRow})/H${subTotalRow}, 0)`],
+        ['Test successful coverage', '', `=IF(H${subTotalRow}>0, D${subTotalRow}/H${subTotalRow}, 0)`]
       ]
     }
+  });
+
+  // Xóa sạch giá trị cũ tại F:H nếu có
+  await sheets.spreadsheets.values.clear({
+    spreadsheetId,
+    range: `'${summarySheetTitle}'!F${covRow1}:H${covRow2}`
   });
 
   // 7. Định dạng giao diện (Merge, Format, Borders, Cắt tỉa hàng thừa)
@@ -364,15 +391,15 @@ async function main() {
         fields: 'userEnteredFormat(textFormat,horizontalAlignment,verticalAlignment)'
       }
     },
-    // Định dạng NumberFormat % cho 2 ô Coverage (Cột F)
+    // Định dạng NumberFormat % cho 2 ô Coverage (Cột E)
     {
       repeatCell: {
         range: {
           sheetId: summarySheetId,
           startRowIndex: covRow1 - 1,
           endRowIndex: covRow2,
-          startColumnIndex: 5,
-          endColumnIndex: 6
+          startColumnIndex: 4,
+          endColumnIndex: 5
         },
         cell: {
           userEnteredFormat: {
@@ -384,8 +411,108 @@ async function main() {
         },
         fields: 'userEnteredFormat(numberFormat,textFormat,horizontalAlignment,verticalAlignment)'
       }
+    },
+    // Viền nét đứt (DOTTED) cho bảng dữ liệu
+    {
+      updateBorders: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: START_ROW - 1,
+          endRowIndex: lastDataRow,
+          startColumnIndex: 1,
+          endColumnIndex: 8
+        },
+        top: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        bottom: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        left: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        right: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        innerHorizontal: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        innerVertical: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } }
+      }
+    },
+    // Viền nét liền (SOLID) cho hàng Sub total
+    {
+      updateBorders: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: subTotalRow - 1,
+          endRowIndex: subTotalRow,
+          startColumnIndex: 1,
+          endColumnIndex: 8
+        },
+        top: { style: 'SOLID', color: { red: 0, green: 0, blue: 0 } },
+        bottom: { style: 'SOLID', color: { red: 0, green: 0, blue: 0 } },
+        left: { style: 'SOLID', color: { red: 0, green: 0, blue: 0 } },
+        right: { style: 'SOLID', color: { red: 0, green: 0, blue: 0 } },
+        innerHorizontal: { style: 'SOLID', color: { red: 0, green: 0, blue: 0 } },
+        innerVertical: { style: 'SOLID', color: { red: 0, green: 0, blue: 0 } }
+      }
+    },
+    // Viền nét đứt cho toàn bộ khối Coverage (Cột C:E)
+    {
+      updateBorders: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: covRow1 - 1,
+          endRowIndex: covRow2,
+          startColumnIndex: 2,
+          endColumnIndex: 5
+        },
+        top: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        bottom: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        left: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        right: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        innerHorizontal: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } },
+        innerVertical: { style: 'DOTTED', color: { red: 0, green: 0, blue: 0 } }
+      }
+    },
+    // Xóa border cũ ở F:H nếu có
+    {
+      updateBorders: {
+        range: {
+          sheetId: summarySheetId,
+          startRowIndex: covRow1 - 1,
+          endRowIndex: covRow2,
+          startColumnIndex: 5,
+          endColumnIndex: 8
+        },
+        top: { style: 'NONE' },
+        bottom: { style: 'NONE' },
+        left: { style: 'NONE' },
+        right: { style: 'NONE' },
+        innerHorizontal: { style: 'NONE' },
+        innerVertical: { style: 'NONE' }
+      }
     }
   ];
+
+  // Tự động cắt tỉa / xóa sạch hàng trống thừa phía dưới bảng Coverage
+  const currentTotalRows = summarySheet.properties.gridProperties ? summarySheet.properties.gridProperties.rowCount : 0;
+  if (currentTotalRows > covRow2) {
+    requests.push({
+      deleteDimension: {
+        range: {
+          sheetId: summarySheetId,
+          dimension: 'ROWS',
+          startIndex: covRow2,
+          endIndex: currentTotalRows
+        }
+      }
+    });
+  }
+
+  // Cập nhật thống kê Scope (hàng 8 & 9)
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `'${summarySheetTitle}'!D8:D9`,
+    valueInputOption: 'USER_ENTERED',
+    requestBody: {
+      values: [
+        [`=COUNTIF(D${START_ROW}:D${lastDataRow}, ">0") + COUNTIFS(D${START_ROW}:D${lastDataRow}, "=0", E${START_ROW}:E${lastDataRow}, ">0")`],
+        [`=COUNTIFS(D${START_ROW}:D${lastDataRow}, "=0", E${START_ROW}:E${lastDataRow}, "=0")`]
+      ]
+    }
+  });
 
   await sheets.spreadsheets.batchUpdate({
     spreadsheetId,
