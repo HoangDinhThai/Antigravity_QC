@@ -224,27 +224,75 @@ Khi có link Google Sheet test cases đi kèm (từ Backlog ticket hoặc ngư�
 
 ### Bước 5: Thực Thi Sau Phê Duyệt (Approval Gate Execution) & Dọn Dẹp (Cleanup)
 
-1. **Khi User phê duyệt ("OK đẩy đi", "Duyệt rồi", "Cập nhật sheet đi"):**
-   - **A. Đẩy Backlog (nếu có):**
-     + Upload toàn bộ ảnh bằng chứng qua tool `mcp_backlog_post_space_attachment(filePaths=[...])` để nhận mảng `attachmentId`.
-     + Đẩy comment báo cáo qua tool `mcp_backlog_add_issue_comment(issueKey, content, attachmentId=[...], notifiedUserId=[...])`.
-     + Cập nhật trạng thái task nếu User yêu cầu (`mcp_backlog_update_issue(issueKey, statusId=...)`).
-     + Trả về link trực tiếp của comment trên Backlog cho User.
-   - **B. Cập nhật Google Sheets (nếu có):**
-     + Thực thi ghi kết quả lên Sheet bằng script:
-       ```bash
-       node .agent/skills/qc-task-tester/scripts/update_sheet_results.js \
-         --url "<URL_GOOGLE_SHEET>" \
-         --tab "<Tên Tab hoặc gid>" \
-         --results '<JSON_KẾT_QUẢ>' \
-         --update-summary
-       ```
-     + Tự động đồng bộ số liệu trang tính SUMMARY nhờ cờ `--update-summary`.
-     + Báo cáo xác nhận số lượng ca Passed/Failed đã cập nhật kèm link sheet.
-2. **Dọn dẹp tài nguyên (Cleanup):**
-   - Xóa bỏ các script test tạm thời, dump html, file log trung gian trong `scratch/` hoặc `/tmp/`.
-   - Giữ nguyên các deliverable: Thư mục ảnh `Evidence/`, file báo cáo `.md`, bản nháp bug `backlog/draft/`.
-   - Thông báo tóm tắt cleanup cho User.
+Khi User phê duyệt ("OK đẩy đi", "Duyệt rồi", "Tạo bug đi", "Cập nhật sheet đi"), tiến hành thực thi theo từng trường hợp cụ thể:
+
+#### 🔴 Trường hợp 1: User duyệt tạo Bug lên Backlog (Khi kiểm thử phát hiện lỗi)
+1. **Upload ảnh bằng chứng lỗi:**
+   - Gọi `mcp_backlog_post_space_attachment(filePaths=[...])` với đường dẫn file ảnh trong thư mục `backlog/draft/bug-.../` để nhận mảng `attachmentId`.
+2. **Chuẩn hóa thẻ ảnh trong phần Description:**
+   - Đảm bảo các thẻ ảnh trong Description khớp với tên file ảnh đã upload: `![Tên ảnh][ten_file.png]`.
+3. **Tra cứu Metadata ID (từ `backlog/.backlog-metadata.json` hoặc API):**
+   - `projectId`: ID dự án (ví dụ `166069` cho `196_VNTEST_LIMS`).
+   - `issueTypeId`: ID loại Bug (ví dụ `708367`).
+   - `summary`: `[{Mã Task}][{Feature}]: {Hành vi lỗi}` (theo đúng bản nháp đã duyệt).
+   - `priorityId`: ID độ ưu tiên (High: 2, Normal: 3, Low: 4).
+   - `parentIssueId`: Numeric ID của task cha đang kiểm thử (ví dụ `8564118`).
+   - `assigneeId`: ID người nhận (thường lấy theo Assignee của task cha, ví dụ Hoan Do: `421599`).
+   - `categoryId`: **Bắt buộc mảng rỗng `[]`** (tuân thủ nghiêm ngặt quy tắc dự án cấm gán Category khi tạo Bug).
+   - `customFields`: Mảng các trường tùy chỉnh chuẩn Backlog:
+     + `Bug Type` (id: `32925`, value: ID tương ứng như Interface Error: 1, Workflow: 2, Functional Bug: 3, Logical Bug: 4...).
+     + `Bug Severity` (id: `32926`, value: ID tương ứng như Critical: 1, Major: 2, Minor: 3).
+     + `Phase Detected` (id: `32927`, value: `3` - System Testing).
+4. **Gọi API tạo Issue Bug:**
+   - Gọi `mcp_backlog_add_issue` với các tham số trên và mảng `attachmentId`.
+5. **Ghi nhận IssueKey mới & Lưu trữ:**
+   - Nhận mã `issueKey` vừa tạo (ví dụ `196_VNTEST_LIMS-924`).
+   - Cập nhật header file bản nháp với `IssueKey: <mã mới>`, `DraftStatus: Created`.
+   - Cung cấp link trực tiếp của Bug trên Backlog cho User: `https://piragovn.backlog.com/view/<issueKey>`.
+6. **Tự động liên kết mã Bug sang Google Sheets (Khi có link Sheet):**
+   - Chạy script cập nhật kết quả:
+     ```bash
+     node .agent/skills/qc-task-tester/scripts/update_sheet_results.js \
+       --url "<URL_GOOGLE_SHEET>" \
+       --tab "<Tên Tab hoặc gid>" \
+       --fail-rows <dòng_bị_lỗi> \
+       --bug "<issueKey_vừa_tạo>" \
+       --update-summary
+     ```
+   - Cột K tự động đổi sang `Failed` (Dropdown Chip đỏ), Cột L tự động điền mã Bug vừa tạo, Cột N điền ngày test, và tab `SUMMARY` được đồng bộ tức thì.
+
+---
+
+#### 🟢 Trường hợp 2: User duyệt Báo cáo Bằng chứng (Khi kiểm thử Đạt yêu cầu)
+1. **Upload ảnh bằng chứng:**
+   - Gọi `mcp_backlog_post_space_attachment(filePaths=[...])` để nhận mảng `attachmentId`.
+2. **Đẩy comment báo cáo nghiệm thu:**
+   - Gọi `mcp_backlog_add_issue_comment(issueKey, content, attachmentId=[...], notifiedUserId=[...])`.
+3. **Cập nhật trạng thái task cha (nếu User yêu cầu):**
+   - Gọi `mcp_backlog_update_issue(issueKey, statusId=...)` chuyển sang `Review` hoặc `Resolved`.
+4. **Cập nhật Google Sheets (Khi có link Sheet):**
+   - Chạy script cập nhật các ca kiểm thử đạt:
+     ```bash
+     node .agent/skills/qc-task-tester/scripts/update_sheet_results.js \
+       --url "<URL_GOOGLE_SHEET>" \
+       --tab "<Tên Tab hoặc gid>" \
+       --pass-rows <dòng_pass> \
+       --update-summary
+     ```
+   - Cột K đổi sang `Passed` (Dropdown Chip xanh), Cột L để trống, Cột N điền ngày test, và tab `SUMMARY` được cập nhật.
+
+---
+
+#### ⚪ Trường hợp 3: User yêu cầu Bỏ Bug / Không đẩy ("Bỏ bug này", "Không làm gì cả")
+1. Cập nhật header bản nháp: `DraftStatus: Excluded`, `ReportToBacklog: false`, kèm lý do `ReviewDecision`.
+2. Giữ nguyên bằng chứng local để đối chiếu, **tuyệt đối không gọi bất kỳ API push nào lên Backlog**.
+
+---
+
+#### 🧹 Dọn dẹp tài nguyên (Cleanup)
+- Xóa bỏ các script test tạm thời, dump html, file log trung gian trong `scratch/` hoặc `/tmp/`.
+- Giữ nguyên các deliverable: Thư mục ảnh `Evidence/`, file báo cáo `.md`, bản nháp bug `backlog/draft/`.
+- Thông báo tóm tắt cleanup cho User.
 
 ---
 
